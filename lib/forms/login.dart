@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gaudiopanel/services/auth-service.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -15,6 +16,8 @@ class LoginFormState extends State<LoginForm> {
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
 
+  String _loginError = '';
+
   @override
   void dispose() {
     _email.dispose();
@@ -22,8 +25,25 @@ class LoginFormState extends State<LoginForm> {
     super.dispose();
   }
 
-  void _login() {
-    if (_formKey.currentState.validate()) {}
+  void _login() async {
+    setState(() {
+      _loginError = '';
+    });
+    if (_formKey.currentState.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+      String loginError =
+          await AuthService().login(_email.text, _password.text);
+      setState(() {
+        _isLoading = false;
+        _loginError = loginError;
+      });
+
+      if (_loginError.isNotEmpty) {
+        _formKey.currentState.validate();
+      }
+    }
   }
 
   @override
@@ -52,6 +72,9 @@ class LoginFormState extends State<LoginForm> {
                               validator: (value) {
                                 if (value.isEmpty) {
                                   return 'پست الکترونیکی وارد نشده است.';
+                                }
+                                if (_loginError.isNotEmpty) {
+                                  return _loginError;
                                 }
                                 return null;
                               },
