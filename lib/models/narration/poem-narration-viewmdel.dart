@@ -1,0 +1,64 @@
+import 'package:gaudiopanel/models/auth/public-rapp-user.dart';
+
+class PoemNarrationViewModel {
+  final String id;
+  final PublicRAppUser owner;
+  final int ganjoorAudioId;
+  final int ganjoorPostId;
+  final String poemFullTitle;
+  final String poemFullUrl;
+  final String mp3Url;
+  final String xmlUrl;
+  final String audioTitle;
+  final String audioArtist;
+  final String audioArtistUrl;
+  final String audioSrc;
+  final String audioSrcUrl;
+  final String mp3SizeInBytes;
+  final String uploadDate;
+  final List<int> audioSyncStatusArray;
+  final int reviewStatus;
+
+  PoemNarrationViewModel(
+      {this.id,
+      this.owner,
+      this.ganjoorAudioId,
+      this.ganjoorPostId,
+      this.poemFullTitle,
+      this.poemFullUrl,
+      this.mp3Url,
+      this.xmlUrl,
+      this.audioTitle,
+      this.audioArtist,
+      this.audioArtistUrl,
+      this.audioSrc,
+      this.audioSrcUrl,
+      this.mp3SizeInBytes,
+      this.uploadDate,
+      this.audioSyncStatusArray,
+      this.reviewStatus});
+
+  factory PoemNarrationViewModel.fromJson(Map<String, dynamic> json) {
+    if (json == null) {
+      return null;
+    }
+    return PoemNarrationViewModel(
+        id: json['id'],
+        owner: PublicRAppUser.fromJson(json['owner']),
+        ganjoorAudioId: json['ganjoorAudioId'],
+        ganjoorPostId: json['ganjoorPostId'],
+        poemFullTitle: json['poemFullTitle'],
+        poemFullUrl: json['poemFullUrl'],
+        mp3Url: json['mp3Url'],
+        xmlUrl: json['xmlUrl'],
+        audioTitle: json['audioTitle'],
+        audioArtist: json['audioArtist'],
+        audioArtistUrl: json['audioArtistUrl'],
+        audioSrc: json['audioSrc'],
+        audioSrcUrl: json['audioSrcUrl'],
+        mp3SizeInBytes: json['mp3SizeInBytes'],
+        uploadDate: json['uploadDate'],
+        audioSyncStatusArray: (json['audioSyncStatusArray'] as List),
+        reviewStatus: json['reviewStatus']);
+  }
+}

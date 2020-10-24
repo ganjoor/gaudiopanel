@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:gaudiopanel/services/gservice-address.dart';
 import 'package:gaudiopanel/services/storage-service.dart';
 import 'package:http/http.dart' as http;
 import 'package:gaudiopanel/models/auth/logged-on-user-model.dart';
@@ -13,8 +14,9 @@ class AuthService {
   /// result is written in local storage
   Future<String> login(String username, String password) async {
     try {
+      var apiRoot = GServiceAddress.Url;
       final http.Response response = await http.post(
-        'http://localhost:3439/api/users/login',
+        '$apiRoot/api/users/login',
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -48,8 +50,9 @@ class AuthService {
     try {
       LoggedOnUserModel oldLoginInfo = await _storageService.getUserInfo();
       var sessionId = oldLoginInfo.sessionId;
+      var apiRoot = GServiceAddress.Url;
       final http.Response response = await http.put(
-        'http://localhost:3439/api/users/relogin/$sessionId',
+        '$apiRoot/api/users/relogin/$sessionId',
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
