@@ -2,22 +2,22 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:gaudiopanel/models/auth/logged-on-user-model.dart';
-import 'package:gaudiopanel/models/narration/poem-narration-viewmdel.dart';
+import 'package:gaudiopanel/models/common/pagination-metadata.dart';
+import 'package:gaudiopanel/models/narration/poem-narration-viewmodel.dart';
+import 'package:gaudiopanel/models/narration/poem-narrations-response-model.dart';
 import 'package:gaudiopanel/services/auth-service.dart';
 import 'package:gaudiopanel/services/gservice-address.dart';
 import 'package:gaudiopanel/services/storage-service.dart';
 import 'package:http/http.dart' as http;
-import 'package:tuple/tuple.dart';
 
 class NarrationService {
   final StorageService _storageService = StorageService();
 
-  Future<Tuple2<List<PoemNarrationViewModel>, String>> getNarrations(
+  Future<PoemNarrationsResponseModel> getNarrations(
       int pageNumber, int pageSize, bool error401) async {
     LoggedOnUserModel userInfo = await _storageService.getUserInfo();
     if (userInfo == null) {
-      return Tuple2<List<PoemNarrationViewModel>, String>(
-          null, 'کاربر وارد سیستم نشده است.');
+      return PoemNarrationsResponseModel(error: 'کاربر وارد سیستم نشده است.');
     }
     var apiRoot = GServiceAddress.Url;
     http.Response response = await http.get(
@@ -30,8 +30,7 @@ class NarrationService {
     if (!error401 && response.statusCode == 401) {
       String errSessionRenewal = await AuthService().relogin();
       if (errSessionRenewal.isNotEmpty) {
-        return Tuple2<List<PoemNarrationViewModel>, String>(
-            null, errSessionRenewal);
+        return PoemNarrationsResponseModel(error: errSessionRenewal);
       }
       return await getNarrations(pageNumber, pageSize, true);
     }
@@ -42,9 +41,13 @@ class NarrationService {
       for (var item in items) {
         ret.add(PoemNarrationViewModel.fromJson(item));
       }
-      return Tuple2<List<PoemNarrationViewModel>, String>(ret, '');
+      return PoemNarrationsResponseModel(
+          narrations: ret,
+          paginationMetadata: PaginationMetadata.fromJson(
+              json.decode(response.headers['paging-headers'])),
+          error: '');
     } else {
-      return Tuple2<List<PoemNarrationViewModel>, String>(null, response.body);
+      return PoemNarrationsResponseModel(error: response.body);
     }
   }
 }
