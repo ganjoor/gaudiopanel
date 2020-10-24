@@ -17,7 +17,7 @@ class StorageService {
     await setUserInfo(null);
   }
 
-  Future<LoggedOnUserModel> getUserInfo() async {
+  Future<LoggedOnUserModel> get userInfo async {
     await _appStorage.ready;
     return LoggedOnUserModel.fromJson(_appStorage.getItem('login'));
   }

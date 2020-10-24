@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gaudiopanel/forms/narrations.dart';
 import 'package:gaudiopanel/services/auth-service.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -42,6 +43,9 @@ class LoginFormState extends State<LoginForm> {
 
       if (_loginError.isNotEmpty) {
         _formKey.currentState.validate();
+      } else {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => NarrationsWidget()));
       }
     }
   }

@@ -15,7 +15,7 @@ class NarrationService {
 
   Future<PoemNarrationsResponseModel> getNarrations(
       int pageNumber, int pageSize, bool error401) async {
-    LoggedOnUserModel userInfo = await _storageService.getUserInfo();
+    LoggedOnUserModel userInfo = await _storageService.userInfo;
     if (userInfo == null) {
       return PoemNarrationsResponseModel(error: 'کاربر وارد سیستم نشده است.');
     }

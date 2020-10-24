@@ -42,13 +42,19 @@ class AuthService {
     return '';
   }
 
+  ///is user logged on?
+  ///
+  Future<bool> get isLoggedOn async {
+    return (await _storageService.userInfo) != null;
+  }
+
   /// renew user session
   ///
   /// returns empty string is everything is ok otherwise the error string
   /// result is written in local storage
   Future<String> relogin() async {
     try {
-      LoggedOnUserModel oldLoginInfo = await _storageService.getUserInfo();
+      LoggedOnUserModel oldLoginInfo = await _storageService.userInfo;
       var sessionId = oldLoginInfo.sessionId;
       var apiRoot = GServiceAddress.Url;
       final http.Response response = await http.put(
@@ -63,6 +69,32 @@ class AuthService {
             LoggedOnUserModel.fromJson(json.decode(response.body));
         await _storageService.setUserInfo(loginResponse);
       } else {
+        return response.body;
+      }
+    } catch (e) {
+      return 'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
+          e.toString();
+    }
+    return '';
+  }
+
+  /// logout
+  ///
+  Future<String> logout() async {
+    try {
+      LoggedOnUserModel userInfo = await _storageService.userInfo;
+      await _storageService.delUserInfo();
+      var userId = userInfo.user.id;
+      var sessionId = userInfo.sessionId;
+      var apiRoot = GServiceAddress.Url;
+      final http.Response response = await http.delete(
+        '$apiRoot/api/users/delsession?userId=$userId&sessionId=$sessionId',
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      if (response.statusCode != 200) {
         return response.body;
       }
     } catch (e) {

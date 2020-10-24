@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:gaudiopanel/forms/login.dart';
+import 'package:gaudiopanel/forms/narrations.dart';
+import 'package:gaudiopanel/services/auth-service.dart';
 
-void main() {
-  runApp(GAudioPanelApp());
+Future<void> main() async {
+  Widget initialWidget =
+      (await AuthService().isLoggedOn) ? NarrationsWidget() : LoginForm();
+  runApp(GAudioPanelApp(initialWidget: initialWidget));
 }
 
 class GAudioPanelApp extends StatefulWidget {
+  final Widget initialWidget;
+
+  const GAudioPanelApp({Key key, this.initialWidget}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => GAudioPanelAppState();
 }
@@ -32,7 +40,7 @@ class GAudioPanelAppState extends State<GAudioPanelApp> {
           // closer together (more dense) than on mobile platforms.
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        home: LoginForm(),
+        home: widget.initialWidget,
         builder: (BuildContext context, Widget child) {
           return Directionality(
             textDirection: TextDirection.rtl,
