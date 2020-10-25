@@ -14,7 +14,7 @@ class PoemNarrationViewModel {
   final String audioArtistUrl;
   final String audioSrc;
   final String audioSrcUrl;
-  final String mp3SizeInBytes;
+  final int mp3SizeInBytes;
   final String uploadDate;
   final List<int> audioSyncStatusArray;
   final int reviewStatus;
@@ -58,7 +58,8 @@ class PoemNarrationViewModel {
         audioSrcUrl: json['audioSrcUrl'],
         mp3SizeInBytes: json['mp3SizeInBytes'],
         uploadDate: json['uploadDate'],
-        audioSyncStatusArray: (json['audioSyncStatusArray'] as List),
+        audioSyncStatusArray:
+            (json['audioSyncStatusArray'] as List).cast<int>().toList(),
         reviewStatus: json['reviewStatus']);
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:gaudiopanel/services/gservice-address.dart';
 import 'package:gaudiopanel/services/storage-service.dart';
@@ -91,6 +92,7 @@ class AuthService {
         '$apiRoot/api/users/delsession?userId=$userId&sessionId=$sessionId',
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
         },
       );
 
