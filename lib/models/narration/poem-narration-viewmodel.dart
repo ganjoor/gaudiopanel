@@ -1,7 +1,7 @@
 import 'package:gaudiopanel/models/auth/public-rapp-user.dart';
 
 class PoemNarrationViewModel {
-  final String id;
+  final int id;
   final PublicRAppUser owner;
   final int ganjoorAudioId;
   final int ganjoorPostId;
