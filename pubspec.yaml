@@ -33,6 +33,7 @@ dependencies:
   localstorage: ^3.0.3+6
   http: any
   after_layout: ^1.0.7+2
+  tuple: ^1.0.3
   
 
 dev_dependencies:
