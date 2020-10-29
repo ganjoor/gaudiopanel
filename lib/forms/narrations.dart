@@ -48,68 +48,74 @@ class NarrationWidgetState extends State<NarrationsWidget>
     return Scaffold(
         key: _key,
         body: LoadingOverlay(
-          isLoading: _isLoading,
-          child: Scaffold(
-            appBar: AppBar(
-              title: Text('پیشخان خوانشگران گنجور » خوانشها'),
-            ),
-            drawer: Drawer(
-              // Add a ListView to the drawer. This ensures the user can scroll
-              // through the options in the drawer if there isn't enough vertical
-              // space to fit everything.
-              child: ListView(
-                // Important: Remove any padding from the ListView.
-                padding: EdgeInsets.zero,
-                children: <Widget>[
-                  DrawerHeader(
-                    child: Column(
-                      children: [
-                        Text(
-                          'سلام!',
-                        ),
-                      ],
+            isLoading: _isLoading,
+            child: Scaffold(
+              appBar: AppBar(
+                title: Text('پیشخان خوانشگران گنجور » خوانشها'),
+              ),
+              drawer: Drawer(
+                // Add a ListView to the drawer. This ensures the user can scroll
+                // through the options in the drawer if there isn't enough vertical
+                // space to fit everything.
+                child: ListView(
+                  // Important: Remove any padding from the ListView.
+                  padding: EdgeInsets.zero,
+                  children: <Widget>[
+                    DrawerHeader(
+                      child: Column(
+                        children: [
+                          Text(
+                            'سلام!',
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  ListTile(
-                    title: Text('خروج'),
-                    leading: Icon(Icons.logout,
-                        color: Theme.of(context).primaryColor),
-                    onTap: () async {
-                      setState(() {
-                        _isLoading = true;
-                      });
+                    ListTile(
+                      title: Text('خروج'),
+                      leading: Icon(Icons.logout,
+                          color: Theme.of(context).primaryColor),
+                      onTap: () async {
+                        setState(() {
+                          _isLoading = true;
+                        });
 
-                      await AuthService().logout();
+                        await AuthService().logout();
 
-                      setState(() {
-                        _isLoading = false;
-                      });
+                        setState(() {
+                          _isLoading = false;
+                        });
 
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) => LoginForm()));
-                    },
-                  ),
-                ],
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginForm()));
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-            body: Builder(
-              builder: (context) => Center(
-                child: ListView.builder(
-                    itemCount: _narrations == null
-                        ? 0
-                        : _narrations.narrations == null
-                            ? 0
-                            : _narrations.narrations.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return ListTile(
-                          title:
-                              Text(_narrations.narrations[index].poemFullTitle),
-                          subtitle:
-                              Text(_narrations.narrations[index].audioArtist));
-                    }),
+              body: Builder(
+                builder: (context) => Center(
+                  child: ListView.builder(
+                      itemCount: _narrations == null
+                          ? 0
+                          : _narrations.narrations == null
+                              ? 0
+                              : _narrations.narrations.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return ListTile(
+                            title: Text(
+                                _narrations.narrations[index].poemFullTitle),
+                            subtitle: Text(
+                                _narrations.narrations[index].audioArtist));
+                      }),
+                ),
               ),
-            ),
-          ),
-        ));
+              floatingActionButton: FloatingActionButton(
+                onPressed: () {},
+                child: Icon(Icons.add),
+                tooltip: 'خوانش جدید',
+              ),
+            )));
   }
 }
