@@ -1,9 +1,11 @@
 import 'package:after_layout/after_layout.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gaudiopanel/forms/login.dart';
 import 'package:gaudiopanel/models/narration/poem-narrations-response-model.dart';
 import 'package:gaudiopanel/services/auth-service.dart';
+import 'package:gaudiopanel/services/upload-narration-service.dart';
 import 'package:gaudiopanel/services/narration-service.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 
@@ -112,9 +114,34 @@ class NarrationWidgetState extends State<NarrationsWidget>
                 ),
               ),
               floatingActionButton: FloatingActionButton(
-                onPressed: () {},
+                onPressed: () async {
+                  FilePickerResult result = await FilePicker.platform.pickFiles(
+                    allowMultiple: true,
+                    type: FileType.custom,
+                    allowedExtensions: ['mp3', 'xml'],
+                  );
+                  if (result != null) {
+                    setState(() {
+                      _isLoading = true;
+                    });
+
+                    String err = await UploadNarrationService()
+                        .uploadFiles(result.files, false);
+
+                    if (err.isNotEmpty) {
+                      _key.currentState.showSnackBar(SnackBar(
+                        content: Text("خطا در ارسال خوانشهای جدید: " + err),
+                        backgroundColor: Colors.red,
+                      ));
+                    }
+
+                    setState(() {
+                      _isLoading = false;
+                    });
+                  }
+                },
                 child: Icon(Icons.add),
-                tooltip: 'خوانش جدید',
+                tooltip: 'خوانشهای جدید',
               ),
             )));
   }
