@@ -9,6 +9,8 @@ import 'package:gaudiopanel/services/upload-narration-service.dart';
 import 'package:gaudiopanel/services/narration-service.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 
+enum NarrationsActiveFormSection { Narrations, Uploads }
+
 class NarrationsWidget extends StatefulWidget {
   @override
   NarrationWidgetState createState() => NarrationWidgetState();
@@ -16,27 +18,47 @@ class NarrationsWidget extends StatefulWidget {
 
 class NarrationWidgetState extends State<NarrationsWidget>
     with AfterLayoutMixin<NarrationsWidget> {
-  final _key = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _key =
+      GlobalKey<ScaffoldMessengerState>();
   bool _isLoading = false;
+  NarrationsActiveFormSection _activeSection =
+      NarrationsActiveFormSection.Narrations;
   int _pageNumber = 1;
   int _pageSize = 20;
   PoemNarrationsResponseModel _narrations;
 
+  String get title {
+    switch (_activeSection) {
+      case NarrationsActiveFormSection.Uploads:
+        return 'پیشخان خوانشگران گنجور » بارگذاریها';
+      default:
+        return 'پیشخان خوانشگران گنجور » خوانشها';
+    }
+  }
+
   Future<void> loadData() async {
-    setState(() {
-      _isLoading = true;
-    });
-    var narrations =
-        await NarrationService().getNarrations(_pageNumber, _pageSize, false);
-    setState(() {
-      _narrations = narrations;
-      _isLoading = false;
-    });
-    if (_narrations.error.isNotEmpty) {
-      _key.currentState.showSnackBar(SnackBar(
-        content: Text("خطا در دریافت خوانشها: " + _narrations.error),
-        backgroundColor: Colors.red,
-      ));
+    switch (_activeSection) {
+      case NarrationsActiveFormSection.Narrations:
+        {
+          setState(() {
+            _isLoading = true;
+          });
+          var narrations = await NarrationService()
+              .getNarrations(_pageNumber, _pageSize, false);
+          setState(() {
+            _narrations = narrations;
+            _isLoading = false;
+          });
+          if (_narrations.error.isNotEmpty) {
+            _key.currentState.showSnackBar(SnackBar(
+              content: Text("خطا در دریافت خوانشها: " + _narrations.error),
+              backgroundColor: Colors.red,
+            ));
+          }
+        }
+        break;
+      case NarrationsActiveFormSection.Uploads:
+        break;
     }
   }
 
@@ -47,13 +69,13 @@ class NarrationWidgetState extends State<NarrationsWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ScaffoldMessenger(
         key: _key,
-        body: LoadingOverlay(
+        child: LoadingOverlay(
             isLoading: _isLoading,
             child: Scaffold(
               appBar: AppBar(
-                title: Text('پیشخان خوانشگران گنجور » خوانشها'),
+                title: Text(title),
               ),
               drawer: Drawer(
                 // Add a ListView to the drawer. This ensures the user can scroll
@@ -71,6 +93,40 @@ class NarrationWidgetState extends State<NarrationsWidget>
                           ),
                         ],
                       ),
+                    ),
+                    ListTile(
+                      title: Text('خوانشها'),
+                      leading: Icon(Icons.music_note,
+                          color: Theme.of(context).primaryColor),
+                      selected: _activeSection ==
+                          NarrationsActiveFormSection.Narrations,
+                      onTap: () async {
+                        if (_activeSection !=
+                            NarrationsActiveFormSection.Narrations) {
+                          setState(() {
+                            _activeSection =
+                                NarrationsActiveFormSection.Narrations;
+                          });
+                          await loadData();
+                        }
+                      },
+                    ),
+                    ListTile(
+                      title: Text('بارگذاریها'),
+                      leading: Icon(Icons.upload_file,
+                          color: Theme.of(context).primaryColor),
+                      selected:
+                          _activeSection == NarrationsActiveFormSection.Uploads,
+                      onTap: () async {
+                        if (_activeSection !=
+                            NarrationsActiveFormSection.Uploads) {
+                          setState(() {
+                            _activeSection =
+                                NarrationsActiveFormSection.Uploads;
+                          });
+                          await loadData();
+                        }
+                      },
                     ),
                     ListTile(
                       title: Text('خروج'),
@@ -97,22 +153,25 @@ class NarrationWidgetState extends State<NarrationsWidget>
                 ),
               ),
               body: Builder(
-                builder: (context) => Center(
-                  child: ListView.builder(
-                      itemCount: _narrations == null
-                          ? 0
-                          : _narrations.narrations == null
-                              ? 0
-                              : _narrations.narrations.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return ListTile(
-                            title: Text(
-                                _narrations.narrations[index].poemFullTitle),
-                            subtitle: Text(
-                                _narrations.narrations[index].audioArtist));
-                      }),
-                ),
-              ),
+                  builder: (context) => Visibility(
+                        child: Center(
+                          child: ListView.builder(
+                              itemCount: _narrations == null
+                                  ? 0
+                                  : _narrations.narrations == null
+                                      ? 0
+                                      : _narrations.narrations.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return ListTile(
+                                    title: Text(_narrations
+                                        .narrations[index].poemFullTitle),
+                                    subtitle: Text(_narrations
+                                        .narrations[index].audioArtist));
+                              }),
+                        ),
+                        visible: _activeSection ==
+                            NarrationsActiveFormSection.Narrations,
+                      )),
               floatingActionButton: FloatingActionButton(
                 onPressed: () async {
                   FilePickerResult result = await FilePicker.platform.pickFiles(
