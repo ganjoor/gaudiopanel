@@ -5,6 +5,8 @@ import 'package:gaudiopanel/models/auth/logged-on-user-model.dart';
 import 'package:gaudiopanel/models/common/pagination-metadata.dart';
 import 'package:gaudiopanel/models/narration/poem-narration-viewmodel.dart';
 import 'package:gaudiopanel/models/narration/poem-narrations-response-model.dart';
+import 'package:gaudiopanel/models/narration/uploaded-item-viewmodel.dart';
+import 'package:gaudiopanel/models/narration/uploaded-narrations-response-model.dart';
 import 'package:gaudiopanel/models/narration/user-narration-profile-viewmodel.dart';
 import 'package:gaudiopanel/services/auth-service.dart';
 import 'package:gaudiopanel/services/gservice-address.dart';
@@ -104,6 +106,54 @@ class NarrationService {
       return Tuple2<List<UserNarrationProfileViewModel>, String>(
           null,
           'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
+              e.toString());
+    }
+  }
+
+  /// Get User Uploads
+  ///
+  /// allUsers parameter is currently ignored
+  Future<UploadedNarrationsResponseModel> getUploads(
+      int pageNumber, int pageSize, bool error401) async {
+    try {
+      LoggedOnUserModel userInfo = await _storageService.userInfo;
+      if (userInfo == null) {
+        return UploadedNarrationsResponseModel(
+            error: 'کاربر وارد سیستم نشده است.');
+      }
+      var apiRoot = GServiceAddress.Url;
+      http.Response response = await http.get(
+          '$apiRoot/api/audio/uploads?PageNumber=$pageNumber&PageSize=$pageSize',
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
+          });
+
+      if (!error401 && response.statusCode == 401) {
+        String errSessionRenewal = await AuthService().relogin();
+        if (errSessionRenewal.isNotEmpty) {
+          return UploadedNarrationsResponseModel(error: errSessionRenewal);
+        }
+        return await getUploads(pageNumber, pageSize, true);
+      }
+
+      List<UploadedItemViewModel> ret = [];
+      if (response.statusCode == 200) {
+        List<dynamic> items = json.decode(response.body);
+        for (var item in items) {
+          ret.add(UploadedItemViewModel.fromJson(item));
+        }
+        return UploadedNarrationsResponseModel(
+            uploads: ret,
+            paginationMetadata: PaginationMetadata.fromJson(
+                json.decode(response.headers['paging-headers'])),
+            error: '');
+      } else {
+        return UploadedNarrationsResponseModel(error: response.body);
+      }
+    } catch (e) {
+      return UploadedNarrationsResponseModel(
+          error: 'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
               e.toString());
     }
   }
