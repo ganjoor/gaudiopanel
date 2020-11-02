@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gaudiopanel/forms/login.dart';
 import 'package:gaudiopanel/models/narration/poem-narrations-response-model.dart';
+import 'package:gaudiopanel/models/narration/uploaded-narrations-response-model.dart';
 import 'package:gaudiopanel/services/auth-service.dart';
 import 'package:gaudiopanel/services/upload-narration-service.dart';
 import 'package:gaudiopanel/services/narration-service.dart';
@@ -26,6 +27,7 @@ class NarrationWidgetState extends State<NarrationsWidget>
   int _pageNumber = 1;
   int _pageSize = 20;
   PoemNarrationsResponseModel _narrations;
+  UploadedNarrationsResponseModel _uploads;
 
   String get title {
     switch (_activeSection) {
@@ -58,6 +60,23 @@ class NarrationWidgetState extends State<NarrationsWidget>
         }
         break;
       case NarrationsActiveFormSection.Uploads:
+        {
+          setState(() {
+            _isLoading = true;
+          });
+          var uploads = await NarrationService()
+              .getUploads(_pageNumber, _pageSize, false);
+          setState(() {
+            _uploads = uploads;
+            _isLoading = false;
+          });
+          if (_uploads.error.isNotEmpty) {
+            _key.currentState.showSnackBar(SnackBar(
+              content: Text("خطا در دریافت بارگذاریها: " + _uploads.error),
+              backgroundColor: Colors.red,
+            ));
+          }
+        }
         break;
     }
   }
@@ -108,6 +127,7 @@ class NarrationWidgetState extends State<NarrationsWidget>
                                 NarrationsActiveFormSection.Narrations;
                           });
                           await loadData();
+                          Navigator.of(context).pop(); //close drawer
                         }
                       },
                     ),
@@ -125,6 +145,7 @@ class NarrationWidgetState extends State<NarrationsWidget>
                                 NarrationsActiveFormSection.Uploads;
                           });
                           await loadData();
+                          Navigator.of(context).pop(); //close drawer
                         }
                       },
                     ),
@@ -153,24 +174,34 @@ class NarrationWidgetState extends State<NarrationsWidget>
                 ),
               ),
               body: Builder(
-                  builder: (context) => Visibility(
-                        child: Center(
-                          child: ListView.builder(
-                              itemCount: _narrations == null
-                                  ? 0
-                                  : _narrations.narrations == null
-                                      ? 0
-                                      : _narrations.narrations.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                return ListTile(
-                                    title: Text(_narrations
-                                        .narrations[index].poemFullTitle),
-                                    subtitle: Text(_narrations
-                                        .narrations[index].audioArtist));
-                              }),
-                        ),
-                        visible: _activeSection ==
-                            NarrationsActiveFormSection.Narrations,
+                  builder: (context) => Center(
+                        child: ListView.builder(
+                            itemCount: _activeSection ==
+                                    NarrationsActiveFormSection.Narrations
+                                ? (_narrations == null
+                                    ? 0
+                                    : _narrations.narrations == null
+                                        ? 0
+                                        : _narrations.narrations.length)
+                                : (_uploads == null
+                                    ? 0
+                                    : _uploads.uploads == null
+                                        ? 0
+                                        : _uploads.uploads.length),
+                            itemBuilder: (BuildContext context, int index) {
+                              return ListTile(
+                                  title: Text(_activeSection ==
+                                          NarrationsActiveFormSection.Narrations
+                                      ? _narrations
+                                          .narrations[index].poemFullTitle
+                                      : _uploads.uploads[index].fileName),
+                                  subtitle: Text(_activeSection ==
+                                          NarrationsActiveFormSection.Narrations
+                                      ? _narrations
+                                          .narrations[index].audioArtist
+                                      : _uploads
+                                          .uploads[index].processResultMsg));
+                            }),
                       )),
               floatingActionButton: FloatingActionButton(
                 onPressed: () async {
