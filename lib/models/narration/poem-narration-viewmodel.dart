@@ -1,5 +1,27 @@
 import 'package:gaudiopanel/models/auth/public-rapp-user.dart';
 
+class AudioReviewStatus {
+  static const int draft = 0;
+  static const int pending = 1;
+  static const int approved = 2;
+  static const int rejected = 3;
+
+  static String valueToString(int value) {
+    switch (value) {
+      case draft:
+        return 'پیش‌نویس';
+      case pending:
+        return 'در انتظار بررسی';
+      case approved:
+        return 'تأیید شده';
+      case rejected:
+        return 'رد شده';
+      default:
+        return 'همه';
+    }
+  }
+}
+
 class PoemNarrationViewModel {
   final int id;
   final PublicRAppUser owner;

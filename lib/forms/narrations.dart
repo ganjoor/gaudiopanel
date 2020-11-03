@@ -3,8 +3,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gaudiopanel/forms/login.dart';
-import 'package:gaudiopanel/models/narration/poem-narrations-response-model.dart';
-import 'package:gaudiopanel/models/narration/uploaded-narrations-response-model.dart';
+import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
+import 'package:gaudiopanel/models/narration/poem-narration-viewmodel.dart';
+import 'package:gaudiopanel/models/narration/uploaded-item-viewmodel.dart';
 import 'package:gaudiopanel/services/auth-service.dart';
 import 'package:gaudiopanel/services/upload-narration-service.dart';
 import 'package:gaudiopanel/services/narration-service.dart';
@@ -26,8 +27,8 @@ class NarrationWidgetState extends State<NarrationsWidget>
       NarrationsActiveFormSection.Narrations;
   int _pageNumber = 1;
   int _pageSize = 20;
-  PoemNarrationsResponseModel _narrations;
-  UploadedNarrationsResponseModel _uploads;
+  PaginatedItemsResponseModel<PoemNarrationViewModel> _narrations;
+  PaginatedItemsResponseModel<UploadedItemViewModel> _uploads;
 
   String get title {
     switch (_activeSection) {
@@ -84,6 +85,32 @@ class NarrationWidgetState extends State<NarrationsWidget>
   @override
   void afterFirstLayout(BuildContext context) async {
     await loadData();
+  }
+
+  ListView get _recordView {
+    return _activeSection == NarrationsActiveFormSection.Narrations
+        ? ListView.builder(
+            itemCount: _narrations == null
+                ? 0
+                : _narrations.items == null
+                    ? 0
+                    : _narrations.items.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ListTile(
+                  title: Text(_narrations.items[index].poemFullTitle),
+                  subtitle: Text(_narrations.items[index].audioArtist));
+            })
+        : ListView.builder(
+            itemCount: _uploads == null
+                ? 0
+                : _uploads.items == null
+                    ? 0
+                    : _uploads.items.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ListTile(
+                  title: Text(_uploads.items[index].fileName),
+                  subtitle: Text(_uploads.items[index].processResultMsg));
+            });
   }
 
   @override
@@ -173,36 +200,7 @@ class NarrationWidgetState extends State<NarrationsWidget>
                   ],
                 ),
               ),
-              body: Builder(
-                  builder: (context) => Center(
-                        child: ListView.builder(
-                            itemCount: _activeSection ==
-                                    NarrationsActiveFormSection.Narrations
-                                ? (_narrations == null
-                                    ? 0
-                                    : _narrations.narrations == null
-                                        ? 0
-                                        : _narrations.narrations.length)
-                                : (_uploads == null
-                                    ? 0
-                                    : _uploads.uploads == null
-                                        ? 0
-                                        : _uploads.uploads.length),
-                            itemBuilder: (BuildContext context, int index) {
-                              return ListTile(
-                                  title: Text(_activeSection ==
-                                          NarrationsActiveFormSection.Narrations
-                                      ? _narrations
-                                          .narrations[index].poemFullTitle
-                                      : _uploads.uploads[index].fileName),
-                                  subtitle: Text(_activeSection ==
-                                          NarrationsActiveFormSection.Narrations
-                                      ? _narrations
-                                          .narrations[index].audioArtist
-                                      : _uploads
-                                          .uploads[index].processResultMsg));
-                            }),
-                      )),
+              body: Builder(builder: (context) => Center(child: _recordView)),
               floatingActionButton: FloatingActionButton(
                 onPressed: () async {
                   FilePickerResult result = await FilePicker.platform.pickFiles(

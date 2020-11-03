@@ -4,9 +4,8 @@ import 'dart:io';
 import 'package:gaudiopanel/models/auth/logged-on-user-model.dart';
 import 'package:gaudiopanel/models/common/pagination-metadata.dart';
 import 'package:gaudiopanel/models/narration/poem-narration-viewmodel.dart';
-import 'package:gaudiopanel/models/narration/poem-narrations-response-model.dart';
+import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
 import 'package:gaudiopanel/models/narration/uploaded-item-viewmodel.dart';
-import 'package:gaudiopanel/models/narration/uploaded-narrations-response-model.dart';
 import 'package:gaudiopanel/models/narration/user-narration-profile-viewmodel.dart';
 import 'package:gaudiopanel/services/auth-service.dart';
 import 'package:gaudiopanel/services/gservice-address.dart';
@@ -19,12 +18,13 @@ class NarrationService {
 
   /// Get Narrations
   ///
-  Future<PoemNarrationsResponseModel> getNarrations(
+  Future<PaginatedItemsResponseModel<PoemNarrationViewModel>> getNarrations(
       int pageNumber, int pageSize, bool error401) async {
     try {
       LoggedOnUserModel userInfo = await _storageService.userInfo;
       if (userInfo == null) {
-        return PoemNarrationsResponseModel(error: 'کاربر وارد سیستم نشده است.');
+        return PaginatedItemsResponseModel<PoemNarrationViewModel>(
+            error: 'کاربر وارد سیستم نشده است.');
       }
       var apiRoot = GServiceAddress.Url;
       http.Response response = await http.get(
@@ -37,7 +37,8 @@ class NarrationService {
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
         if (errSessionRenewal.isNotEmpty) {
-          return PoemNarrationsResponseModel(error: errSessionRenewal);
+          return PaginatedItemsResponseModel<PoemNarrationViewModel>(
+              error: errSessionRenewal);
         }
         return await getNarrations(pageNumber, pageSize, true);
       }
@@ -48,16 +49,17 @@ class NarrationService {
         for (var item in items) {
           ret.add(PoemNarrationViewModel.fromJson(item));
         }
-        return PoemNarrationsResponseModel(
-            narrations: ret,
+        return PaginatedItemsResponseModel<PoemNarrationViewModel>(
+            items: ret,
             paginationMetadata: PaginationMetadata.fromJson(
                 json.decode(response.headers['paging-headers'])),
             error: '');
       } else {
-        return PoemNarrationsResponseModel(error: response.body);
+        return PaginatedItemsResponseModel<PoemNarrationViewModel>(
+            error: response.body);
       }
     } catch (e) {
-      return PoemNarrationsResponseModel(
+      return PaginatedItemsResponseModel<PoemNarrationViewModel>(
           error: 'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
               e.toString());
     }
@@ -113,12 +115,12 @@ class NarrationService {
   /// Get User Uploads
   ///
   /// allUsers parameter is currently ignored
-  Future<UploadedNarrationsResponseModel> getUploads(
+  Future<PaginatedItemsResponseModel<UploadedItemViewModel>> getUploads(
       int pageNumber, int pageSize, bool error401) async {
     try {
       LoggedOnUserModel userInfo = await _storageService.userInfo;
       if (userInfo == null) {
-        return UploadedNarrationsResponseModel(
+        return PaginatedItemsResponseModel<UploadedItemViewModel>(
             error: 'کاربر وارد سیستم نشده است.');
       }
       var apiRoot = GServiceAddress.Url;
@@ -132,7 +134,8 @@ class NarrationService {
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
         if (errSessionRenewal.isNotEmpty) {
-          return UploadedNarrationsResponseModel(error: errSessionRenewal);
+          return PaginatedItemsResponseModel<UploadedItemViewModel>(
+              error: errSessionRenewal);
         }
         return await getUploads(pageNumber, pageSize, true);
       }
@@ -143,16 +146,17 @@ class NarrationService {
         for (var item in items) {
           ret.add(UploadedItemViewModel.fromJson(item));
         }
-        return UploadedNarrationsResponseModel(
-            uploads: ret,
+        return PaginatedItemsResponseModel<UploadedItemViewModel>(
+            items: ret,
             paginationMetadata: PaginationMetadata.fromJson(
                 json.decode(response.headers['paging-headers'])),
             error: '');
       } else {
-        return UploadedNarrationsResponseModel(error: response.body);
+        return PaginatedItemsResponseModel<UploadedItemViewModel>(
+            error: response.body);
       }
     } catch (e) {
-      return UploadedNarrationsResponseModel(
+      return PaginatedItemsResponseModel<UploadedItemViewModel>(
           error: 'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
               e.toString());
     }
