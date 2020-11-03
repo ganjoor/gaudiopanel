@@ -23,6 +23,8 @@ class AudioReviewStatus {
 }
 
 class PoemNarrationViewModel {
+  bool isExpanded = false;
+  bool isMarked = false;
   final int id;
   final PublicRAppUser owner;
   final int ganjoorAudioId;

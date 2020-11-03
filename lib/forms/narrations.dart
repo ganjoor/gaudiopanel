@@ -55,9 +55,9 @@ class NarrationWidgetState extends State<NarrationsWidget>
             _narrations.items.addAll(narrations.items);
             _isLoading = false;
           });
-          if (_narrations.error.isNotEmpty) {
+          if (narrations.error.isNotEmpty) {
             _key.currentState.showSnackBar(SnackBar(
-              content: Text("خطا در دریافت خوانشها: " + _narrations.error),
+              content: Text("خطا در دریافت خوانشها: " + narrations.error),
               backgroundColor: Colors.red,
             ));
           }
@@ -71,12 +71,12 @@ class NarrationWidgetState extends State<NarrationsWidget>
           var uploads = await NarrationService()
               .getUploads(_uploadsPageNumber, _pageSize, false);
           setState(() {
-            _uploads = uploads;
+            _uploads.items.addAll(uploads.items);
             _isLoading = false;
           });
-          if (_uploads.error.isNotEmpty) {
+          if (uploads.error.isNotEmpty) {
             _key.currentState.showSnackBar(SnackBar(
-              content: Text("خطا در دریافت بارگذاریها: " + _uploads.error),
+              content: Text("خطا در دریافت بارگذاریها: " + uploads.error),
               backgroundColor: Colors.red,
             ));
           }
@@ -108,30 +108,87 @@ class NarrationWidgetState extends State<NarrationsWidget>
     }
   }
 
-  ListView get items {
+  Icon getUploadIcon(UploadedItemViewModel upload) {
+    return upload.processResult
+        ? upload.processProgress == 100
+            ? Icon(Icons.check, color: Colors.green)
+            : Icon(Icons.query_builder, color: Colors.orange)
+        : upload.processResultMsg.isNotEmpty
+            ? Icon(Icons.error, color: Colors.red)
+            : Icon(Icons.query_builder, color: Colors.orange);
+  }
+
+  Widget get items {
     return _activeSection == NarrationsActiveFormSection.Narrations
-        ? ListView.builder(
-            itemCount: _narrations == null
-                ? 0
-                : _narrations.items == null
-                    ? 0
-                    : _narrations.items.length,
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                  leading: getNarrationIcon(_narrations.items[index]),
-                  title: Text(_narrations.items[index].poemFullTitle),
-                  subtitle: Text(_narrations.items[index].audioArtist));
-            })
+        ? ListView(children: [
+            Padding(
+                padding: EdgeInsets.all(10.0),
+                child: ExpansionPanelList(
+                    expansionCallback: (int index, bool isExpanded) {
+                      setState(() {
+                        _narrations.items[index].isExpanded =
+                            !_narrations.items[index].isExpanded;
+                      });
+                    },
+                    children: _narrations.items
+                        .map((e) => ExpansionPanel(
+                            headerBuilder:
+                                (BuildContext context, bool isExpanded) {
+                              return ListTile(
+                                  leading: getNarrationIcon(e),
+                                  title: Text(e.poemFullTitle),
+                                  trailing: IconButton(
+                                    icon: e.isMarked
+                                        ? Icon(Icons.check_box)
+                                        : Icon(Icons.check_box_outline_blank),
+                                    onPressed: () {
+                                      setState(() {
+                                        e.isMarked = !e.isMarked;
+                                      });
+                                    },
+                                  ),
+                                  subtitle: Text(e.audioArtist));
+                            },
+                            isExpanded: e.isExpanded,
+                            body: FocusTraversalGroup(
+                                child: Form(
+                                    autovalidateMode: AutovalidateMode.always,
+                                    onChanged: () {
+                                      Form.of(primaryFocus.context).save();
+                                    },
+                                    child: Wrap(children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: TextFormField(
+                                          initialValue: e.audioArtist,
+                                          decoration: InputDecoration(
+                                              labelText: 'نام خوانشگر',
+                                              hintText: 'نام خوانشگر'),
+                                          onSaved: (String value) {
+                                            setState(() {
+                                              _narrations.items[_narrations
+                                                      .items
+                                                      .indexWhere((element) =>
+                                                          element.id == e.id)] =
+                                                  PoemNarrationViewModel(
+                                                      audioArtist: value,
+                                                      poemFullTitle:
+                                                          e.poemFullTitle);
+                                            });
+                                          },
+                                        ),
+                                      )
+                                    ])))))
+                        .toList()))
+          ])
         : ListView.builder(
-            itemCount: _uploads == null
-                ? 0
-                : _uploads.items == null
-                    ? 0
-                    : _uploads.items.length,
+            itemCount: _uploads.items.length,
             itemBuilder: (BuildContext context, int index) {
               return ListTile(
-                  leading: Icon(Icons.ac_unit),
-                  title: Text(_uploads.items[index].fileName),
+                  leading: getUploadIcon(_uploads.items[index]),
+                  title: Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: Text(_uploads.items[index].fileName)),
                   subtitle: Text(_uploads.items[index].processResultMsg));
             });
   }
