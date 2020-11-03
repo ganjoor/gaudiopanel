@@ -25,10 +25,13 @@ class NarrationWidgetState extends State<NarrationsWidget>
   bool _isLoading = false;
   NarrationsActiveFormSection _activeSection =
       NarrationsActiveFormSection.Narrations;
-  int _pageNumber = 1;
+  int _narrationsPageNumber = 1;
+  int _uploadsPageNumber = 1;
   int _pageSize = 20;
-  PaginatedItemsResponseModel<PoemNarrationViewModel> _narrations;
-  PaginatedItemsResponseModel<UploadedItemViewModel> _uploads;
+  PaginatedItemsResponseModel<PoemNarrationViewModel> _narrations =
+      PaginatedItemsResponseModel<PoemNarrationViewModel>(items: []);
+  PaginatedItemsResponseModel<UploadedItemViewModel> _uploads =
+      PaginatedItemsResponseModel<UploadedItemViewModel>(items: []);
 
   String get title {
     switch (_activeSection) {
@@ -39,7 +42,7 @@ class NarrationWidgetState extends State<NarrationsWidget>
     }
   }
 
-  Future<void> loadData() async {
+  Future<void> _loadData() async {
     switch (_activeSection) {
       case NarrationsActiveFormSection.Narrations:
         {
@@ -47,9 +50,9 @@ class NarrationWidgetState extends State<NarrationsWidget>
             _isLoading = true;
           });
           var narrations = await NarrationService()
-              .getNarrations(_pageNumber, _pageSize, false);
+              .getNarrations(_narrationsPageNumber, _pageSize, false);
           setState(() {
-            _narrations = narrations;
+            _narrations.items.addAll(narrations.items);
             _isLoading = false;
           });
           if (_narrations.error.isNotEmpty) {
@@ -66,7 +69,7 @@ class NarrationWidgetState extends State<NarrationsWidget>
             _isLoading = true;
           });
           var uploads = await NarrationService()
-              .getUploads(_pageNumber, _pageSize, false);
+              .getUploads(_uploadsPageNumber, _pageSize, false);
           setState(() {
             _uploads = uploads;
             _isLoading = false;
@@ -84,10 +87,28 @@ class NarrationWidgetState extends State<NarrationsWidget>
 
   @override
   void afterFirstLayout(BuildContext context) async {
-    await loadData();
+    await _loadData();
   }
 
-  ListView get _recordView {
+  Icon getNarrationIcon(PoemNarrationViewModel narration) {
+    switch (narration.reviewStatus) {
+      case AudioReviewStatus.draft:
+        return Icon(Icons.edit);
+      case AudioReviewStatus.pending:
+        return Icon(Icons.history, color: Colors.orange);
+      case AudioReviewStatus.approved:
+        return Icon(
+          Icons.verified,
+          color: Colors.green,
+        );
+      case AudioReviewStatus.rejected:
+        return Icon(Icons.clear, color: Colors.red);
+      default:
+        return Icon(Icons.circle);
+    }
+  }
+
+  ListView get items {
     return _activeSection == NarrationsActiveFormSection.Narrations
         ? ListView.builder(
             itemCount: _narrations == null
@@ -97,6 +118,7 @@ class NarrationWidgetState extends State<NarrationsWidget>
                     : _narrations.items.length,
             itemBuilder: (BuildContext context, int index) {
               return ListTile(
+                  leading: getNarrationIcon(_narrations.items[index]),
                   title: Text(_narrations.items[index].poemFullTitle),
                   subtitle: Text(_narrations.items[index].audioArtist));
             })
@@ -108,6 +130,7 @@ class NarrationWidgetState extends State<NarrationsWidget>
                     : _uploads.items.length,
             itemBuilder: (BuildContext context, int index) {
               return ListTile(
+                  leading: Icon(Icons.ac_unit),
                   title: Text(_uploads.items[index].fileName),
                   subtitle: Text(_uploads.items[index].processResultMsg));
             });
@@ -153,7 +176,10 @@ class NarrationWidgetState extends State<NarrationsWidget>
                             _activeSection =
                                 NarrationsActiveFormSection.Narrations;
                           });
-                          await loadData();
+                          if (_narrations.items.length == 0) {
+                            await _loadData();
+                          }
+
                           Navigator.of(context).pop(); //close drawer
                         }
                       },
@@ -171,7 +197,10 @@ class NarrationWidgetState extends State<NarrationsWidget>
                             _activeSection =
                                 NarrationsActiveFormSection.Uploads;
                           });
-                          await loadData();
+                          if (_uploads.items.length == 0) {
+                            await _loadData();
+                          }
+
                           Navigator.of(context).pop(); //close drawer
                         }
                       },
@@ -200,7 +229,25 @@ class NarrationWidgetState extends State<NarrationsWidget>
                   ],
                 ),
               ),
-              body: Builder(builder: (context) => Center(child: _recordView)),
+              body: Builder(
+                  builder: (context) => Center(
+                      child: NotificationListener<ScrollNotification>(
+                          onNotification: (ScrollNotification scrollInfo) {
+                            if (!_isLoading &&
+                                scrollInfo.metrics.pixels ==
+                                    scrollInfo.metrics.maxScrollExtent) {
+                              setState(() {
+                                if (_activeSection ==
+                                    NarrationsActiveFormSection.Narrations)
+                                  _narrationsPageNumber++;
+                                else
+                                  _uploadsPageNumber++;
+                              });
+                              _loadData();
+                            }
+                            return true;
+                          },
+                          child: items))),
               floatingActionButton: FloatingActionButton(
                 onPressed: () async {
                   FilePickerResult result = await FilePicker.platform.pickFiles(
