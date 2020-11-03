@@ -25,6 +25,7 @@ class AudioReviewStatus {
 class PoemNarrationViewModel {
   bool isExpanded = false;
   bool isMarked = false;
+  bool modified = false;
   final int id;
   final PublicRAppUser owner;
   final int ganjoorAudioId;
@@ -33,7 +34,7 @@ class PoemNarrationViewModel {
   final String poemFullUrl;
   final String mp3Url;
   final String xmlUrl;
-  final String audioTitle;
+  String audioTitle;
   final String audioArtist;
   final String audioArtistUrl;
   final String audioSrc;
@@ -41,7 +42,7 @@ class PoemNarrationViewModel {
   final int mp3SizeInBytes;
   final String uploadDate;
   final List<int> audioSyncStatusArray;
-  final int reviewStatus;
+  int reviewStatus;
 
   PoemNarrationViewModel(
       {this.id,

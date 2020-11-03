@@ -154,30 +154,31 @@ class NarrationWidgetState extends State<NarrationsWidget>
                                 child: Form(
                                     autovalidateMode: AutovalidateMode.always,
                                     onChanged: () {
-                                      Form.of(primaryFocus.context).save();
+                                      setState(() {
+                                        e.modified = true;
+                                      });
                                     },
                                     child: Wrap(children: [
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: TextFormField(
-                                          initialValue: e.audioArtist,
+                                          initialValue: e.audioTitle,
+                                          style: TextStyle(
+                                              color: e.modified
+                                                  ? Theme.of(context).errorColor
+                                                  : Theme.of(context)
+                                                      .primaryColor),
                                           decoration: InputDecoration(
-                                              labelText: 'نام خوانشگر',
-                                              hintText: 'نام خوانشگر'),
+                                            labelText: 'عنوان',
+                                            hintText: 'عنوان',
+                                          ),
                                           onSaved: (String value) {
                                             setState(() {
-                                              _narrations.items[_narrations
-                                                      .items
-                                                      .indexWhere((element) =>
-                                                          element.id == e.id)] =
-                                                  PoemNarrationViewModel(
-                                                      audioArtist: value,
-                                                      poemFullTitle:
-                                                          e.poemFullTitle);
+                                              e.audioTitle = value;
                                             });
                                           },
                                         ),
-                                      )
+                                      ),
                                     ])))))
                         .toList()))
           ])
