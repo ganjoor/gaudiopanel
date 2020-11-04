@@ -51,11 +51,16 @@ class NarrationWidgetState extends State<NarrationsWidget>
           });
           var narrations = await NarrationService()
               .getNarrations(_narrationsPageNumber, _pageSize, false);
-          setState(() {
-            _narrations.items.addAll(narrations.items);
-            _isLoading = false;
-          });
-          if (narrations.error.isNotEmpty) {
+          if (narrations.error.isEmpty) {
+            setState(() {
+              _narrations.items.addAll(narrations.items);
+              _narrations.paginationMetadata = narrations.paginationMetadata;
+              _isLoading = false;
+            });
+          } else {
+            setState(() {
+              _isLoading = false;
+            });
             _key.currentState.showSnackBar(SnackBar(
               content: Text("خطا در دریافت خوانشها: " + narrations.error),
               backgroundColor: Colors.red,
@@ -70,11 +75,17 @@ class NarrationWidgetState extends State<NarrationsWidget>
           });
           var uploads = await NarrationService()
               .getUploads(_uploadsPageNumber, _pageSize, false);
-          setState(() {
-            _uploads.items.addAll(uploads.items);
-            _isLoading = false;
-          });
-          if (uploads.error.isNotEmpty) {
+
+          if (uploads.error.isEmpty) {
+            setState(() {
+              _uploads.items.addAll(uploads.items);
+              _uploads.paginationMetadata = uploads.paginationMetadata;
+              _isLoading = false;
+            });
+          } else {
+            setState(() {
+              _isLoading = false;
+            });
             _key.currentState.showSnackBar(SnackBar(
               content: Text("خطا در دریافت بارگذاریها: " + uploads.error),
               backgroundColor: Colors.red,
@@ -297,9 +308,19 @@ class NarrationWidgetState extends State<NarrationsWidget>
                               setState(() {
                                 if (_activeSection ==
                                     NarrationsActiveFormSection.Narrations)
-                                  _narrationsPageNumber++;
+                                  _narrationsPageNumber =
+                                      _narrations.paginationMetadata == null
+                                          ? 1
+                                          : _narrations.paginationMetadata
+                                                  .currentPage +
+                                              1;
                                 else
-                                  _uploadsPageNumber++;
+                                  _uploadsPageNumber =
+                                      _uploads.paginationMetadata == null
+                                          ? 1
+                                          : _uploads.paginationMetadata
+                                                  .currentPage +
+                                              1;
                               });
                               _loadData();
                             }
