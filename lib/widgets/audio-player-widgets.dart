@@ -1,13 +1,14 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:gaudiopanel/services/narration-service.dart';
 import 'package:just_audio/just_audio.dart';
 
 class ControlButtons extends StatelessWidget {
   final AudioPlayer player;
-  final String url;
+  final int id;
 
-  ControlButtons(this.player, this.url);
+  ControlButtons(this.player, this.id);
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +48,7 @@ class ControlButtons extends StatelessWidget {
                 icon: Icon(Icons.play_arrow),
                 iconSize: 64.0,
                 onPressed: () {
-                  player.setUrl(this.url);
+                  player.setUrl(NarrationService().getAudioFileUrl(this.id));
                   player.play();
                 },
               );

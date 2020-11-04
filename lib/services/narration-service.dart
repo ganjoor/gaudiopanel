@@ -161,4 +161,12 @@ class NarrationService {
               e.toString());
     }
   }
+
+  ///Get mp3 url
+  ///
+  /// for the player
+  String getAudioFileUrl(int id) {
+    var apiRoot = GServiceAddress.Url;
+    return '$apiRoot/api/audio/file/$id.mp3';
+  }
 }

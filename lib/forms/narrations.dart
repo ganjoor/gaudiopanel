@@ -8,7 +8,6 @@ import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
 import 'package:gaudiopanel/models/narration/poem-narration-viewmodel.dart';
 import 'package:gaudiopanel/models/narration/uploaded-item-viewmodel.dart';
 import 'package:gaudiopanel/services/auth-service.dart';
-import 'package:gaudiopanel/services/gservice-address.dart';
 import 'package:gaudiopanel/services/upload-narration-service.dart';
 import 'package:gaudiopanel/services/narration-service.dart';
 import 'package:gaudiopanel/widgets/audio-player-widgets.dart';
@@ -202,12 +201,7 @@ class NarrationWidgetState extends State<NarrationsWidget>
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
-                                            ControlButtons(
-                                                _player,
-                                                GServiceAddress.Url +
-                                                    '/api/audio/file/' +
-                                                    e.id.toString() +
-                                                    '.mp3'),
+                                            ControlButtons(_player, e.id),
                                             StreamBuilder<Duration>(
                                               stream: _player.durationStream,
                                               builder: (context, snapshot) {
@@ -224,15 +218,27 @@ class NarrationWidgetState extends State<NarrationsWidget>
                                                     if (position > duration) {
                                                       position = duration;
                                                     }
-                                                    return SeekBar(
-                                                      duration: duration,
-                                                      position: position,
-                                                      onChangeEnd:
-                                                          (newPosition) {
-                                                        _player
-                                                            .seek(newPosition);
-                                                      },
-                                                    );
+                                                    return Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          SeekBar(
+                                                            duration: duration,
+                                                            position: position,
+                                                            onChangeEnd:
+                                                                (newPosition) {
+                                                              _player.seek(
+                                                                  newPosition);
+                                                            },
+                                                          ),
+                                                          Text(position
+                                                              .inMilliseconds
+                                                              .toString())
+                                                        ]);
                                                   },
                                                 );
                                               },
