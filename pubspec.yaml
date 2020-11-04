@@ -35,6 +35,7 @@ dependencies:
   after_layout: ^1.0.7+2
   tuple: ^1.0.3
   file_picker: ^2.0.11
+  just_audio: ^0.5.5
   
 
 dev_dependencies:

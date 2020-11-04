@@ -2,13 +2,17 @@ import 'package:after_layout/after_layout.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gaudiopanel/forms/login.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
 import 'package:gaudiopanel/models/narration/poem-narration-viewmodel.dart';
 import 'package:gaudiopanel/models/narration/uploaded-item-viewmodel.dart';
 import 'package:gaudiopanel/services/auth-service.dart';
+import 'package:gaudiopanel/services/gservice-address.dart';
 import 'package:gaudiopanel/services/upload-narration-service.dart';
 import 'package:gaudiopanel/services/narration-service.dart';
+import 'package:gaudiopanel/widgets/audio-player-widgets.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 
 enum NarrationsActiveFormSection { Narrations, Uploads }
@@ -32,6 +36,7 @@ class NarrationWidgetState extends State<NarrationsWidget>
       PaginatedItemsResponseModel<PoemNarrationViewModel>(items: []);
   PaginatedItemsResponseModel<UploadedItemViewModel> _uploads =
       PaginatedItemsResponseModel<UploadedItemViewModel>(items: []);
+  AudioPlayer _player;
 
   String get title {
     switch (_activeSection) {
@@ -190,6 +195,51 @@ class NarrationWidgetState extends State<NarrationsWidget>
                                           },
                                         ),
                                       ),
+                                      SafeArea(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            ControlButtons(
+                                                _player,
+                                                GServiceAddress.Url +
+                                                    '/api/audio/file/' +
+                                                    e.id.toString() +
+                                                    '.mp3'),
+                                            StreamBuilder<Duration>(
+                                              stream: _player.durationStream,
+                                              builder: (context, snapshot) {
+                                                final duration =
+                                                    snapshot.data ??
+                                                        Duration.zero;
+                                                return StreamBuilder<Duration>(
+                                                  stream:
+                                                      _player.positionStream,
+                                                  builder: (context, snapshot) {
+                                                    var position =
+                                                        snapshot.data ??
+                                                            Duration.zero;
+                                                    if (position > duration) {
+                                                      position = duration;
+                                                    }
+                                                    return SeekBar(
+                                                      duration: duration,
+                                                      position: position,
+                                                      onChangeEnd:
+                                                          (newPosition) {
+                                                        _player
+                                                            .seek(newPosition);
+                                                      },
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     ])))))
                         .toList()))
           ])
@@ -203,6 +253,21 @@ class NarrationWidgetState extends State<NarrationsWidget>
                       child: Text(_uploads.items[index].fileName)),
                   subtitle: Text(_uploads.items[index].processResultMsg));
             });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _player = AudioPlayer();
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.black,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _player.dispose();
+    super.dispose();
   }
 
   @override
