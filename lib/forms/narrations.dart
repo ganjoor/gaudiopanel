@@ -133,6 +133,21 @@ class NarrationWidgetState extends State<NarrationsWidget>
             : Icon(Icons.query_builder, color: Colors.orange);
   }
 
+  String getVerse(
+      PoemNarrationViewModel narration, int positionInMilliseconds) {
+    if (narration.verses == null) {
+      return '';
+    }
+    var verse = narration.verses
+        .where((element) =>
+            element.audioStartMilliseconds > positionInMilliseconds)
+        .first;
+    if (verse == null) {
+      return '';
+    }
+    return verse.verseText;
+  }
+
   Widget get items {
     return _activeSection == NarrationsActiveFormSection.Narrations
         ? ListView(children: [
@@ -201,7 +216,7 @@ class NarrationWidgetState extends State<NarrationsWidget>
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
-                                            ControlButtons(_player, e.id),
+                                            ControlButtons(_player, e),
                                             StreamBuilder<Duration>(
                                               stream: _player.durationStream,
                                               builder: (context, snapshot) {
@@ -235,9 +250,10 @@ class NarrationWidgetState extends State<NarrationsWidget>
                                                                   newPosition);
                                                             },
                                                           ),
-                                                          Text(position
-                                                              .inMilliseconds
-                                                              .toString())
+                                                          Text(getVerse(
+                                                              e,
+                                                              position
+                                                                  .inMilliseconds))
                                                         ]);
                                                   },
                                                 );

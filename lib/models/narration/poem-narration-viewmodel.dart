@@ -1,4 +1,5 @@
 import 'package:gaudiopanel/models/auth/public-rapp-user.dart';
+import 'package:gaudiopanel/models/narration/narration-verse-sync.dart';
 
 class AudioReviewStatus {
   static const int draft = 0;
@@ -43,6 +44,7 @@ class PoemNarrationViewModel {
   final String uploadDate;
   final List<int> audioSyncStatusArray;
   int reviewStatus;
+  List<NarrationVerseSync> verses;
 
   PoemNarrationViewModel(
       {this.id,

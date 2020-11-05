@@ -1,14 +1,15 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:gaudiopanel/models/narration/poem-narration-viewmodel.dart';
 import 'package:gaudiopanel/services/narration-service.dart';
 import 'package:just_audio/just_audio.dart';
 
 class ControlButtons extends StatelessWidget {
   final AudioPlayer player;
-  final int id;
+  final PoemNarrationViewModel narration;
 
-  ControlButtons(this.player, this.id);
+  ControlButtons(this.player, this.narration);
 
   @override
   Widget build(BuildContext context) {
@@ -47,8 +48,14 @@ class ControlButtons extends StatelessWidget {
               return IconButton(
                 icon: Icon(Icons.play_arrow),
                 iconSize: 64.0,
-                onPressed: () {
-                  player.setUrl(NarrationService().getAudioFileUrl(this.id));
+                onPressed: () async {
+                  var service = NarrationService();
+                  if (this.narration.verses == null) {
+                    this.narration.verses =
+                        (await service.getVerses(this.narration.id, false))
+                            .item1;
+                  }
+                  player.setUrl(service.getAudioFileUrl(this.narration.id));
                   player.play();
                 },
               );
