@@ -7,6 +7,7 @@ import 'package:gaudiopanel/forms/login.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
 import 'package:gaudiopanel/models/narration/poem-narration-viewmodel.dart';
 import 'package:gaudiopanel/models/narration/uploaded-item-viewmodel.dart';
+import 'package:gaudiopanel/models/narration/user-narration-profile-viewmodel.dart';
 import 'package:gaudiopanel/services/auth-service.dart';
 import 'package:gaudiopanel/services/upload-narration-service.dart';
 import 'package:gaudiopanel/services/narration-service.dart';
@@ -14,7 +15,7 @@ import 'package:gaudiopanel/widgets/audio-player-widgets.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 
-enum NarrationsActiveFormSection { Narrations, Uploads }
+enum NarrationsActiveFormSection { Narrations, Uploads, Profiles }
 
 class NarrationsWidget extends StatefulWidget {
   @override
@@ -35,14 +36,17 @@ class NarrationWidgetState extends State<NarrationsWidget>
       PaginatedItemsResponseModel<PoemNarrationViewModel>(items: []);
   PaginatedItemsResponseModel<UploadedItemViewModel> _uploads =
       PaginatedItemsResponseModel<UploadedItemViewModel>(items: []);
+  List<UserNarrationProfileViewModel> _profiles = [];
   AudioPlayer _player;
 
   String get title {
     switch (_activeSection) {
       case NarrationsActiveFormSection.Uploads:
-        return 'پیشخان خوانشگران گنجور » بارگذاریها';
+        return 'پیشخان خوانشگران گنجور » بارگذاری‌ها';
+      case NarrationsActiveFormSection.Profiles:
+        return 'پیشخان خوانشگران گنجور » نمایه‌ها';
       default:
-        return 'پیشخان خوانشگران گنجور » خوانشها';
+        return 'پیشخان خوانشگران گنجور » خوانش‌ها';
     }
   }
 
@@ -63,7 +67,7 @@ class NarrationWidgetState extends State<NarrationsWidget>
         _isLoading = false;
       });
       _key.currentState.showSnackBar(SnackBar(
-        content: Text("خطا در دریافت خوانشها: " + narrations.error),
+        content: Text("خطا در دریافت خوانش‌ها: " + narrations.error),
         backgroundColor: Colors.red,
       ));
     }
@@ -87,7 +91,7 @@ class NarrationWidgetState extends State<NarrationsWidget>
         _isLoading = false;
       });
       _key.currentState.showSnackBar(SnackBar(
-        content: Text("خطا در دریافت بارگذاریها: " + uploads.error),
+        content: Text("خطا در دریافت بارگذاری‌ها: " + uploads.error),
         backgroundColor: Colors.red,
       ));
     }
@@ -100,6 +104,8 @@ class NarrationWidgetState extends State<NarrationsWidget>
         break;
       case NarrationsActiveFormSection.Uploads:
         await _loadUploadsData();
+        break;
+      case NarrationsActiveFormSection.Profiles:
         break;
     }
   }
@@ -153,123 +159,124 @@ class NarrationWidgetState extends State<NarrationsWidget>
   }
 
   Widget get items {
-    return _activeSection == NarrationsActiveFormSection.Narrations
-        ? ListView(children: [
-            Padding(
-                padding: EdgeInsets.all(10.0),
-                child: ExpansionPanelList(
-                    expansionCallback: (int index, bool isExpanded) {
-                      setState(() {
-                        _narrations.items[index].isExpanded =
-                            !_narrations.items[index].isExpanded;
-                      });
-                    },
-                    children: _narrations.items
-                        .map((e) => ExpansionPanel(
-                            headerBuilder:
-                                (BuildContext context, bool isExpanded) {
-                              return ListTile(
-                                  leading: getNarrationIcon(e),
-                                  title: Text(e.poemFullTitle),
-                                  trailing: IconButton(
-                                    icon: e.isMarked
-                                        ? Icon(Icons.check_box)
-                                        : Icon(Icons.check_box_outline_blank),
-                                    onPressed: () {
-                                      setState(() {
-                                        e.isMarked = !e.isMarked;
-                                      });
-                                    },
-                                  ),
-                                  subtitle: Text(e.audioArtist));
-                            },
-                            isExpanded: e.isExpanded,
-                            body: FocusTraversalGroup(
-                                child: Form(
-                                    autovalidateMode: AutovalidateMode.always,
-                                    onChanged: () {
-                                      setState(() {
-                                        e.modified = true;
-                                      });
-                                    },
-                                    child: Wrap(children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: TextFormField(
-                                          initialValue: e.audioTitle,
-                                          style: TextStyle(
-                                              color: e.modified
-                                                  ? Theme.of(context).errorColor
-                                                  : Theme.of(context)
-                                                      .primaryColor),
-                                          decoration: InputDecoration(
-                                            labelText: 'عنوان',
-                                            hintText: 'عنوان',
+    switch (_activeSection) {
+      case NarrationsActiveFormSection.Narrations:
+        return ListView(children: [
+          Padding(
+              padding: EdgeInsets.all(10.0),
+              child: ExpansionPanelList(
+                  expansionCallback: (int index, bool isExpanded) {
+                    setState(() {
+                      _narrations.items[index].isExpanded =
+                          !_narrations.items[index].isExpanded;
+                    });
+                  },
+                  children: _narrations.items
+                      .map((e) => ExpansionPanel(
+                          headerBuilder:
+                              (BuildContext context, bool isExpanded) {
+                            return ListTile(
+                                leading: getNarrationIcon(e),
+                                title: Text(e.poemFullTitle),
+                                trailing: IconButton(
+                                  icon: e.isMarked
+                                      ? Icon(Icons.check_box)
+                                      : Icon(Icons.check_box_outline_blank),
+                                  onPressed: () {
+                                    setState(() {
+                                      e.isMarked = !e.isMarked;
+                                    });
+                                  },
+                                ),
+                                subtitle: Text(e.audioArtist));
+                          },
+                          isExpanded: e.isExpanded,
+                          body: FocusTraversalGroup(
+                              child: Form(
+                                  autovalidateMode: AutovalidateMode.always,
+                                  onChanged: () {
+                                    setState(() {
+                                      e.modified = true;
+                                    });
+                                  },
+                                  child: Wrap(children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: TextFormField(
+                                        initialValue: e.audioTitle,
+                                        style: TextStyle(
+                                            color: e.modified
+                                                ? Theme.of(context).errorColor
+                                                : Theme.of(context)
+                                                    .primaryColor),
+                                        decoration: InputDecoration(
+                                          labelText: 'عنوان',
+                                          hintText: 'عنوان',
+                                        ),
+                                        onSaved: (String value) {
+                                          setState(() {
+                                            e.audioTitle = value;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                    SafeArea(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          ControlButtons(_player, e),
+                                          StreamBuilder<Duration>(
+                                            stream: _player.durationStream,
+                                            builder: (context, snapshot) {
+                                              final duration = snapshot.data ??
+                                                  Duration.zero;
+                                              return StreamBuilder<Duration>(
+                                                stream: _player.positionStream,
+                                                builder: (context, snapshot) {
+                                                  var position =
+                                                      snapshot.data ??
+                                                          Duration.zero;
+                                                  if (position > duration) {
+                                                    position = duration;
+                                                  }
+                                                  return Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        SeekBar(
+                                                          duration: duration,
+                                                          position: position,
+                                                          onChangeEnd:
+                                                              (newPosition) {
+                                                            _player.seek(
+                                                                newPosition);
+                                                          },
+                                                        ),
+                                                        Text(getVerse(
+                                                            e,
+                                                            position
+                                                                .inMilliseconds))
+                                                      ]);
+                                                },
+                                              );
+                                            },
                                           ),
-                                          onSaved: (String value) {
-                                            setState(() {
-                                              e.audioTitle = value;
-                                            });
-                                          },
-                                        ),
+                                        ],
                                       ),
-                                      SafeArea(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            ControlButtons(_player, e),
-                                            StreamBuilder<Duration>(
-                                              stream: _player.durationStream,
-                                              builder: (context, snapshot) {
-                                                final duration =
-                                                    snapshot.data ??
-                                                        Duration.zero;
-                                                return StreamBuilder<Duration>(
-                                                  stream:
-                                                      _player.positionStream,
-                                                  builder: (context, snapshot) {
-                                                    var position =
-                                                        snapshot.data ??
-                                                            Duration.zero;
-                                                    if (position > duration) {
-                                                      position = duration;
-                                                    }
-                                                    return Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          SeekBar(
-                                                            duration: duration,
-                                                            position: position,
-                                                            onChangeEnd:
-                                                                (newPosition) {
-                                                              _player.seek(
-                                                                  newPosition);
-                                                            },
-                                                          ),
-                                                          Text(getVerse(
-                                                              e,
-                                                              position
-                                                                  .inMilliseconds))
-                                                        ]);
-                                                  },
-                                                );
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ])))))
-                        .toList()))
-          ])
-        : ListView.builder(
+                                    ),
+                                  ])))))
+                      .toList()))
+        ]);
+
+      default:
+        return ListView.builder(
             itemCount: _uploads.items.length,
             itemBuilder: (BuildContext context, int index) {
               return ListTile(
@@ -279,6 +286,7 @@ class NarrationWidgetState extends State<NarrationsWidget>
                       child: Text(_uploads.items[index].fileName)),
                   subtitle: Text(_uploads.items[index].processResultMsg));
             });
+    }
   }
 
   @override
@@ -324,7 +332,7 @@ class NarrationWidgetState extends State<NarrationsWidget>
                       ),
                     ),
                     ListTile(
-                      title: Text('خوانشها'),
+                      title: Text('خوانش‌ها'),
                       leading: Icon(Icons.music_note,
                           color: Theme.of(context).primaryColor),
                       selected: _activeSection ==
@@ -345,7 +353,7 @@ class NarrationWidgetState extends State<NarrationsWidget>
                       },
                     ),
                     ListTile(
-                      title: Text('بارگذاریها'),
+                      title: Text('بارگذاری‌ها'),
                       leading: Icon(Icons.upload_file,
                           color: Theme.of(context).primaryColor),
                       selected:
@@ -358,6 +366,27 @@ class NarrationWidgetState extends State<NarrationsWidget>
                                 NarrationsActiveFormSection.Uploads;
                           });
                           if (_uploads.items.length == 0) {
+                            await _loadData();
+                          }
+
+                          Navigator.of(context).pop(); //close drawer
+                        }
+                      },
+                    ),
+                    ListTile(
+                      title: Text('نمایه‌ها'),
+                      leading: Icon(Icons.people,
+                          color: Theme.of(context).primaryColor),
+                      selected: _activeSection ==
+                          NarrationsActiveFormSection.Profiles,
+                      onTap: () async {
+                        if (_activeSection !=
+                            NarrationsActiveFormSection.Profiles) {
+                          setState(() {
+                            _activeSection =
+                                NarrationsActiveFormSection.Profiles;
+                          });
+                          if (_profiles.length == 0) {
                             await _loadData();
                           }
 
@@ -397,21 +426,27 @@ class NarrationWidgetState extends State<NarrationsWidget>
                                 scrollInfo.metrics.pixels ==
                                     scrollInfo.metrics.maxScrollExtent) {
                               setState(() {
-                                if (_activeSection ==
-                                    NarrationsActiveFormSection.Narrations)
-                                  _narrationsPageNumber =
-                                      _narrations.paginationMetadata == null
-                                          ? 1
-                                          : _narrations.paginationMetadata
-                                                  .currentPage +
-                                              1;
-                                else
-                                  _uploadsPageNumber =
-                                      _uploads.paginationMetadata == null
-                                          ? 1
-                                          : _uploads.paginationMetadata
-                                                  .currentPage +
-                                              1;
+                                switch (_activeSection) {
+                                  case NarrationsActiveFormSection.Narrations:
+                                    _narrationsPageNumber =
+                                        _narrations.paginationMetadata == null
+                                            ? 1
+                                            : _narrations.paginationMetadata
+                                                    .currentPage +
+                                                1;
+                                    break;
+                                  case NarrationsActiveFormSection.Uploads:
+                                    _uploadsPageNumber =
+                                        _uploads.paginationMetadata == null
+                                            ? 1
+                                            : _uploads.paginationMetadata
+                                                    .currentPage +
+                                                1;
+                                    break;
+                                  case NarrationsActiveFormSection.Profiles:
+                                    //do nothing
+                                    break;
+                                }
                               });
                               _loadData();
                             }
@@ -435,7 +470,7 @@ class NarrationWidgetState extends State<NarrationsWidget>
 
                     if (err.isNotEmpty) {
                       _key.currentState.showSnackBar(SnackBar(
-                        content: Text("خطا در ارسال خوانشهای جدید: " + err),
+                        content: Text("خطا در ارسال خوانش‌های جدید: " + err),
                         backgroundColor: Colors.red,
                       ));
                     }
@@ -446,7 +481,7 @@ class NarrationWidgetState extends State<NarrationsWidget>
                   }
                 },
                 child: Icon(Icons.add),
-                tooltip: 'خوانشهای جدید',
+                tooltip: 'ارسال خوانش‌های جدید',
               ),
             )));
   }
