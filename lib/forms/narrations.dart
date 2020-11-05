@@ -97,6 +97,28 @@ class NarrationWidgetState extends State<NarrationsWidget>
     }
   }
 
+  Future<void> _loadProfilesData() async {
+    setState(() {
+      _isLoading = true;
+    });
+    var profiles = await NarrationService().getProfiles(false);
+
+    if (profiles.item2.isEmpty) {
+      setState(() {
+        _profiles = profiles.item1;
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+      _key.currentState.showSnackBar(SnackBar(
+        content: Text("خطا در دریافت نمایه‌ها: " + profiles.item2),
+        backgroundColor: Colors.red,
+      ));
+    }
+  }
+
   Future<void> _loadData() async {
     switch (_activeSection) {
       case NarrationsActiveFormSection.Narrations:
@@ -106,6 +128,7 @@ class NarrationWidgetState extends State<NarrationsWidget>
         await _loadUploadsData();
         break;
       case NarrationsActiveFormSection.Profiles:
+        await _loadProfilesData();
         break;
     }
   }
@@ -274,7 +297,18 @@ class NarrationWidgetState extends State<NarrationsWidget>
                                   ])))))
                       .toList()))
         ]);
-
+      case NarrationsActiveFormSection.Profiles:
+        return ListView.builder(
+            itemCount: _profiles.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ListTile(
+                  leading: Icon(Icons.people),
+                  title: Text(_profiles[index].artistName),
+                  subtitle: Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: Text(_profiles[index].artistUrl)));
+            });
+      case NarrationsActiveFormSection.Uploads:
       default:
         return ListView.builder(
             itemCount: _uploads.items.length,

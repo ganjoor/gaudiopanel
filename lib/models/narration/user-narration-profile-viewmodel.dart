@@ -1,5 +1,5 @@
 class UserNarrationProfileViewModel {
-  final int id;
+  final String id;
   final String fileSuffixWithoutDash;
   final String artistName;
   final String artistUrl;
@@ -24,7 +24,7 @@ class UserNarrationProfileViewModel {
       id: json['id'],
       fileSuffixWithoutDash: json['fileSuffixWithoutDash'],
       artistName: json['artistName'],
-      artistUrl: json['poemFullTitle'],
+      artistUrl: json['artistUrl'],
       audioSrc: json['audioSrc'],
       audioSrcUrl: json['audioSrcUrl'],
       isDefault: json['isDefault'],
