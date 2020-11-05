@@ -27,7 +27,7 @@ class NarrationWidgetState extends State<NarrationsWidget>
       GlobalKey<ScaffoldMessengerState>();
   bool _isLoading = false;
   NarrationsActiveFormSection _activeSection =
-      NarrationsActiveFormSection.Narrations;
+      NarrationsActiveFormSection.Uploads;
   int _narrationsPageNumber = 1;
   int _uploadsPageNumber = 1;
   int _pageSize = 20;
@@ -46,56 +46,60 @@ class NarrationWidgetState extends State<NarrationsWidget>
     }
   }
 
+  Future<void> _loadNarrationsData() async {
+    setState(() {
+      _isLoading = true;
+    });
+    var narrations = await NarrationService()
+        .getNarrations(_narrationsPageNumber, _pageSize, false);
+    if (narrations.error.isEmpty) {
+      setState(() {
+        _narrations.items.addAll(narrations.items);
+        _narrations.paginationMetadata = narrations.paginationMetadata;
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+      _key.currentState.showSnackBar(SnackBar(
+        content: Text("خطا در دریافت خوانشها: " + narrations.error),
+        backgroundColor: Colors.red,
+      ));
+    }
+  }
+
+  Future<void> _loadUploadsData() async {
+    setState(() {
+      _isLoading = true;
+    });
+    var uploads = await NarrationService()
+        .getUploads(_uploadsPageNumber, _pageSize, false);
+
+    if (uploads.error.isEmpty) {
+      setState(() {
+        _uploads.items.addAll(uploads.items);
+        _uploads.paginationMetadata = uploads.paginationMetadata;
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+      _key.currentState.showSnackBar(SnackBar(
+        content: Text("خطا در دریافت بارگذاریها: " + uploads.error),
+        backgroundColor: Colors.red,
+      ));
+    }
+  }
+
   Future<void> _loadData() async {
     switch (_activeSection) {
       case NarrationsActiveFormSection.Narrations:
-        {
-          setState(() {
-            _isLoading = true;
-          });
-          var narrations = await NarrationService()
-              .getNarrations(_narrationsPageNumber, _pageSize, false);
-          if (narrations.error.isEmpty) {
-            setState(() {
-              _narrations.items.addAll(narrations.items);
-              _narrations.paginationMetadata = narrations.paginationMetadata;
-              _isLoading = false;
-            });
-          } else {
-            setState(() {
-              _isLoading = false;
-            });
-            _key.currentState.showSnackBar(SnackBar(
-              content: Text("خطا در دریافت خوانشها: " + narrations.error),
-              backgroundColor: Colors.red,
-            ));
-          }
-        }
+        await _loadNarrationsData();
         break;
       case NarrationsActiveFormSection.Uploads:
-        {
-          setState(() {
-            _isLoading = true;
-          });
-          var uploads = await NarrationService()
-              .getUploads(_uploadsPageNumber, _pageSize, false);
-
-          if (uploads.error.isEmpty) {
-            setState(() {
-              _uploads.items.addAll(uploads.items);
-              _uploads.paginationMetadata = uploads.paginationMetadata;
-              _isLoading = false;
-            });
-          } else {
-            setState(() {
-              _isLoading = false;
-            });
-            _key.currentState.showSnackBar(SnackBar(
-              content: Text("خطا در دریافت بارگذاریها: " + uploads.error),
-              backgroundColor: Colors.red,
-            ));
-          }
-        }
+        await _loadUploadsData();
         break;
     }
   }
