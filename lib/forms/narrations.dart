@@ -140,8 +140,8 @@ class NarrationWidgetState extends State<NarrationsWidget>
     }
     var verse = narration.verses
         .where((element) =>
-            element.audioStartMilliseconds > positionInMilliseconds)
-        .first;
+            element.audioStartMilliseconds < positionInMilliseconds)
+        .last;
     if (verse == null) {
       return '';
     }
