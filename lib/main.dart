@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:gaudiopanel/forms/login.dart';
-import 'package:gaudiopanel/forms/narrations.dart';
+import 'package:gaudiopanel/forms/main-form.dart';
 import 'package:gaudiopanel/services/auth-service.dart';
 
 Future<void> main() async {
   Widget initialWidget =
-      (await AuthService().isLoggedOn) ? NarrationsWidget() : LoginForm();
+      (await AuthService().isLoggedOn) ? MainForm() : LoginForm();
   runApp(GAudioPanelApp(initialWidget: initialWidget));
 }
 

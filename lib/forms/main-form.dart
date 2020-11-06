@@ -2,7 +2,6 @@ import 'package:after_layout/after_layout.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:gaudiopanel/forms/login.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
 import 'package:gaudiopanel/models/narration/poem-narration-viewmodel.dart';
@@ -11,19 +10,18 @@ import 'package:gaudiopanel/models/narration/user-narration-profile-viewmodel.da
 import 'package:gaudiopanel/services/auth-service.dart';
 import 'package:gaudiopanel/services/upload-narration-service.dart';
 import 'package:gaudiopanel/services/narration-service.dart';
-import 'package:gaudiopanel/widgets/audio-player-widgets.dart';
-import 'package:just_audio/just_audio.dart';
+import 'package:gaudiopanel/widgets/narrtions-widget.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 
 enum NarrationsActiveFormSection { Narrations, Uploads, Profiles }
 
-class NarrationsWidget extends StatefulWidget {
+class MainForm extends StatefulWidget {
   @override
   NarrationWidgetState createState() => NarrationWidgetState();
 }
 
-class NarrationWidgetState extends State<NarrationsWidget>
-    with AfterLayoutMixin<NarrationsWidget> {
+class NarrationWidgetState extends State<MainForm>
+    with AfterLayoutMixin<MainForm> {
   final GlobalKey<ScaffoldMessengerState> _key =
       GlobalKey<ScaffoldMessengerState>();
   bool _isLoading = false;
@@ -37,7 +35,6 @@ class NarrationWidgetState extends State<NarrationsWidget>
   PaginatedItemsResponseModel<UploadedItemViewModel> _uploads =
       PaginatedItemsResponseModel<UploadedItemViewModel>(items: []);
   List<UserNarrationProfileViewModel> _profiles = [];
-  AudioPlayer _player;
 
   String get title {
     switch (_activeSection) {
@@ -183,117 +180,7 @@ class NarrationWidgetState extends State<NarrationsWidget>
   Widget get items {
     switch (_activeSection) {
       case NarrationsActiveFormSection.Narrations:
-        return ListView(children: [
-          Padding(
-              padding: EdgeInsets.all(10.0),
-              child: ExpansionPanelList(
-                  expansionCallback: (int index, bool isExpanded) {
-                    setState(() {
-                      _narrations.items[index].isExpanded =
-                          !_narrations.items[index].isExpanded;
-                    });
-                  },
-                  children: _narrations.items
-                      .map((e) => ExpansionPanel(
-                          headerBuilder:
-                              (BuildContext context, bool isExpanded) {
-                            return ListTile(
-                                leading: getNarrationIcon(e),
-                                title: Text(e.poemFullTitle),
-                                trailing: IconButton(
-                                  icon: e.isMarked
-                                      ? Icon(Icons.check_box)
-                                      : Icon(Icons.check_box_outline_blank),
-                                  onPressed: () {
-                                    setState(() {
-                                      e.isMarked = !e.isMarked;
-                                    });
-                                  },
-                                ),
-                                subtitle: Text(e.audioArtist));
-                          },
-                          isExpanded: e.isExpanded,
-                          body: FocusTraversalGroup(
-                              child: Form(
-                                  autovalidateMode: AutovalidateMode.always,
-                                  onChanged: () {
-                                    setState(() {
-                                      e.modified = true;
-                                    });
-                                  },
-                                  child: Wrap(children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: TextFormField(
-                                        initialValue: e.audioTitle,
-                                        style: TextStyle(
-                                            color: e.modified
-                                                ? Theme.of(context).errorColor
-                                                : Theme.of(context)
-                                                    .primaryColor),
-                                        decoration: InputDecoration(
-                                          labelText: 'عنوان',
-                                          hintText: 'عنوان',
-                                        ),
-                                        onSaved: (String value) {
-                                          setState(() {
-                                            e.audioTitle = value;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                    SafeArea(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          ControlButtons(_player, e),
-                                          StreamBuilder<Duration>(
-                                            stream: _player.durationStream,
-                                            builder: (context, snapshot) {
-                                              final duration = snapshot.data ??
-                                                  Duration.zero;
-                                              return StreamBuilder<Duration>(
-                                                stream: _player.positionStream,
-                                                builder: (context, snapshot) {
-                                                  var position =
-                                                      snapshot.data ??
-                                                          Duration.zero;
-                                                  if (position > duration) {
-                                                    position = duration;
-                                                  }
-                                                  return Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .center,
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        SeekBar(
-                                                          duration: duration,
-                                                          position: position,
-                                                          onChangeEnd:
-                                                              (newPosition) {
-                                                            _player.seek(
-                                                                newPosition);
-                                                          },
-                                                        ),
-                                                        Text(getVerse(
-                                                            e, position))
-                                                      ]);
-                                                },
-                                              );
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ])))))
-                      .toList()))
-        ]);
+        return NarrationsWidget(_narrations);
       case NarrationsActiveFormSection.Profiles:
         return ListView(children: [
           Padding(
@@ -455,21 +342,6 @@ class NarrationWidgetState extends State<NarrationsWidget>
                   subtitle: Text(_uploads.items[index].processResultMsg));
             });
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _player = AudioPlayer();
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Colors.black,
-    ));
-  }
-
-  @override
-  void dispose() {
-    _player.dispose();
-    super.dispose();
   }
 
   @override
