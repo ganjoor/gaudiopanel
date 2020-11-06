@@ -135,24 +135,6 @@ class NarrationWidgetState extends State<MainForm>
     await _loadData();
   }
 
-  Icon getNarrationIcon(PoemNarrationViewModel narration) {
-    switch (narration.reviewStatus) {
-      case AudioReviewStatus.draft:
-        return Icon(Icons.edit);
-      case AudioReviewStatus.pending:
-        return Icon(Icons.history, color: Colors.orange);
-      case AudioReviewStatus.approved:
-        return Icon(
-          Icons.verified,
-          color: Colors.green,
-        );
-      case AudioReviewStatus.rejected:
-        return Icon(Icons.clear, color: Colors.red);
-      default:
-        return Icon(Icons.circle);
-    }
-  }
-
   Icon getUploadIcon(UploadedItemViewModel upload) {
     return upload.processResult
         ? upload.processProgress == 100
@@ -161,20 +143,6 @@ class NarrationWidgetState extends State<MainForm>
         : upload.processResultMsg.isNotEmpty
             ? Icon(Icons.error, color: Colors.red)
             : Icon(Icons.query_builder, color: Colors.orange);
-  }
-
-  String getVerse(PoemNarrationViewModel narration, Duration position) {
-    if (position == null || narration == null || narration.verses == null) {
-      return '';
-    }
-    var verse = narration.verses
-        .where((element) =>
-            element.audioStartMilliseconds < position.inMilliseconds)
-        .last;
-    if (verse == null) {
-      return '';
-    }
-    return verse.verseText;
   }
 
   Widget get items {
