@@ -15,13 +15,23 @@ class _ProfileEditState extends State<ProfileEdit> {
 
   _ProfileEditState(this.profile);
 
+  TextEditingController _nameController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    _nameController.text = this.profile.name;
     return FocusTraversalGroup(
         child: Form(
             autovalidateMode: AutovalidateMode.always,
             onChanged: () {
               setState(() {
+                profile.name = _nameController.text;
                 profile.modified = true;
               });
             },
@@ -33,16 +43,11 @@ class _ProfileEditState extends State<ProfileEdit> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
-                  initialValue: profile.name,
+                  controller: _nameController,
                   decoration: InputDecoration(
                     labelText: 'نام نمایه',
                     hintText: 'نام نمایه',
                   ),
-                  onSaved: (String value) {
-                    setState(() {
-                      profile.name = value;
-                    });
-                  },
                 ),
               ),
               Text(

@@ -16,7 +16,8 @@ class _ProfilesState extends State<ProfilesDataSection> {
   final PaginatedItemsResponseModel<UserNarrationProfileViewModel> profiles;
   _ProfilesState(this.profiles);
 
-  Future<void> _edit(UserNarrationProfileViewModel profile) async {
+  Future<UserNarrationProfileViewModel> _edit(
+      UserNarrationProfileViewModel profile) async {
     bool _isNew = profile == null;
     if (profile == null) {
       profile = UserNarrationProfileViewModel(
@@ -29,26 +30,27 @@ class _ProfilesState extends State<ProfilesDataSection> {
           isDefault: true);
     }
 
-    return showDialog<void>(
+    return showDialog<UserNarrationProfileViewModel>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
+        ProfileEdit _profileEdit = ProfileEdit(profile: profile);
         return AlertDialog(
           title: Text(_isNew ? 'نمایهٔ جدید' : 'ویرایش نمایه'),
           content: SingleChildScrollView(
-            child: ProfileEdit(profile: profile),
+            child: _profileEdit,
           ),
           actions: <Widget>[
             ElevatedButton(
               child: Text(_isNew ? 'ایجاد' : 'ذخیره'),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(_profileEdit.profile);
               },
             ),
             TextButton(
               child: Text('انصراف'),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(null);
               },
             )
           ],
@@ -66,7 +68,12 @@ class _ProfilesState extends State<ProfilesDataSection> {
               leading: IconButton(
                 icon: Icon(Icons.edit),
                 onPressed: () async {
-                  await _edit(profiles.items[index]);
+                  final result = await _edit(profiles.items[index]);
+                  if (result != null) {
+                    setState(() {
+                      profiles.items[index] = result;
+                    });
+                  }
                 },
               ),
               title: Text(profiles.items[index].name),
