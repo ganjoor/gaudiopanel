@@ -5,8 +5,8 @@ import 'package:gaudiopanel/models/narration/poem-narration-viewmodel.dart';
 import 'package:gaudiopanel/widgets/audio-player-widgets.dart';
 import 'package:just_audio/just_audio.dart';
 
-class NarrationsWidget extends StatefulWidget {
-  NarrationsWidget(this.narrations);
+class NarrationsDataSection extends StatefulWidget {
+  const NarrationsDataSection({Key key, this.narrations}) : super(key: key);
 
   final PaginatedItemsResponseModel<PoemNarrationViewModel> narrations;
 
@@ -14,7 +14,7 @@ class NarrationsWidget extends StatefulWidget {
   _NarrationsState createState() => _NarrationsState(this.narrations);
 }
 
-class _NarrationsState extends State<StatefulWidget> {
+class _NarrationsState extends State<NarrationsDataSection> {
   _NarrationsState(this.narrations);
   AudioPlayer _player;
 

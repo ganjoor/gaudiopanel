@@ -3,6 +3,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gaudiopanel/forms/login.dart';
+import 'package:gaudiopanel/forms/main-form-sections/profiles-data-section.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
 import 'package:gaudiopanel/models/narration/poem-narration-viewmodel.dart';
 import 'package:gaudiopanel/models/narration/uploaded-item-viewmodel.dart';
@@ -10,7 +11,8 @@ import 'package:gaudiopanel/models/narration/user-narration-profile-viewmodel.da
 import 'package:gaudiopanel/services/auth-service.dart';
 import 'package:gaudiopanel/services/upload-narration-service.dart';
 import 'package:gaudiopanel/services/narration-service.dart';
-import 'package:gaudiopanel/widgets/narrtions-widget.dart';
+import 'package:gaudiopanel/forms/main-form-sections/narrtions-data-section.dart';
+import 'package:gaudiopanel/forms/main-form-sections/uploads-data-section.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 
 enum NarrationsActiveFormSection { Narrations, Uploads, Profiles }
@@ -34,8 +36,8 @@ class NarrationWidgetState extends State<MainForm>
       PaginatedItemsResponseModel<PoemNarrationViewModel>(items: []);
   PaginatedItemsResponseModel<UploadedItemViewModel> _uploads =
       PaginatedItemsResponseModel<UploadedItemViewModel>(items: []);
-  List<UserNarrationProfileViewModel> _profiles = [];
-
+  PaginatedItemsResponseModel<UserNarrationProfileViewModel> _profiles =
+      PaginatedItemsResponseModel<UserNarrationProfileViewModel>(items: []);
   String get title {
     switch (_activeSection) {
       case NarrationsActiveFormSection.Uploads:
@@ -102,7 +104,7 @@ class NarrationWidgetState extends State<MainForm>
 
     if (profiles.item2.isEmpty) {
       setState(() {
-        _profiles = profiles.item1.sublist(0, 5);
+        _profiles.items.addAll(profiles.item1.sublist(0, 5));
         _isLoading = false;
       });
     } else {
@@ -135,180 +137,15 @@ class NarrationWidgetState extends State<MainForm>
     await _loadData();
   }
 
-  Icon getUploadIcon(UploadedItemViewModel upload) {
-    return upload.processResult
-        ? upload.processProgress == 100
-            ? Icon(Icons.check, color: Colors.green)
-            : Icon(Icons.query_builder, color: Colors.orange)
-        : upload.processResultMsg.isNotEmpty
-            ? Icon(Icons.error, color: Colors.red)
-            : Icon(Icons.query_builder, color: Colors.orange);
-  }
-
   Widget get items {
     switch (_activeSection) {
       case NarrationsActiveFormSection.Narrations:
-        return NarrationsWidget(_narrations);
+        return NarrationsDataSection(narrations: _narrations);
       case NarrationsActiveFormSection.Profiles:
-        return ListView(children: [
-          Padding(
-              padding: EdgeInsets.all(10.0),
-              child: ExpansionPanelList(
-                  expansionCallback: (int index, bool isExpanded) {
-                    setState(() {
-                      _profiles[index].isExpanded =
-                          !_profiles[index].isExpanded;
-                    });
-                  },
-                  children: _profiles
-                      .map((e) => ExpansionPanel(
-                          headerBuilder:
-                              (BuildContext context, bool isExpanded) {
-                            return ListTile(
-                                leading: Icon(
-                                  Icons.people,
-                                  color: e.isDefault
-                                      ? Colors.red
-                                      : Theme.of(context).disabledColor,
-                                ),
-                                title: Text(e.name),
-                                trailing: IconButton(
-                                  icon: e.modified
-                                      ? Icon(Icons.save,
-                                          color: Theme.of(context).primaryColor)
-                                      : e.isMarked
-                                          ? Icon(Icons.check_box)
-                                          : Icon(Icons.check_box_outline_blank),
-                                  onPressed: () {
-                                    setState(() {
-                                      e.isMarked = !e.isMarked;
-                                    });
-                                  },
-                                ),
-                                subtitle: Text(e.artistName));
-                          },
-                          isExpanded: e.isExpanded,
-                          body: FocusTraversalGroup(
-                              child: Form(
-                                  autovalidateMode: AutovalidateMode.always,
-                                  onChanged: () {
-                                    setState(() {
-                                      e.modified = true;
-                                    });
-                                  },
-                                  child: Wrap(children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: TextFormField(
-                                        initialValue: e.name,
-                                        decoration: InputDecoration(
-                                          labelText: 'نام نمایه',
-                                          hintText: 'نامه نمایه',
-                                        ),
-                                        onSaved: (String value) {
-                                          setState(() {
-                                            e.name = value;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: TextFormField(
-                                        initialValue: e.artistName,
-                                        decoration: InputDecoration(
-                                          labelText: 'نام خوانشگر',
-                                          hintText: 'نام خوانشگر',
-                                        ),
-                                        onSaved: (String value) {
-                                          setState(() {
-                                            e.artistName = value;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Directionality(
-                                          textDirection: TextDirection.ltr,
-                                          child: TextFormField(
-                                            initialValue: e.artistUrl,
-                                            decoration: InputDecoration(
-                                              labelText: 'نشانی وب',
-                                              hintText: 'نشانی وب',
-                                            ),
-                                            onSaved: (String value) {
-                                              setState(() {
-                                                e.artistUrl = value;
-                                              });
-                                            },
-                                          )),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: TextFormField(
-                                        initialValue: e.audioSrc,
-                                        decoration: InputDecoration(
-                                          labelText: 'نام منبع',
-                                          hintText: 'نام منبع',
-                                        ),
-                                        onSaved: (String value) {
-                                          setState(() {
-                                            e.audioSrc = value;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Directionality(
-                                          textDirection: TextDirection.ltr,
-                                          child: TextFormField(
-                                            initialValue: e.audioSrcUrl,
-                                            decoration: InputDecoration(
-                                              labelText: 'نشانی وب منبع',
-                                              hintText: 'نشانی وب منبع',
-                                            ),
-                                            onSaved: (String value) {
-                                              setState(() {
-                                                e.audioSrcUrl = value;
-                                              });
-                                            },
-                                          )),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Directionality(
-                                          textDirection: TextDirection.ltr,
-                                          child: TextFormField(
-                                            initialValue:
-                                                e.fileSuffixWithoutDash,
-                                            decoration: InputDecoration(
-                                              labelText: 'پسوند یکتاساز فایل',
-                                              hintText: 'پسوند یکتاساز فایل',
-                                            ),
-                                            onSaved: (String value) {
-                                              setState(() {
-                                                e.fileSuffixWithoutDash = value;
-                                              });
-                                            },
-                                          )),
-                                    ),
-                                  ])))))
-                      .toList()))
-        ]);
+        return ProfilesDataSection(profiles: _profiles);
       case NarrationsActiveFormSection.Uploads:
       default:
-        return ListView.builder(
-            itemCount: _uploads.items.length,
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                  leading: getUploadIcon(_uploads.items[index]),
-                  title: Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Text(_uploads.items[index].fileName)),
-                  subtitle: Text(_uploads.items[index].processResultMsg));
-            });
+        return UploadsDataSection(uploads: _uploads);
     }
   }
 
@@ -394,7 +231,7 @@ class NarrationWidgetState extends State<MainForm>
                             _activeSection =
                                 NarrationsActiveFormSection.Profiles;
                           });
-                          if (_profiles.length == 0) {
+                          if (_profiles.items.length == 0) {
                             await _loadData();
                           }
 
