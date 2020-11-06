@@ -105,7 +105,7 @@ class NarrationWidgetState extends State<NarrationsWidget>
 
     if (profiles.item2.isEmpty) {
       setState(() {
-        _profiles = profiles.item1;
+        _profiles = profiles.item1.sublist(0, 5);
         _isLoading = false;
       });
     } else {
@@ -295,19 +295,153 @@ class NarrationWidgetState extends State<NarrationsWidget>
                       .toList()))
         ]);
       case NarrationsActiveFormSection.Profiles:
-        return ListView.builder(
-            itemCount: _profiles.length,
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                  leading: Icon(Icons.people),
-                  title: Text(_profiles[index].name),
-                  subtitle: Column(children: [
-                    Text(_profiles[index].artistName),
-                    Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: Text(_profiles[index].artistUrl))
-                  ]));
-            });
+        return ListView(children: [
+          Padding(
+              padding: EdgeInsets.all(10.0),
+              child: ExpansionPanelList(
+                  expansionCallback: (int index, bool isExpanded) {
+                    setState(() {
+                      _profiles[index].isExpanded =
+                          !_profiles[index].isExpanded;
+                    });
+                  },
+                  children: _profiles
+                      .map((e) => ExpansionPanel(
+                          headerBuilder:
+                              (BuildContext context, bool isExpanded) {
+                            return ListTile(
+                                leading: Icon(
+                                  Icons.people,
+                                  color: e.isDefault
+                                      ? Colors.red
+                                      : Theme.of(context).disabledColor,
+                                ),
+                                title: Text(e.name),
+                                trailing: IconButton(
+                                  icon: e.modified
+                                      ? Icon(Icons.save,
+                                          color: Theme.of(context).primaryColor)
+                                      : e.isMarked
+                                          ? Icon(Icons.check_box)
+                                          : Icon(Icons.check_box_outline_blank),
+                                  onPressed: () {
+                                    setState(() {
+                                      e.isMarked = !e.isMarked;
+                                    });
+                                  },
+                                ),
+                                subtitle: Text(e.artistName));
+                          },
+                          isExpanded: e.isExpanded,
+                          body: FocusTraversalGroup(
+                              child: Form(
+                                  autovalidateMode: AutovalidateMode.always,
+                                  onChanged: () {
+                                    setState(() {
+                                      e.modified = true;
+                                    });
+                                  },
+                                  child: Wrap(children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: TextFormField(
+                                        initialValue: e.name,
+                                        decoration: InputDecoration(
+                                          labelText: 'نام نمایه',
+                                          hintText: 'نامه نمایه',
+                                        ),
+                                        onSaved: (String value) {
+                                          setState(() {
+                                            e.name = value;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: TextFormField(
+                                        initialValue: e.artistName,
+                                        decoration: InputDecoration(
+                                          labelText: 'نام خوانشگر',
+                                          hintText: 'نام خوانشگر',
+                                        ),
+                                        onSaved: (String value) {
+                                          setState(() {
+                                            e.artistName = value;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Directionality(
+                                          textDirection: TextDirection.ltr,
+                                          child: TextFormField(
+                                            initialValue: e.artistUrl,
+                                            decoration: InputDecoration(
+                                              labelText: 'نشانی وب',
+                                              hintText: 'نشانی وب',
+                                            ),
+                                            onSaved: (String value) {
+                                              setState(() {
+                                                e.artistUrl = value;
+                                              });
+                                            },
+                                          )),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: TextFormField(
+                                        initialValue: e.audioSrc,
+                                        decoration: InputDecoration(
+                                          labelText: 'نام منبع',
+                                          hintText: 'نام منبع',
+                                        ),
+                                        onSaved: (String value) {
+                                          setState(() {
+                                            e.audioSrc = value;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Directionality(
+                                          textDirection: TextDirection.ltr,
+                                          child: TextFormField(
+                                            initialValue: e.audioSrcUrl,
+                                            decoration: InputDecoration(
+                                              labelText: 'نشانی وب منبع',
+                                              hintText: 'نشانی وب منبع',
+                                            ),
+                                            onSaved: (String value) {
+                                              setState(() {
+                                                e.audioSrcUrl = value;
+                                              });
+                                            },
+                                          )),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Directionality(
+                                          textDirection: TextDirection.ltr,
+                                          child: TextFormField(
+                                            initialValue:
+                                                e.fileSuffixWithoutDash,
+                                            decoration: InputDecoration(
+                                              labelText: 'پسوند یکتاساز فایل',
+                                              hintText: 'پسوند یکتاساز فایل',
+                                            ),
+                                            onSaved: (String value) {
+                                              setState(() {
+                                                e.fileSuffixWithoutDash = value;
+                                              });
+                                            },
+                                          )),
+                                    ),
+                                  ])))))
+                      .toList()))
+        ]);
       case NarrationsActiveFormSection.Uploads:
       default:
         return ListView.builder(

@@ -1,12 +1,15 @@
 class UserNarrationProfileViewModel {
   final String id;
-  final String name;
-  final String fileSuffixWithoutDash;
-  final String artistName;
-  final String artistUrl;
-  final String audioSrc;
-  final String audioSrcUrl;
+  String name;
+  String fileSuffixWithoutDash;
+  String artistName;
+  String artistUrl;
+  String audioSrc;
+  String audioSrcUrl;
   final bool isDefault;
+  bool isExpanded = false;
+  bool isMarked = false;
+  bool modified = false;
 
   UserNarrationProfileViewModel(
       {this.id,
