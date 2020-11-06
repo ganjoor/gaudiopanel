@@ -1,5 +1,6 @@
 class UserNarrationProfileViewModel {
   final String id;
+  final String name;
   final String fileSuffixWithoutDash;
   final String artistName;
   final String artistUrl;
@@ -9,6 +10,7 @@ class UserNarrationProfileViewModel {
 
   UserNarrationProfileViewModel(
       {this.id,
+      this.name,
       this.fileSuffixWithoutDash,
       this.artistName,
       this.artistUrl,
@@ -22,6 +24,7 @@ class UserNarrationProfileViewModel {
     }
     return UserNarrationProfileViewModel(
       id: json['id'],
+      name: json['name'],
       fileSuffixWithoutDash: json['fileSuffixWithoutDash'],
       artistName: json['artistName'],
       artistUrl: json['artistUrl'],

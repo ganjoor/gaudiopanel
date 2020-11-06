@@ -303,10 +303,13 @@ class NarrationWidgetState extends State<NarrationsWidget>
             itemBuilder: (BuildContext context, int index) {
               return ListTile(
                   leading: Icon(Icons.people),
-                  title: Text(_profiles[index].artistName),
-                  subtitle: Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Text(_profiles[index].artistUrl)));
+                  title: Text(_profiles[index].name),
+                  subtitle: Column(children: [
+                    Text(_profiles[index].artistName),
+                    Directionality(
+                        textDirection: TextDirection.ltr,
+                        child: Text(_profiles[index].artistUrl))
+                  ]));
             });
       case NarrationsActiveFormSection.Uploads:
       default:
