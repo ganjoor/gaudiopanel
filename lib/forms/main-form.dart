@@ -104,7 +104,7 @@ class NarrationWidgetState extends State<MainForm>
 
     if (profiles.item2.isEmpty) {
       setState(() {
-        _profiles.items.addAll(profiles.item1.sublist(0, 5));
+        _profiles.items.addAll(profiles.item1);
         _isLoading = false;
       });
     } else {
