@@ -166,14 +166,13 @@ class NarrationWidgetState extends State<NarrationsWidget>
             : Icon(Icons.query_builder, color: Colors.orange);
   }
 
-  String getVerse(
-      PoemNarrationViewModel narration, int positionInMilliseconds) {
-    if (narration.verses == null) {
+  String getVerse(PoemNarrationViewModel narration, Duration position) {
+    if (position == null || narration == null || narration.verses == null) {
       return '';
     }
     var verse = narration.verses
         .where((element) =>
-            element.audioStartMilliseconds < positionInMilliseconds)
+            element.audioStartMilliseconds < position.inMilliseconds)
         .last;
     if (verse == null) {
       return '';
@@ -283,9 +282,7 @@ class NarrationWidgetState extends State<NarrationsWidget>
                                                           },
                                                         ),
                                                         Text(getVerse(
-                                                            e,
-                                                            position
-                                                                .inMilliseconds))
+                                                            e, position))
                                                       ]);
                                                 },
                                               );
