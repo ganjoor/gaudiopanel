@@ -176,6 +176,35 @@ class NarrationWidgetState extends State<MainForm>
     );
   }
 
+  Future<bool> _confirm(String title, String text) async {
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: SingleChildScrollView(
+            child: Text(text),
+          ),
+          actions: [
+            ElevatedButton(
+              child: Text('بله'),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+            TextButton(
+              child: Text('خیر'),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+
   Future _newNarrations() async {
     FilePickerResult result = await FilePicker.platform.pickFiles(
       allowMultiple: true,
@@ -227,6 +256,36 @@ class NarrationWidgetState extends State<MainForm>
             child: Scaffold(
               appBar: AppBar(
                 title: Text(title),
+                actions: [
+                  Visibility(
+                      child: IconButton(
+                        icon: Icon(Icons.delete),
+                        tooltip: 'حذف',
+                        onPressed: () async {
+                          var markedProfiles = _profiles.items
+                              .where((element) => element.isMarked)
+                              .toList();
+                          if (markedProfiles.isEmpty) {
+                            _key.currentState.showSnackBar(SnackBar(
+                              content: Text(
+                                  'لطفاً نمایه‌های مد نظر را علامتگذاری کنید.'),
+                              backgroundColor: Colors.red,
+                            ));
+                            return;
+                          }
+                          String confirmation = markedProfiles.length > 1
+                              ? 'آیا از حذف ' +
+                                  markedProfiles.length.toString() +
+                                  ' نمایهٔ علامتگذاری شده اطمینان دارید؟'
+                              : 'آیا از حذف نمایهٔ «' +
+                                  markedProfiles[0].name +
+                                  '» اطمینان دارید؟';
+                          await _confirm('تأییدیه', confirmation);
+                        },
+                      ),
+                      visible: _activeSection ==
+                          NarrationsActiveFormSection.Profiles)
+                ],
               ),
               drawer: Drawer(
                 // Add a ListView to the drawer. This ensures the user can scroll
