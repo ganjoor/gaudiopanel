@@ -62,6 +62,7 @@ class _ProfilesState extends State<ProfilesDataSection> {
         itemCount: profiles.items.length,
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
+              selected: profiles.items[index].isDefault,
               leading: IconButton(
                 icon: Icon(Icons.edit),
                 onPressed: () async {
