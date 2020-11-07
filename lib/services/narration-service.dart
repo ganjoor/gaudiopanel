@@ -203,6 +203,45 @@ class NarrationService {
     }
   }
 
+  /// delete an existing profile
+  ///
+  ///
+  Future<Tuple2<bool, String>> deleteProfile(String id, bool error401) async {
+    try {
+      LoggedOnUserModel userInfo = await _storageService.userInfo;
+      if (userInfo == null) {
+        return Tuple2<bool, String>(false, 'کاربر وارد سیستم نشده است.');
+      }
+      var apiRoot = GServiceAddress.Url;
+      http.Response response = await http.delete(
+        '$apiRoot/api/audio/profile/$id',
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
+        },
+      );
+
+      if (!error401 && response.statusCode == 401) {
+        String errSessionRenewal = await AuthService().relogin();
+        if (errSessionRenewal.isNotEmpty) {
+          return Tuple2<bool, String>(false, errSessionRenewal);
+        }
+        return await deleteProfile(id, true);
+      }
+
+      if (response.statusCode == 200) {
+        return Tuple2<bool, String>(json.decode(response.body), '');
+      } else {
+        return Tuple2<bool, String>(false, response.body);
+      }
+    } catch (e) {
+      return Tuple2<bool, String>(
+          false,
+          'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
+              e.toString());
+    }
+  }
+
   /// Get User Uploads
   ///
   /// allUsers parameter is currently ignored

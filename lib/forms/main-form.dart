@@ -280,7 +280,26 @@ class NarrationWidgetState extends State<MainForm>
                               : 'آیا از حذف نمایهٔ «' +
                                   markedProfiles[0].name +
                                   '» اطمینان دارید؟';
-                          await _confirm('تأییدیه', confirmation);
+                          if (await _confirm('تأییدیه', confirmation)) {
+                            for (var item in markedProfiles) {
+                              var delRes = await NarrationService()
+                                  .deleteProfile(item.id, false);
+                              if (delRes.item2.isNotEmpty) {
+                                _key.currentState.showSnackBar(SnackBar(
+                                  content: Text('خطا در حذف نمایهٔ ' +
+                                      item.name +
+                                      '، اطلاعات بیستر ' +
+                                      delRes.item2),
+                                  backgroundColor: Colors.red,
+                                ));
+                              }
+                              if (delRes.item1) {
+                                setState(() {
+                                  _profiles.items.remove(item);
+                                });
+                              }
+                            }
+                          }
                         },
                       ),
                       visible: _activeSection ==
