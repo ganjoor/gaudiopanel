@@ -113,6 +113,48 @@ class NarrationService {
     }
   }
 
+  Future<Tuple2<UserNarrationProfileViewModel, String>> updateProfile(
+      UserNarrationProfileViewModel profile, bool error401) async {
+    try {
+      LoggedOnUserModel userInfo = await _storageService.userInfo;
+      if (userInfo == null) {
+        return Tuple2<UserNarrationProfileViewModel, String>(
+            null, 'کاربر وارد سیستم نشده است.');
+      }
+      var apiRoot = GServiceAddress.Url;
+      http.Response response = await http.put('$apiRoot/api/audio/profile',
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
+          },
+          body: jsonEncode(profile.toJson()));
+
+      if (!error401 && response.statusCode == 401) {
+        String errSessionRenewal = await AuthService().relogin();
+        if (errSessionRenewal.isNotEmpty) {
+          return Tuple2<UserNarrationProfileViewModel, String>(
+              null, errSessionRenewal);
+        }
+        return await updateProfile(profile, true);
+      }
+
+      if (response.statusCode == 200) {
+        UserNarrationProfileViewModel ret =
+            UserNarrationProfileViewModel.fromJson(json.decode(response.body));
+
+        return Tuple2<UserNarrationProfileViewModel, String>(ret, '');
+      } else {
+        return Tuple2<UserNarrationProfileViewModel, String>(
+            null, response.body);
+      }
+    } catch (e) {
+      return Tuple2<UserNarrationProfileViewModel, String>(
+          null,
+          'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
+              e.toString());
+    }
+  }
+
   /// Get User Uploads
   ///
   /// allUsers parameter is currently ignored

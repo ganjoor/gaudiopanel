@@ -1,20 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:gaudiopanel/callbacks/g-ui-callbacks.dart';
 import 'package:gaudiopanel/forms/profile-edit.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
 import 'package:gaudiopanel/models/narration/user-narration-profile-viewmodel.dart';
+import 'package:gaudiopanel/services/narration-service.dart';
 
 class ProfilesDataSection extends StatefulWidget {
   final PaginatedItemsResponseModel<UserNarrationProfileViewModel> profiles;
+  final LoadingStateChanged loadingStateChanged;
+  final SnackbarNeeded snackbarNeeded;
 
-  const ProfilesDataSection({Key key, this.profiles}) : super(key: key);
+  const ProfilesDataSection(
+      {Key key, this.profiles, this.loadingStateChanged, this.snackbarNeeded})
+      : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _ProfilesState(this.profiles);
+  State<StatefulWidget> createState() => _ProfilesState(
+      this.profiles, this.loadingStateChanged, this.snackbarNeeded);
 }
 
 class _ProfilesState extends State<ProfilesDataSection> {
   final PaginatedItemsResponseModel<UserNarrationProfileViewModel> profiles;
-  _ProfilesState(this.profiles);
+  final LoadingStateChanged loadingStateChanged;
+  final SnackbarNeeded snackbarNeeded;
+  _ProfilesState(this.profiles, this.loadingStateChanged, this.snackbarNeeded);
 
   Future<UserNarrationProfileViewModel> _edit(
       UserNarrationProfileViewModel profile) async {
@@ -30,30 +39,18 @@ class _ProfilesState extends State<ProfilesDataSection> {
           isDefault: true);
     }
 
+    var profileCopy = UserNarrationProfileViewModel.fromJson(profile.toJson());
+
     return showDialog<UserNarrationProfileViewModel>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        ProfileEdit _profileEdit = ProfileEdit(profile: profile);
+        ProfileEdit _profileEdit = ProfileEdit(profile: profileCopy);
         return AlertDialog(
           title: Text(_isNew ? 'نمایهٔ جدید' : 'ویرایش نمایه'),
           content: SingleChildScrollView(
             child: _profileEdit,
           ),
-          actions: <Widget>[
-            ElevatedButton(
-              child: Text(_isNew ? 'ایجاد' : 'ذخیره'),
-              onPressed: () {
-                Navigator.of(context).pop(_profileEdit.profile);
-              },
-            ),
-            TextButton(
-              child: Text('انصراف'),
-              onPressed: () {
-                Navigator.of(context).pop(null);
-              },
-            )
-          ],
         );
       },
     );
@@ -70,9 +67,24 @@ class _ProfilesState extends State<ProfilesDataSection> {
                 onPressed: () async {
                   final result = await _edit(profiles.items[index]);
                   if (result != null) {
-                    setState(() {
-                      profiles.items[index] = result;
-                    });
+                    if (this.loadingStateChanged != null) {
+                      this.loadingStateChanged(true);
+                    }
+                    var serviceResult =
+                        await NarrationService().updateProfile(result, false);
+                    if (this.loadingStateChanged != null) {
+                      this.loadingStateChanged(false);
+                    }
+                    if (serviceResult.item2 == '') {
+                      setState(() {
+                        profiles.items[index] = serviceResult.item1;
+                      });
+                    } else {
+                      if (this.snackbarNeeded != null) {
+                        this.snackbarNeeded(
+                            'خطا در ذخیرهٔ نمایه: ' + serviceResult.item2);
+                      }
+                    }
                   }
                 },
               ),

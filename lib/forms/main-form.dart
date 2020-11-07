@@ -137,12 +137,28 @@ class NarrationWidgetState extends State<MainForm>
     await _loadData();
   }
 
+  void _loadingStateChanged(bool isLoading) {
+    setState(() {
+      this._isLoading = isLoading;
+    });
+  }
+
+  void _snackbarNeeded(String msg) {
+    _key.currentState.showSnackBar(SnackBar(
+      content: Text(msg),
+      backgroundColor: Colors.red,
+    ));
+  }
+
   Widget get items {
     switch (_activeSection) {
       case NarrationsActiveFormSection.Narrations:
         return NarrationsDataSection(narrations: _narrations);
       case NarrationsActiveFormSection.Profiles:
-        return ProfilesDataSection(profiles: _profiles);
+        return ProfilesDataSection(
+            profiles: _profiles,
+            loadingStateChanged: _loadingStateChanged,
+            snackbarNeeded: _snackbarNeeded);
       case NarrationsActiveFormSection.Uploads:
       default:
         return UploadsDataSection(uploads: _uploads);

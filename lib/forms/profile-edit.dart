@@ -29,12 +29,6 @@ class _ProfileEditState extends State<ProfileEdit> {
     return FocusTraversalGroup(
         child: Form(
             autovalidateMode: AutovalidateMode.always,
-            onChanged: () {
-              setState(() {
-                profile.name = _nameController.text;
-                profile.modified = true;
-              });
-            },
             child: Wrap(children: [
               Visibility(
                   child: Text(
@@ -141,6 +135,26 @@ class _ProfileEditState extends State<ProfileEdit> {
               ),
               Text(
                   'نام فایل خوانش شما روی سرور ترکیبی از یک عدد، یک خط میانه (دش) و این حروف خواهد بود. می‌توانید حروف ابتدایی نام و نام خانوادگیتان را به انگلیسی وارد کنید. اگر فایلی همنام فایل نهایی از پیش وجود داشته باشد اعدادی به نام فایل اضافه می‌شود. بهتر است تا حد ممکن این پسوند یکتا باشد'),
+              Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ButtonBar(
+                    alignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton(
+                        child: Text(profile.id == null ? 'ایجاد' : 'ذخیره'),
+                        onPressed: () {
+                          profile.name = _nameController.text;
+                          Navigator.of(context).pop(profile);
+                        },
+                      ),
+                      TextButton(
+                        child: Text('انصراف'),
+                        onPressed: () {
+                          Navigator.of(context).pop(null);
+                        },
+                      )
+                    ],
+                  )),
             ])));
   }
 }

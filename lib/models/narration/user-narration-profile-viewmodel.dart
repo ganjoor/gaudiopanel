@@ -9,7 +9,6 @@ class UserNarrationProfileViewModel {
   final bool isDefault;
   bool isExpanded = false;
   bool isMarked = false;
-  bool modified = false;
 
   UserNarrationProfileViewModel(
       {this.id,
@@ -35,5 +34,18 @@ class UserNarrationProfileViewModel {
       audioSrcUrl: json['audioSrcUrl'],
       isDefault: json['isDefault'],
     );
+  }
+
+  toJson() {
+    Map<String, dynamic> m = new Map();
+    m['id'] = id;
+    m['name'] = name;
+    m['fileSuffixWithoutDash'] = fileSuffixWithoutDash;
+    m['artistName'] = artistName;
+    m['artistUrl'] = artistUrl;
+    m['audioSrc'] = audioSrc;
+    m['audioSrcUrl'] = audioSrcUrl;
+    m['isDefault'] = isDefault;
+    return m;
   }
 }
