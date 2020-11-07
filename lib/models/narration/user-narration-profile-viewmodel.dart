@@ -6,7 +6,7 @@ class UserNarrationProfileViewModel {
   String artistUrl;
   String audioSrc;
   String audioSrcUrl;
-  final bool isDefault;
+  bool isDefault;
   bool isExpanded = false;
   bool isMarked = false;
 

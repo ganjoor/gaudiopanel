@@ -78,6 +78,12 @@ class _ProfilesState extends State<ProfilesDataSection> {
                     if (serviceResult.item2 == '') {
                       setState(() {
                         profiles.items[index] = serviceResult.item1;
+                        if (profiles.items[index].isDefault) {
+                          for (var item in profiles.items) {
+                            item.isDefault =
+                                item.id == profiles.items[index].id;
+                          }
+                        }
                       });
                     } else {
                       if (this.snackbarNeeded != null) {

@@ -16,16 +16,32 @@ class _ProfileEditState extends State<ProfileEdit> {
   _ProfileEditState(this.profile);
 
   TextEditingController _nameController = TextEditingController();
+  TextEditingController _artistNameController = TextEditingController();
+  TextEditingController _artistUrlController = TextEditingController();
+  TextEditingController _audioSrcController = TextEditingController();
+  TextEditingController _audioSrcUrlController = TextEditingController();
+  TextEditingController _fileSuffixWithoutDashController =
+      TextEditingController();
 
   @override
   void dispose() {
     _nameController.dispose();
+    _artistNameController.dispose();
+    _artistUrlController.dispose();
+    _audioSrcController.dispose();
+    _audioSrcUrlController.dispose();
+    _fileSuffixWithoutDashController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     _nameController.text = this.profile.name;
+    _artistNameController.text = this.profile.artistName;
+    _artistUrlController.text = this.profile.artistUrl;
+    _audioSrcController.text = this.profile.audioSrc;
+    _audioSrcUrlController.text = this.profile.audioSrcUrl;
+    _fileSuffixWithoutDashController.text = this.profile.fileSuffixWithoutDash;
     return FocusTraversalGroup(
         child: Form(
             autovalidateMode: AutovalidateMode.always,
@@ -49,51 +65,33 @@ class _ProfileEditState extends State<ProfileEdit> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
-                  initialValue: profile.artistName,
-                  decoration: InputDecoration(
-                    labelText: 'نام خوانشگر',
-                    hintText: 'نام خوانشگر را با حروف فارسی وارد کنید',
-                  ),
-                  onSaved: (String value) {
-                    setState(() {
-                      profile.artistName = value;
-                    });
-                  },
-                ),
+                    controller: _artistNameController,
+                    decoration: InputDecoration(
+                      labelText: 'نام خوانشگر',
+                      hintText: 'نام خوانشگر را با حروف فارسی وارد کنید',
+                    )),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Directionality(
                     textDirection: TextDirection.ltr,
                     child: TextFormField(
-                      initialValue: profile.artistUrl,
-                      decoration: InputDecoration(
-                        labelText: 'نشانی وب',
-                        hintText: 'نشانی وب',
-                      ),
-                      onSaved: (String value) {
-                        setState(() {
-                          profile.artistUrl = value;
-                        });
-                      },
-                    )),
+                        controller: _artistUrlController,
+                        decoration: InputDecoration(
+                          labelText: 'نشانی وب',
+                          hintText: 'نشانی وب',
+                        ))),
               ),
               Text(
                   'نشانی سایت یا کانال تلگرام یا صفحهٔ اینستاگرام، نشانی‌های نامرتبط تبلیغاتی قابل پذیرش نیستند'),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
-                  initialValue: profile.audioSrc,
-                  decoration: InputDecoration(
-                    labelText: 'نام منبع',
-                    hintText: 'نام منبع',
-                  ),
-                  onSaved: (String value) {
-                    setState(() {
-                      profile.audioSrc = value;
-                    });
-                  },
-                ),
+                    controller: _audioSrcController,
+                    decoration: InputDecoration(
+                      labelText: 'نام منبع',
+                      hintText: 'نام منبع',
+                    )),
               ),
               Text(
                   'اختیاری، اگر خوانش را با کسب اجازه از جای دیگری دریافت و همگام کرده‌اید می‌توانید نام منبع را اینجا وارد کنید'),
@@ -102,17 +100,11 @@ class _ProfileEditState extends State<ProfileEdit> {
                 child: Directionality(
                     textDirection: TextDirection.ltr,
                     child: TextFormField(
-                      initialValue: profile.audioSrcUrl,
-                      decoration: InputDecoration(
-                        labelText: 'نشانی وب منبع',
-                        hintText: 'نشانی وب منبع',
-                      ),
-                      onSaved: (String value) {
-                        setState(() {
-                          profile.audioSrcUrl = value;
-                        });
-                      },
-                    )),
+                        controller: _audioSrcUrlController,
+                        decoration: InputDecoration(
+                          labelText: 'نشانی وب منبع',
+                          hintText: 'نشانی وب منبع',
+                        ))),
               ),
               Text(
                   'اختیاری، اگر خوانش را با کسب اجازه از جای دیگری دریافت و همگام کرده‌اید می‌توانید نشانی منبع را اینجا وارد کنید'),
@@ -121,20 +113,30 @@ class _ProfileEditState extends State<ProfileEdit> {
                 child: Directionality(
                     textDirection: TextDirection.ltr,
                     child: TextFormField(
-                      initialValue: profile.fileSuffixWithoutDash,
-                      decoration: InputDecoration(
-                        labelText: 'پسوند یکتاساز فایل',
-                        hintText: 'پسوند یکتاساز فایل',
-                      ),
-                      onSaved: (String value) {
-                        setState(() {
-                          profile.fileSuffixWithoutDash = value;
-                        });
-                      },
-                    )),
+                        controller: _fileSuffixWithoutDashController,
+                        decoration: InputDecoration(
+                          labelText: 'پسوند یکتاساز فایل',
+                          hintText: 'پسوند یکتاساز فایل',
+                        ))),
               ),
               Text(
                   'نام فایل خوانش شما روی سرور ترکیبی از یک عدد، یک خط میانه (دش) و این حروف خواهد بود. می‌توانید حروف ابتدایی نام و نام خانوادگیتان را به انگلیسی وارد کنید. اگر فایلی همنام فایل نهایی از پیش وجود داشته باشد اعدادی به نام فایل اضافه می‌شود. بهتر است تا حد ممکن این پسوند یکتا باشد'),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text('پیش‌فرض'),
+                      Switch(
+                          value: profile.isDefault,
+                          onChanged: (value) {
+                            setState(() {
+                              profile.isDefault = value;
+                            });
+                          })
+                    ]),
+              ),
               Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ButtonBar(
@@ -144,6 +146,12 @@ class _ProfileEditState extends State<ProfileEdit> {
                         child: Text(profile.id == null ? 'ایجاد' : 'ذخیره'),
                         onPressed: () {
                           profile.name = _nameController.text;
+                          profile.artistName = _artistNameController.text;
+                          profile.artistUrl = _artistUrlController.text;
+                          profile.audioSrc = _audioSrcController.text;
+                          profile.audioSrcUrl = _audioSrcUrlController.text;
+                          profile.fileSuffixWithoutDash =
+                              _fileSuffixWithoutDashController.text;
                           Navigator.of(context).pop(profile);
                         },
                       ),
