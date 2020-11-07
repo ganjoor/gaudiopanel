@@ -143,7 +143,10 @@ class _ProfileEditState extends State<ProfileEdit> {
                     alignment: MainAxisAlignment.end,
                     children: [
                       ElevatedButton(
-                        child: Text(profile.id == null ? 'ایجاد' : 'ذخیره'),
+                        child: Text(
+                            profile.id == '00000000-0000-0000-0000-000000000000'
+                                ? 'ایجاد'
+                                : 'ذخیره'),
                         onPressed: () {
                           profile.name = _nameController.text;
                           profile.artistName = _artistNameController.text;

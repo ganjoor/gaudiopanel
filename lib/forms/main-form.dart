@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gaudiopanel/forms/login.dart';
 import 'package:gaudiopanel/forms/main-form-sections/profiles-data-section.dart';
+import 'package:gaudiopanel/forms/profile-edit.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
 import 'package:gaudiopanel/models/narration/poem-narration-viewmodel.dart';
 import 'package:gaudiopanel/models/narration/uploaded-item-viewmodel.dart';
@@ -148,6 +149,58 @@ class NarrationWidgetState extends State<MainForm>
       content: Text(msg),
       backgroundColor: Colors.red,
     ));
+  }
+
+  Future<UserNarrationProfileViewModel> _newProfile() async {
+    return showDialog<UserNarrationProfileViewModel>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        ProfileEdit _profileEdit = ProfileEdit(
+            profile: UserNarrationProfileViewModel(
+                id: '00000000-0000-0000-0000-000000000000',
+                name: '',
+                artistName: '',
+                artistUrl: '',
+                audioSrc: '',
+                audioSrcUrl: '',
+                fileSuffixWithoutDash: '',
+                isDefault: true));
+        return AlertDialog(
+          title: Text('نمایهٔ جدید'),
+          content: SingleChildScrollView(
+            child: _profileEdit,
+          ),
+        );
+      },
+    );
+  }
+
+  Future _newNarrations() async {
+    FilePickerResult result = await FilePicker.platform.pickFiles(
+      allowMultiple: true,
+      type: FileType.custom,
+      allowedExtensions: ['mp3', 'xml'],
+    );
+    if (result != null) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      String err =
+          await UploadNarrationService().uploadFiles(result.files, false);
+
+      if (err.isNotEmpty) {
+        _key.currentState.showSnackBar(SnackBar(
+          content: Text("خطا در ارسال خوانش‌های جدید: " + err),
+          backgroundColor: Colors.red,
+        ));
+      }
+
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   Widget get items {
@@ -316,33 +369,50 @@ class NarrationWidgetState extends State<MainForm>
                           child: items))),
               floatingActionButton: FloatingActionButton(
                 onPressed: () async {
-                  FilePickerResult result = await FilePicker.platform.pickFiles(
-                    allowMultiple: true,
-                    type: FileType.custom,
-                    allowedExtensions: ['mp3', 'xml'],
-                  );
-                  if (result != null) {
-                    setState(() {
-                      _isLoading = true;
-                    });
-
-                    String err = await UploadNarrationService()
-                        .uploadFiles(result.files, false);
-
-                    if (err.isNotEmpty) {
-                      _key.currentState.showSnackBar(SnackBar(
-                        content: Text("خطا در ارسال خوانش‌های جدید: " + err),
-                        backgroundColor: Colors.red,
-                      ));
-                    }
-
-                    setState(() {
-                      _isLoading = false;
-                    });
+                  switch (_activeSection) {
+                    case NarrationsActiveFormSection.Narrations:
+                    case NarrationsActiveFormSection.Uploads:
+                      await _newNarrations();
+                      if (_activeSection ==
+                          NarrationsActiveFormSection.Uploads) {
+                        await _loadData();
+                      }
+                      break;
+                    case NarrationsActiveFormSection.Profiles:
+                      var result = await _newProfile();
+                      if (result != null) {
+                        setState(() {
+                          _isLoading = true;
+                        });
+                        var serviceResult =
+                            await NarrationService().addProfile(result, false);
+                        setState(() {
+                          _isLoading = false;
+                        });
+                        if (serviceResult.item2 == '') {
+                          setState(() {
+                            if (serviceResult.item1.isDefault) {
+                              for (var item in _profiles.items) {
+                                item.isDefault = false;
+                              }
+                            }
+                            _profiles.items.insert(0, serviceResult.item1);
+                          });
+                        } else {
+                          _key.currentState.showSnackBar(SnackBar(
+                            content: Text(
+                                'خطا در ایجاد نمایه: ' + serviceResult.item2),
+                            backgroundColor: Colors.red,
+                          ));
+                        }
+                      }
+                      break;
                   }
                 },
                 child: Icon(Icons.add),
-                tooltip: 'ارسال خوانش‌های جدید',
+                tooltip: _activeSection == NarrationsActiveFormSection.Profiles
+                    ? 'ایجاد نمایهٔ جدید'
+                    : 'ارسال خوانش‌های جدید',
               ),
             )));
   }
