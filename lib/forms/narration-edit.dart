@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:gaudiopanel/models/narration/poem-narration-viewmodel.dart';
 import 'package:gaudiopanel/widgets/audio-player-widgets.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NarrationEdit extends StatefulWidget {
   final PoemNarrationViewModel narration;
@@ -19,6 +20,12 @@ class _NarrationEditState extends State<NarrationEdit> {
 
   _NarrationEditState(this.narration);
 
+  TextEditingController _titleController = TextEditingController();
+  TextEditingController _artistNameController = TextEditingController();
+  TextEditingController _artistUrlController = TextEditingController();
+  TextEditingController _audioSrcController = TextEditingController();
+  TextEditingController _audioSrcUrlController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -31,6 +38,11 @@ class _NarrationEditState extends State<NarrationEdit> {
   @override
   void dispose() {
     _player.dispose();
+    _titleController.dispose();
+    _artistNameController.dispose();
+    _artistUrlController.dispose();
+    _audioSrcController.dispose();
+    _audioSrcUrlController.dispose();
     super.dispose();
   }
 
@@ -50,33 +62,83 @@ class _NarrationEditState extends State<NarrationEdit> {
 
   @override
   Widget build(BuildContext context) {
+    _titleController.text = narration.audioTitle;
+    _artistNameController.text = narration.audioArtist;
+    _artistUrlController.text = narration.audioArtistUrl;
+    _audioSrcController.text = narration.audioSrc;
+    _audioSrcUrlController.text = narration.audioSrcUrl;
     return FocusTraversalGroup(
         child: Form(
             autovalidateMode: AutovalidateMode.always,
-            onChanged: () {
-              setState(() {
-                narration.modified = true;
-              });
-            },
             child: Wrap(children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
-                  initialValue: narration.audioTitle,
-                  style: TextStyle(
-                      color: narration.modified
-                          ? Theme.of(context).errorColor
-                          : Theme.of(context).primaryColor),
-                  decoration: InputDecoration(
-                    labelText: 'عنوان',
-                    hintText: 'عنوان',
-                  ),
-                  onSaved: (String value) {
-                    setState(() {
-                      narration.audioTitle = value;
-                    });
-                  },
-                ),
+                    controller: _titleController,
+                    decoration: InputDecoration(
+                      labelText: 'عنوان',
+                      hintText: 'عنوان',
+                    )),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                    controller: _artistNameController,
+                    decoration: InputDecoration(
+                      labelText: 'نام خوانشگر',
+                      hintText: 'نام خوانشگر را با حروف فارسی وارد کنید',
+                    )),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: TextFormField(
+                        controller: _artistUrlController,
+                        decoration: InputDecoration(
+                            labelText: 'نشانی وب',
+                            hintText: 'نشانی وب',
+                            prefixIcon: IconButton(
+                              icon: Icon(Icons.open_in_browser),
+                              onPressed: () async {
+                                var url = _artistUrlController.text;
+                                if (await canLaunch(url)) {
+                                  await launch(url);
+                                } else {
+                                  throw 'خطا در نمایش نشانی $url';
+                                }
+                              },
+                            )))),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                    controller: _audioSrcController,
+                    decoration: InputDecoration(
+                      labelText: 'نام منبع',
+                      hintText: 'نام منبع',
+                    )),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: TextFormField(
+                        controller: _audioSrcUrlController,
+                        decoration: InputDecoration(
+                            labelText: 'نشانی وب منبع',
+                            hintText: 'نشانی وب منبع',
+                            prefixIcon: IconButton(
+                              icon: Icon(Icons.open_in_browser),
+                              onPressed: () async {
+                                var url = _audioSrcUrlController.text;
+                                if (await canLaunch(url)) {
+                                  await launch(url);
+                                } else {
+                                  throw 'خطا در نمایش نشانی $url';
+                                }
+                              },
+                            )))),
               ),
               SafeArea(
                 child: Column(
@@ -115,6 +177,30 @@ class _NarrationEditState extends State<NarrationEdit> {
                   ],
                 ),
               ),
+              Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ButtonBar(
+                    alignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton(
+                        child: Text('ذخیره'),
+                        onPressed: () {
+                          narration.audioTitle = _titleController.text;
+                          narration.audioArtist = _artistNameController.text;
+                          narration.audioArtistUrl = _artistUrlController.text;
+                          narration.audioSrc = _audioSrcController.text;
+                          narration.audioSrcUrl = _audioSrcUrlController.text;
+                          Navigator.of(context).pop(narration);
+                        },
+                      ),
+                      TextButton(
+                        child: Text('انصراف'),
+                        onPressed: () {
+                          Navigator.of(context).pop(null);
+                        },
+                      )
+                    ],
+                  )),
             ])));
   }
 }

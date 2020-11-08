@@ -63,20 +63,6 @@ class _NarrationsState extends State<NarrationsDataSection> {
     }
   }
 
-  String getVerse(PoemNarrationViewModel narration, Duration position) {
-    if (position == null || narration == null || narration.verses == null) {
-      return '';
-    }
-    var verse = narration.verses
-        .where((element) =>
-            element.audioStartMilliseconds < position.inMilliseconds)
-        .last;
-    if (verse == null) {
-      return '';
-    }
-    return verse.verseText;
-  }
-
   Future<PoemNarrationViewModel> _edit(PoemNarrationViewModel narration) async {
     return showDialog<PoemNarrationViewModel>(
       context: context,
