@@ -20,7 +20,11 @@ class NarrationService {
   /// Get Narrations
   ///
   Future<PaginatedItemsResponseModel<PoemNarrationViewModel>> getNarrations(
-      int pageNumber, int pageSize, bool error401) async {
+      int pageNumber,
+      int pageSize,
+      bool allUsers,
+      int status,
+      bool error401) async {
     try {
       LoggedOnUserModel userInfo = await _storageService.userInfo;
       if (userInfo == null) {
@@ -29,7 +33,7 @@ class NarrationService {
       }
       var apiRoot = GServiceAddress.Url;
       http.Response response = await http.get(
-          '$apiRoot/api/audio?PageNumber=$pageNumber&PageSize=$pageSize',
+          '$apiRoot/api/audio?PageNumber=$pageNumber&PageSize=$pageSize&allUsers=$allUsers&status=$status',
           headers: {
             'Content-Type': 'application/json; charset=UTF-8',
             HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
@@ -41,7 +45,8 @@ class NarrationService {
           return PaginatedItemsResponseModel<PoemNarrationViewModel>(
               error: errSessionRenewal);
         }
-        return await getNarrations(pageNumber, pageSize, true);
+        return await getNarrations(
+            pageNumber, pageSize, allUsers, status, true);
       }
 
       List<PoemNarrationViewModel> ret = [];

@@ -16,7 +16,13 @@ import 'package:gaudiopanel/forms/main-form-sections/narrtions-data-section.dart
 import 'package:gaudiopanel/forms/main-form-sections/uploads-data-section.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 
-enum NarrationsActiveFormSection { Narrations, Uploads, Profiles }
+enum NarrationsActiveFormSection {
+  DraftNarrations,
+  AllMyNarrations,
+  AllUsersPendingNarrations,
+  Uploads,
+  Profiles
+}
 
 class MainForm extends StatefulWidget {
   @override
@@ -54,8 +60,17 @@ class NarrationWidgetState extends State<MainForm>
     setState(() {
       _isLoading = true;
     });
-    var narrations = await NarrationService()
-        .getNarrations(_narrationsPageNumber, _pageSize, false);
+    var narrations = await NarrationService().getNarrations(
+        _narrationsPageNumber,
+        _pageSize,
+        _activeSection == NarrationsActiveFormSection.AllUsersPendingNarrations,
+        _activeSection == NarrationsActiveFormSection.AllMyNarrations
+            ? -1
+            : _activeSection ==
+                    NarrationsActiveFormSection.AllUsersPendingNarrations
+                ? 1
+                : 0,
+        false);
     if (narrations.error.isEmpty) {
       setState(() {
         _narrations.items.addAll(narrations.items);
@@ -121,7 +136,9 @@ class NarrationWidgetState extends State<MainForm>
 
   Future<void> _loadData() async {
     switch (_activeSection) {
-      case NarrationsActiveFormSection.Narrations:
+      case NarrationsActiveFormSection.DraftNarrations:
+      case NarrationsActiveFormSection.AllMyNarrations:
+      case NarrationsActiveFormSection.AllUsersPendingNarrations:
         await _loadNarrationsData();
         break;
       case NarrationsActiveFormSection.Uploads:
@@ -234,7 +251,10 @@ class NarrationWidgetState extends State<MainForm>
 
   Widget get items {
     switch (_activeSection) {
-      case NarrationsActiveFormSection.Narrations:
+      case NarrationsActiveFormSection.DraftNarrations:
+      case NarrationsActiveFormSection.AllMyNarrations:
+      case NarrationsActiveFormSection.AllUsersPendingNarrations:
+      case NarrationsActiveFormSection.DraftNarrations:
         return NarrationsDataSection(narrations: _narrations);
       case NarrationsActiveFormSection.Profiles:
         return ProfilesDataSection(
@@ -324,28 +344,27 @@ class NarrationWidgetState extends State<MainForm>
                       ),
                     ),
                     ListTile(
-                      title: Text('خوانش‌ها'),
+                      title: Text('خوانش‌های پیش‌نویس من'),
                       leading: Icon(Icons.music_note,
                           color: Theme.of(context).primaryColor),
                       selected: _activeSection ==
-                          NarrationsActiveFormSection.Narrations,
+                          NarrationsActiveFormSection.DraftNarrations,
                       onTap: () async {
                         if (_activeSection !=
-                            NarrationsActiveFormSection.Narrations) {
+                            NarrationsActiveFormSection.DraftNarrations) {
                           setState(() {
+                            _narrations.items.clear();
                             _activeSection =
-                                NarrationsActiveFormSection.Narrations;
+                                NarrationsActiveFormSection.DraftNarrations;
                           });
-                          if (_narrations.items.length == 0) {
-                            await _loadData();
-                          }
+                          await _loadData();
 
                           Navigator.of(context).pop(); //close drawer
                         }
                       },
                     ),
                     ListTile(
-                      title: Text('بارگذاری‌ها'),
+                      title: Text('بارگذاری‌های من'),
                       leading: Icon(Icons.upload_file,
                           color: Theme.of(context).primaryColor),
                       selected:
@@ -366,7 +385,48 @@ class NarrationWidgetState extends State<MainForm>
                       },
                     ),
                     ListTile(
-                      title: Text('نمایه‌ها'),
+                      title: Text('همهٔ خوانش‌های من'),
+                      leading: Icon(Icons.music_note,
+                          color: Theme.of(context).primaryColor),
+                      selected: _activeSection ==
+                          NarrationsActiveFormSection.AllMyNarrations,
+                      onTap: () async {
+                        if (_activeSection !=
+                            NarrationsActiveFormSection.AllMyNarrations) {
+                          setState(() {
+                            _narrations.items.clear();
+                            _activeSection =
+                                NarrationsActiveFormSection.AllMyNarrations;
+                          });
+                          await _loadData();
+
+                          Navigator.of(context).pop(); //close drawer
+                        }
+                      },
+                    ),
+                    ListTile(
+                      title: Text('خوانش‌های در انتظار تأیید'),
+                      leading: Icon(Icons.music_note,
+                          color: Theme.of(context).primaryColor),
+                      selected: _activeSection ==
+                          NarrationsActiveFormSection.AllUsersPendingNarrations,
+                      onTap: () async {
+                        if (_activeSection !=
+                            NarrationsActiveFormSection
+                                .AllUsersPendingNarrations) {
+                          setState(() {
+                            _narrations.items.clear();
+                            _activeSection = NarrationsActiveFormSection
+                                .AllUsersPendingNarrations;
+                          });
+                          await _loadData();
+
+                          Navigator.of(context).pop(); //close drawer
+                        }
+                      },
+                    ),
+                    ListTile(
+                      title: Text('نمایه‌های من'),
                       leading: Icon(Icons.people,
                           color: Theme.of(context).primaryColor),
                       selected: _activeSection ==
@@ -419,7 +479,12 @@ class NarrationWidgetState extends State<MainForm>
                                     scrollInfo.metrics.maxScrollExtent) {
                               setState(() {
                                 switch (_activeSection) {
-                                  case NarrationsActiveFormSection.Narrations:
+                                  case NarrationsActiveFormSection
+                                      .DraftNarrations:
+                                  case NarrationsActiveFormSection
+                                      .AllMyNarrations:
+                                  case NarrationsActiveFormSection
+                                      .AllUsersPendingNarrations:
                                     _narrationsPageNumber =
                                         _narrations.paginationMetadata == null
                                             ? 1
@@ -448,7 +513,9 @@ class NarrationWidgetState extends State<MainForm>
               floatingActionButton: FloatingActionButton(
                 onPressed: () async {
                   switch (_activeSection) {
-                    case NarrationsActiveFormSection.Narrations:
+                    case NarrationsActiveFormSection.DraftNarrations:
+                    case NarrationsActiveFormSection.AllMyNarrations:
+                    case NarrationsActiveFormSection.AllUsersPendingNarrations:
                     case NarrationsActiveFormSection.Uploads:
                       await _newNarrations();
                       if (_activeSection ==
