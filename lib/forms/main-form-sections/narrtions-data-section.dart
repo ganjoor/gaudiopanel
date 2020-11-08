@@ -73,7 +73,9 @@ class _NarrationsState extends State<NarrationsDataSection> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        NarrationEdit _narrationEdit = NarrationEdit(narration: narration);
+        PoemNarrationViewModel narrationCopy =
+            PoemNarrationViewModel.fromJson(narration.toJson());
+        NarrationEdit _narrationEdit = NarrationEdit(narration: narrationCopy);
         return AlertDialog(
           title: Text('ویرایش خوانش'),
           content: SingleChildScrollView(

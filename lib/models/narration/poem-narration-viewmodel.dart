@@ -89,4 +89,26 @@ class PoemNarrationViewModel {
             (json['audioSyncStatusArray'] as List).cast<int>().toList(),
         reviewStatus: json['reviewStatus']);
   }
+
+  toJson() {
+    Map<String, dynamic> m = new Map();
+    m['id'] = id;
+    m['owner'] = owner.toJson();
+    m['ganjoorAudioId'] = ganjoorAudioId;
+    m['ganjoorPostId'] = ganjoorPostId;
+    m['poemFullTitle'] = poemFullTitle;
+    m['poemFullUrl'] = poemFullUrl;
+    m['mp3Url'] = mp3Url;
+    m['xmlUrl'] = xmlUrl;
+    m['audioTitle'] = audioTitle;
+    m['audioArtist'] = audioArtist;
+    m['audioArtistUrl'] = audioArtistUrl;
+    m['audioSrc'] = audioSrc;
+    m['audioSrcUrl'] = audioSrcUrl;
+    m['mp3SizeInBytes'] = mp3SizeInBytes;
+    m['uploadDate'] = uploadDate;
+    m['audioSyncStatusArray'] = audioSyncStatusArray;
+    m['reviewStatus'] = reviewStatus;
+    return m;
+  }
 }
