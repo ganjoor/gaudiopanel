@@ -1,25 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gaudiopanel/callbacks/g-ui-callbacks.dart';
 import 'package:gaudiopanel/forms/narration-edit.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
 import 'package:gaudiopanel/models/narration/poem-narration-viewmodel.dart';
-import 'package:gaudiopanel/widgets/audio-player-widgets.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:tuple/tuple.dart';
 
 class NarrationsDataSection extends StatefulWidget {
-  const NarrationsDataSection({Key key, this.narrations}) : super(key: key);
+  const NarrationsDataSection(
+      {Key key, this.narrations, this.loadingStateChanged, this.snackbarNeeded})
+      : super(key: key);
 
   final PaginatedItemsResponseModel<PoemNarrationViewModel> narrations;
+  final LoadingStateChanged loadingStateChanged;
+  final SnackbarNeeded snackbarNeeded;
 
   @override
-  _NarrationsState createState() => _NarrationsState(this.narrations);
+  _NarrationsState createState() => _NarrationsState(
+      this.narrations, this.loadingStateChanged, this.snackbarNeeded);
 }
 
 class _NarrationsState extends State<NarrationsDataSection> {
-  _NarrationsState(this.narrations);
+  _NarrationsState(
+      this.narrations, this.loadingStateChanged, this.snackbarNeeded);
   AudioPlayer _player;
 
   final PaginatedItemsResponseModel<PoemNarrationViewModel> narrations;
+  final LoadingStateChanged loadingStateChanged;
+  final SnackbarNeeded snackbarNeeded;
 
   @override
   void initState() {
@@ -88,113 +97,52 @@ class _NarrationsState extends State<NarrationsDataSection> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(children: [
-      Padding(
-          padding: EdgeInsets.all(10.0),
-          child: ExpansionPanelList(
-              expansionCallback: (int index, bool isExpanded) {
-                setState(() {
-                  narrations.items[index].isExpanded =
-                      !narrations.items[index].isExpanded;
-                });
-              },
-              children: narrations.items
-                  .map((e) => ExpansionPanel(
-                      headerBuilder: (BuildContext context, bool isExpanded) {
-                        return ListTile(
-                            leading: IconButton(
-                                icon: getNarrationIcon(e),
-                                onPressed: () async {
-                                  await _edit(e);
-                                }),
-                            title: Text(e.poemFullTitle),
-                            trailing: IconButton(
-                              icon: e.isMarked
-                                  ? Icon(Icons.check_box)
-                                  : Icon(Icons.check_box_outline_blank),
-                              onPressed: () {
-                                setState(() {
-                                  e.isMarked = !e.isMarked;
-                                });
-                              },
-                            ),
-                            subtitle: Text(e.audioArtist));
-                      },
-                      isExpanded: e.isExpanded,
-                      body: FocusTraversalGroup(
-                          child: Form(
-                              autovalidateMode: AutovalidateMode.always,
-                              onChanged: () {
-                                setState(() {
-                                  e.modified = true;
-                                });
-                              },
-                              child: Wrap(children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: TextFormField(
-                                    initialValue: e.audioTitle,
-                                    style: TextStyle(
-                                        color: e.modified
-                                            ? Theme.of(context).errorColor
-                                            : Theme.of(context).primaryColor),
-                                    decoration: InputDecoration(
-                                      labelText: 'عنوان',
-                                      hintText: 'عنوان',
-                                    ),
-                                    onSaved: (String value) {
-                                      setState(() {
-                                        e.audioTitle = value;
-                                      });
-                                    },
-                                  ),
-                                ),
-                                SafeArea(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      ControlButtons(_player, e),
-                                      StreamBuilder<Duration>(
-                                        stream: _player.durationStream,
-                                        builder: (context, snapshot) {
-                                          final duration =
-                                              snapshot.data ?? Duration.zero;
-                                          return StreamBuilder<Duration>(
-                                            stream: _player.positionStream,
-                                            builder: (context, snapshot) {
-                                              var position = snapshot.data ??
-                                                  Duration.zero;
-                                              if (position > duration) {
-                                                position = duration;
-                                              }
-                                              return Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    SeekBar(
-                                                      duration: duration,
-                                                      position: position,
-                                                      onChangeEnd:
-                                                          (newPosition) {
-                                                        _player
-                                                            .seek(newPosition);
-                                                      },
-                                                    ),
-                                                    Text(getVerse(e, position))
-                                                  ]);
-                                            },
-                                          );
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ])))))
-                  .toList()))
-    ]);
+    return ListView.builder(
+        itemCount: narrations.items.length,
+        itemBuilder: (BuildContext context, int index) {
+          return ListTile(
+              leading: IconButton(
+                icon: Icon(Icons.edit),
+                onPressed: () async {
+                  final result = await _edit(narrations.items[index]);
+                  if (result != null) {
+                    if (this.loadingStateChanged != null) {
+                      this.loadingStateChanged(true);
+                    }
+                    var serviceResult =
+                        Tuple2<PoemNarrationViewModel, String>(result, '');
+                    if (this.loadingStateChanged != null) {
+                      this.loadingStateChanged(false);
+                    }
+                    if (serviceResult.item2 == '') {
+                      setState(() {
+                        narrations.items[index] = serviceResult.item1;
+                      });
+                    } else {
+                      if (this.snackbarNeeded != null) {
+                        this.snackbarNeeded(
+                            'خطا در ذخیرهٔ خونش: ' + serviceResult.item2);
+                      }
+                    }
+                  }
+                },
+              ),
+              title: Text(narrations.items[index].audioTitle),
+              subtitle: Column(children: [
+                Text(narrations.items[index].poemFullTitle),
+                Text(narrations.items[index].audioArtist),
+              ]),
+              trailing: IconButton(
+                icon: narrations.items[index].isMarked
+                    ? Icon(Icons.check_box)
+                    : Icon(Icons.check_box_outline_blank),
+                onPressed: () {
+                  setState(() {
+                    narrations.items[index].isMarked =
+                        !narrations.items[index].isMarked;
+                  });
+                },
+              ));
+        });
   }
 }
