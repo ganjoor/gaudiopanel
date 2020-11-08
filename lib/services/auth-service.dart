@@ -49,6 +49,28 @@ class AuthService {
     return (await _storageService.userInfo) != null;
   }
 
+  ///has user specified operation permission
+  ///
+  Future<bool> hasPermission(
+      String securableItemShortName, String operationShortName) async {
+    LoggedOnUserModel userInfo = await _storageService.userInfo;
+    if (userInfo == null) {
+      return false;
+    }
+    var securableItem = userInfo.securableItem
+        .where((element) => element.shortName == securableItemShortName)
+        .first;
+    if (securableItem != null) {
+      var operation = securableItem.operations
+          .where((element) => element.shortName == operationShortName)
+          .first;
+      if (operation != null) {
+        return operation.status;
+      }
+    }
+    return false;
+  }
+
   /// renew user session
   ///
   /// returns empty string is everything is ok otherwise the error string

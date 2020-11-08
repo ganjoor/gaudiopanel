@@ -35,7 +35,7 @@ class NarrationWidgetState extends State<MainForm>
       GlobalKey<ScaffoldMessengerState>();
   bool _isLoading = false;
   NarrationsActiveFormSection _activeSection =
-      NarrationsActiveFormSection.Uploads;
+      NarrationsActiveFormSection.DraftNarrations;
   int _narrationsPageNumber = 1;
   int _uploadsPageNumber = 1;
   int _pageSize = 20;
@@ -48,12 +48,17 @@ class NarrationWidgetState extends State<MainForm>
   String get title {
     switch (_activeSection) {
       case NarrationsActiveFormSection.Uploads:
-        return 'پیشخان خوانشگران گنجور » بارگذاری‌ها';
+        return 'پیشخان خوانشگران گنجور » بارگذاری‌های من';
       case NarrationsActiveFormSection.Profiles:
-        return 'پیشخان خوانشگران گنجور » نمایه‌ها';
-      default:
-        return 'پیشخان خوانشگران گنجور » خوانش‌ها';
+        return 'پیشخان خوانشگران گنجور » نمایه‌های من';
+      case NarrationsActiveFormSection.DraftNarrations:
+        return 'پیشخان خوانشگران گنجور » خوانش‌های پیش‌نویس من';
+      case NarrationsActiveFormSection.AllMyNarrations:
+        return 'پیشخان خوانشگران گنجور » همهٔ خوانش‌های من';
+      case NarrationsActiveFormSection.AllUsersPendingNarrations:
+        return 'پیشخان خوانشگران گنجور » خوانش‌های در انتظار تأیید';
     }
+    return '';
   }
 
   Future<void> _loadNarrationsData() async {
