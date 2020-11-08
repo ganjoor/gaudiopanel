@@ -354,6 +354,7 @@ class NarrationWidgetState extends State<MainForm>
                             NarrationsActiveFormSection.DraftNarrations) {
                           setState(() {
                             _narrations.items.clear();
+                            _narrationsPageNumber = 1;
                             _activeSection =
                                 NarrationsActiveFormSection.DraftNarrations;
                           });
@@ -394,6 +395,7 @@ class NarrationWidgetState extends State<MainForm>
                         if (_activeSection !=
                             NarrationsActiveFormSection.AllMyNarrations) {
                           setState(() {
+                            _narrationsPageNumber = 1;
                             _narrations.items.clear();
                             _activeSection =
                                 NarrationsActiveFormSection.AllMyNarrations;
@@ -415,6 +417,7 @@ class NarrationWidgetState extends State<MainForm>
                             NarrationsActiveFormSection
                                 .AllUsersPendingNarrations) {
                           setState(() {
+                            _narrationsPageNumber = 1;
                             _narrations.items.clear();
                             _activeSection = NarrationsActiveFormSection
                                 .AllUsersPendingNarrations;

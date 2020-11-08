@@ -1,7 +1,7 @@
 class PaginationMetadata {
   final int totalCount;
   final int pageSize;
-  final int currentPage;
+  int currentPage;
   final int totalPages;
   final bool hasPreviousPage;
   final bool hasNextPage;
