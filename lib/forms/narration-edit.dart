@@ -1,6 +1,8 @@
+import 'package:after_layout/after_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gaudiopanel/models/narration/poem-narration-viewmodel.dart';
+import 'package:gaudiopanel/services/auth-service.dart';
 import 'package:gaudiopanel/widgets/audio-player-widgets.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -14,9 +16,11 @@ class NarrationEdit extends StatefulWidget {
   State<StatefulWidget> createState() => _NarrationEditState(this.narration);
 }
 
-class _NarrationEditState extends State<NarrationEdit> {
+class _NarrationEditState extends State<NarrationEdit>
+    with AfterLayoutMixin<NarrationEdit> {
   final PoemNarrationViewModel narration;
   AudioPlayer _player;
+  bool _canModerate = false;
 
   _NarrationEditState(this.narration);
 
@@ -58,6 +62,15 @@ class _NarrationEditState extends State<NarrationEdit> {
       return '';
     }
     return verse.verseText;
+  }
+
+  @override
+  void afterFirstLayout(BuildContext context) async {
+    if (await AuthService().hasPermission('narration', 'moderate')) {
+      setState(() {
+        _canModerate = true;
+      });
+    }
   }
 
   @override
@@ -182,6 +195,22 @@ class _NarrationEditState extends State<NarrationEdit> {
                   child: ButtonBar(
                     alignment: MainAxisAlignment.end,
                     children: [
+                      Visibility(
+                          child: ElevatedButton(
+                            child: Text('انتشار'),
+                            onPressed: () {
+                              narration.audioTitle = _titleController.text;
+                              narration.audioArtist =
+                                  _artistNameController.text;
+                              narration.audioArtistUrl =
+                                  _artistUrlController.text;
+                              narration.audioSrc = _audioSrcController.text;
+                              narration.audioSrcUrl =
+                                  _audioSrcUrlController.text;
+                              Navigator.of(context).pop(narration);
+                            },
+                          ),
+                          visible: _canModerate),
                       ElevatedButton(
                         child: Text('ذخیره'),
                         onPressed: () {

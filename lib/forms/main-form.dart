@@ -260,7 +260,10 @@ class NarrationWidgetState extends State<MainForm>
       case NarrationsActiveFormSection.AllMyNarrations:
       case NarrationsActiveFormSection.AllUsersPendingNarrations:
       case NarrationsActiveFormSection.DraftNarrations:
-        return NarrationsDataSection(narrations: _narrations);
+        return NarrationsDataSection(
+            narrations: _narrations,
+            loadingStateChanged: _loadingStateChanged,
+            snackbarNeeded: _snackbarNeeded);
       case NarrationsActiveFormSection.Profiles:
         return ProfilesDataSection(
             profiles: _profiles,

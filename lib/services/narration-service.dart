@@ -71,6 +71,51 @@ class NarrationService {
     }
   }
 
+  /// updates an existing narration
+  ///
+  ///
+  Future<Tuple2<PoemNarrationViewModel, String>> updateNarration(
+      PoemNarrationViewModel narration, bool error401) async {
+    try {
+      LoggedOnUserModel userInfo = await _storageService.userInfo;
+      if (userInfo == null) {
+        return Tuple2<PoemNarrationViewModel, String>(
+            null, 'کاربر وارد سیستم نشده است.');
+      }
+      var apiRoot = GServiceAddress.Url;
+      int id = narration.id;
+      http.Response response = await http.put('$apiRoot/api/audio/$id',
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
+          },
+          body: jsonEncode(narration.toJson()));
+
+      if (!error401 && response.statusCode == 401) {
+        String errSessionRenewal = await AuthService().relogin();
+        if (errSessionRenewal.isNotEmpty) {
+          return Tuple2<PoemNarrationViewModel, String>(
+              null, errSessionRenewal);
+        }
+        return await updateNarration(narration, true);
+      }
+
+      if (response.statusCode == 200) {
+        PoemNarrationViewModel ret =
+            PoemNarrationViewModel.fromJson(json.decode(response.body));
+
+        return Tuple2<PoemNarrationViewModel, String>(ret, '');
+      } else {
+        return Tuple2<PoemNarrationViewModel, String>(null, response.body);
+      }
+    } catch (e) {
+      return Tuple2<PoemNarrationViewModel, String>(
+          null,
+          'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
+              e.toString());
+    }
+  }
+
   /// Get Profiles
   ///
   ///returns a Tuple2, if any error occurs Items1 is null and Item2 contains the error message

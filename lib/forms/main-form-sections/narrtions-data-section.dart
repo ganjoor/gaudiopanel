@@ -4,8 +4,8 @@ import 'package:gaudiopanel/callbacks/g-ui-callbacks.dart';
 import 'package:gaudiopanel/forms/narration-edit.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
 import 'package:gaudiopanel/models/narration/poem-narration-viewmodel.dart';
+import 'package:gaudiopanel/services/narration-service.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:tuple/tuple.dart';
 
 class NarrationsDataSection extends StatefulWidget {
   const NarrationsDataSection(
@@ -96,7 +96,7 @@ class _NarrationsState extends State<NarrationsDataSection> {
                       this.loadingStateChanged(true);
                     }
                     var serviceResult =
-                        Tuple2<PoemNarrationViewModel, String>(result, '');
+                        await NarrationService().updateNarration(result, false);
                     if (this.loadingStateChanged != null) {
                       this.loadingStateChanged(false);
                     }
