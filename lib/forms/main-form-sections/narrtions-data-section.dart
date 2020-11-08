@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gaudiopanel/forms/narration-edit.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
 import 'package:gaudiopanel/models/narration/poem-narration-viewmodel.dart';
 import 'package:gaudiopanel/widgets/audio-player-widgets.dart';
@@ -67,6 +68,22 @@ class _NarrationsState extends State<NarrationsDataSection> {
     return verse.verseText;
   }
 
+  Future<PoemNarrationViewModel> _edit(PoemNarrationViewModel narration) async {
+    return showDialog<PoemNarrationViewModel>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        NarrationEdit _narrationEdit = NarrationEdit(narration: narration);
+        return AlertDialog(
+          title: Text('ویرایش خوانش'),
+          content: SingleChildScrollView(
+            child: _narrationEdit,
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView(children: [
@@ -83,7 +100,11 @@ class _NarrationsState extends State<NarrationsDataSection> {
                   .map((e) => ExpansionPanel(
                       headerBuilder: (BuildContext context, bool isExpanded) {
                         return ListTile(
-                            leading: getNarrationIcon(e),
+                            leading: IconButton(
+                                icon: getNarrationIcon(e),
+                                onPressed: () async {
+                                  await _edit(e);
+                                }),
                             title: Text(e.poemFullTitle),
                             trailing: IconButton(
                               icon: e.isMarked
