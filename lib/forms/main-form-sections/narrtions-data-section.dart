@@ -107,7 +107,7 @@ class _NarrationsState extends State<NarrationsDataSection> {
                     } else {
                       if (this.snackbarNeeded != null) {
                         this.snackbarNeeded(
-                            'خطا در ذخیرهٔ خونش: ' + serviceResult.item2);
+                            'خطا در ذخیرهٔ خوانش: ' + serviceResult.item2);
                       }
                     }
                   }
