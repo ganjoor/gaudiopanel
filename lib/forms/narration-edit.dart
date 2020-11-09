@@ -197,7 +197,7 @@ class _NarrationEditState extends State<NarrationEdit>
                     children: [
                       Visibility(
                           child: ElevatedButton(
-                            child: Text('انتشار'),
+                            child: Text('ذخیره و درخواست بررسی'),
                             onPressed: () {
                               narration.audioTitle = _titleController.text;
                               narration.audioArtist =
@@ -207,10 +207,31 @@ class _NarrationEditState extends State<NarrationEdit>
                               narration.audioSrc = _audioSrcController.text;
                               narration.audioSrcUrl =
                                   _audioSrcUrlController.text;
+                              narration.reviewStatus = 1; //Approved
                               Navigator.of(context).pop(narration);
                             },
                           ),
-                          visible: _canModerate),
+                          visible: !_canModerate &&
+                              narration.reviewStatus == 0 /* Draft */),
+                      Visibility(
+                          child: ElevatedButton(
+                            child: Text('ذخیره و انتشار'),
+                            onPressed: () {
+                              narration.audioTitle = _titleController.text;
+                              narration.audioArtist =
+                                  _artistNameController.text;
+                              narration.audioArtistUrl =
+                                  _artistUrlController.text;
+                              narration.audioSrc = _audioSrcController.text;
+                              narration.audioSrcUrl =
+                                  _audioSrcUrlController.text;
+                              narration.reviewStatus = 2; //Approved
+                              Navigator.of(context).pop(narration);
+                            },
+                          ),
+                          visible: _canModerate &&
+                              ((narration.reviewStatus == 0 /* Draft */) ||
+                                  (narration.reviewStatus == 1 /* Pending */))),
                       ElevatedButton(
                         child: Text('ذخیره'),
                         onPressed: () {

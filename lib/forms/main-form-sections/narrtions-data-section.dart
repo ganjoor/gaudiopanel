@@ -100,7 +100,8 @@ class _NarrationsState extends State<NarrationsDataSection> {
                     if (this.loadingStateChanged != null) {
                       this.loadingStateChanged(false);
                     }
-                    if (serviceResult.item2 == '') {
+                    if (serviceResult.item1 != null &&
+                        serviceResult.item2 == '') {
                       setState(() {
                         narrations.items[index] = serviceResult.item1;
                       });

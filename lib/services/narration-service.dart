@@ -106,7 +106,12 @@ class NarrationService {
 
         return Tuple2<PoemNarrationViewModel, String>(ret, '');
       } else {
-        return Tuple2<PoemNarrationViewModel, String>(null, response.body);
+        return Tuple2<PoemNarrationViewModel, String>(
+            null,
+            'کد برگشتی: ' +
+                response.statusCode.toString() +
+                ' ' +
+                response.body);
       }
     } catch (e) {
       return Tuple2<PoemNarrationViewModel, String>(
