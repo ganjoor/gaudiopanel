@@ -9,26 +9,32 @@ import 'package:just_audio/just_audio.dart';
 
 class NarrationsDataSection extends StatefulWidget {
   const NarrationsDataSection(
-      {Key key, this.narrations, this.loadingStateChanged, this.snackbarNeeded})
+      {Key key,
+      this.narrations,
+      this.loadingStateChanged,
+      this.snackbarNeeded,
+      this.status})
       : super(key: key);
 
   final PaginatedItemsResponseModel<PoemNarrationViewModel> narrations;
   final LoadingStateChanged loadingStateChanged;
   final SnackbarNeeded snackbarNeeded;
+  final int status;
 
   @override
-  _NarrationsState createState() => _NarrationsState(
-      this.narrations, this.loadingStateChanged, this.snackbarNeeded);
+  _NarrationsState createState() => _NarrationsState(this.narrations,
+      this.loadingStateChanged, this.snackbarNeeded, this.status);
 }
 
 class _NarrationsState extends State<NarrationsDataSection> {
-  _NarrationsState(
-      this.narrations, this.loadingStateChanged, this.snackbarNeeded);
+  _NarrationsState(this.narrations, this.loadingStateChanged,
+      this.snackbarNeeded, this.status);
   AudioPlayer _player;
 
   final PaginatedItemsResponseModel<PoemNarrationViewModel> narrations;
   final LoadingStateChanged loadingStateChanged;
   final SnackbarNeeded snackbarNeeded;
+  final int status;
 
   @override
   void initState() {
@@ -70,6 +76,7 @@ class _NarrationsState extends State<NarrationsDataSection> {
       builder: (BuildContext context) {
         PoemNarrationViewModel narrationCopy =
             PoemNarrationViewModel.fromJson(narration.toJson());
+        narrationCopy.isModified = false;
         NarrationEdit _narrationEdit = NarrationEdit(narration: narrationCopy);
         return AlertDialog(
           title: Text('ویرایش خوانش'),
@@ -91,7 +98,7 @@ class _NarrationsState extends State<NarrationsDataSection> {
                 icon: Icon(Icons.edit),
                 onPressed: () async {
                   final result = await _edit(narrations.items[index]);
-                  if (result != null) {
+                  if (result != null && result.isModified) {
                     if (this.loadingStateChanged != null) {
                       this.loadingStateChanged(true);
                     }
@@ -103,7 +110,15 @@ class _NarrationsState extends State<NarrationsDataSection> {
                     if (serviceResult.item1 != null &&
                         serviceResult.item2 == '') {
                       setState(() {
-                        narrations.items[index] = serviceResult.item1;
+                        if (status == -1) {
+                          narrations.items[index] = serviceResult.item1;
+                        } else if (status == 0 || status == 1) {
+                          if (serviceResult.item1.reviewStatus == status) {
+                            narrations.items[index] = serviceResult.item1;
+                          } else {
+                            narrations.items.removeAt(index);
+                          }
+                        }
                       });
                     } else {
                       if (this.snackbarNeeded != null) {

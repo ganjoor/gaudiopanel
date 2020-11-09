@@ -25,6 +25,7 @@ class AudioReviewStatus {
 
 class PoemNarrationViewModel {
   bool isMarked = false;
+  bool isModified = false;
   final int id;
   final PublicRAppUser owner;
   final int ganjoorAudioId;

@@ -73,6 +73,16 @@ class _NarrationEditState extends State<NarrationEdit>
     }
   }
 
+  void _setModifiedFlag() {
+    if (narration.audioTitle != _titleController.text ||
+        narration.audioArtist != _artistNameController.text ||
+        narration.audioArtistUrl != _artistUrlController.text ||
+        narration.audioSrc != _audioSrcController.text ||
+        narration.audioSrcUrl != _audioSrcUrlController.text) {
+      narration.isModified = true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     _titleController.text = narration.audioTitle;
@@ -207,7 +217,8 @@ class _NarrationEditState extends State<NarrationEdit>
                               narration.audioSrc = _audioSrcController.text;
                               narration.audioSrcUrl =
                                   _audioSrcUrlController.text;
-                              narration.reviewStatus = 1; //Approved
+                              narration.reviewStatus = 1; //Pending
+                              narration.isModified = true;
                               Navigator.of(context).pop(narration);
                             },
                           ),
@@ -217,6 +228,7 @@ class _NarrationEditState extends State<NarrationEdit>
                           child: ElevatedButton(
                             child: Text('ذخیره و انتشار'),
                             onPressed: () {
+                              _setModifiedFlag();
                               narration.audioTitle = _titleController.text;
                               narration.audioArtist =
                                   _artistNameController.text;
@@ -235,6 +247,7 @@ class _NarrationEditState extends State<NarrationEdit>
                       ElevatedButton(
                         child: Text('ذخیره'),
                         onPressed: () {
+                          _setModifiedFlag();
                           narration.audioTitle = _titleController.text;
                           narration.audioArtist = _artistNameController.text;
                           narration.audioArtistUrl = _artistUrlController.text;
