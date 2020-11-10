@@ -33,6 +33,7 @@ class NarrationWidgetState extends State<MainForm>
     with AfterLayoutMixin<MainForm> {
   final GlobalKey<ScaffoldMessengerState> _key =
       GlobalKey<ScaffoldMessengerState>();
+  bool _canModerate = false;
   bool _isLoading = false;
   NarrationsActiveFormSection _activeSection =
       NarrationsActiveFormSection.DraftNarrations;
@@ -157,6 +158,11 @@ class NarrationWidgetState extends State<MainForm>
 
   @override
   void afterFirstLayout(BuildContext context) async {
+    if (await AuthService().hasPermission('narration', 'moderate')) {
+      setState(() {
+        _canModerate = true;
+      });
+    }
     await _loadData();
   }
 
@@ -421,28 +427,31 @@ class NarrationWidgetState extends State<MainForm>
                         }
                       },
                     ),
-                    ListTile(
-                      title: Text('خوانش‌های در انتظار تأیید'),
-                      leading: Icon(Icons.music_note,
-                          color: Theme.of(context).primaryColor),
-                      selected: _activeSection ==
-                          NarrationsActiveFormSection.AllUsersPendingNarrations,
-                      onTap: () async {
-                        if (_activeSection !=
-                            NarrationsActiveFormSection
-                                .AllUsersPendingNarrations) {
-                          setState(() {
-                            _narrationsPageNumber = 1;
-                            _narrations.items.clear();
-                            _activeSection = NarrationsActiveFormSection
-                                .AllUsersPendingNarrations;
-                          });
-                          await _loadData();
+                    Visibility(
+                        child: ListTile(
+                          title: Text('خوانش‌های در انتظار تأیید'),
+                          leading: Icon(Icons.music_note,
+                              color: Theme.of(context).primaryColor),
+                          selected: _activeSection ==
+                              NarrationsActiveFormSection
+                                  .AllUsersPendingNarrations,
+                          onTap: () async {
+                            if (_activeSection !=
+                                NarrationsActiveFormSection
+                                    .AllUsersPendingNarrations) {
+                              setState(() {
+                                _narrationsPageNumber = 1;
+                                _narrations.items.clear();
+                                _activeSection = NarrationsActiveFormSection
+                                    .AllUsersPendingNarrations;
+                              });
+                              await _loadData();
 
-                          Navigator.of(context).pop(); //close drawer
-                        }
-                      },
-                    ),
+                              Navigator.of(context).pop(); //close drawer
+                            }
+                          },
+                        ),
+                        visible: _canModerate),
                     ListTile(
                       title: Text('نمایه‌های من'),
                       leading: Icon(Icons.people,
