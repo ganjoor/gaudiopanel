@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:gaudiopanel/models/auth/logged-on-user-model.dart';
 import 'package:gaudiopanel/models/common/pagination-metadata.dart';
 import 'package:gaudiopanel/models/narration/narration-verse-sync.dart';
+import 'package:gaudiopanel/models/narration/poem-narration-moderate-viewModel.dart';
 import 'package:gaudiopanel/models/narration/poem-narration-viewmodel.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
 import 'package:gaudiopanel/models/narration/uploaded-item-viewmodel.dart';
@@ -98,6 +99,63 @@ class NarrationService {
               null, errSessionRenewal);
         }
         return await updateNarration(narration, true);
+      }
+
+      if (response.statusCode == 200) {
+        PoemNarrationViewModel ret =
+            PoemNarrationViewModel.fromJson(json.decode(response.body));
+
+        return Tuple2<PoemNarrationViewModel, String>(ret, '');
+      } else {
+        return Tuple2<PoemNarrationViewModel, String>(
+            null,
+            'کد برگشتی: ' +
+                response.statusCode.toString() +
+                ' ' +
+                response.body);
+      }
+    } catch (e) {
+      return Tuple2<PoemNarrationViewModel, String>(
+          null,
+          'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
+              e.toString());
+    }
+  }
+
+  ///moderate narration
+  ///
+  ///
+  Future<Tuple2<PoemNarrationViewModel, String>> moderateNarration(int id,
+      PoemNarrationModerationResult res, String message, bool error401) async {
+    try {
+      LoggedOnUserModel userInfo = await _storageService.userInfo;
+      if (userInfo == null) {
+        return Tuple2<PoemNarrationViewModel, String>(
+            null, 'کاربر وارد سیستم نشده است.');
+      }
+
+      int mres = res == PoemNarrationModerationResult.MetadataNeedsFixation
+          ? 0
+          : res == PoemNarrationModerationResult.Approve
+              ? 1
+              : 2;
+      PoemNarrationModerateViewModel model =
+          PoemNarrationModerateViewModel(result: mres, message: message);
+      var apiRoot = GServiceAddress.Url;
+      http.Response response = await http.put('$apiRoot/api/audio/moderate/$id',
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
+          },
+          body: jsonEncode(model.toJson()));
+
+      if (!error401 && response.statusCode == 401) {
+        String errSessionRenewal = await AuthService().relogin();
+        if (errSessionRenewal.isNotEmpty) {
+          return Tuple2<PoemNarrationViewModel, String>(
+              null, errSessionRenewal);
+        }
+        return await moderateNarration(id, res, message, true);
       }
 
       if (response.statusCode == 200) {
