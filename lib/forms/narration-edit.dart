@@ -99,9 +99,20 @@ class _NarrationEditState extends State<NarrationEdit>
                 child: TextFormField(
                     controller: _titleController,
                     decoration: InputDecoration(
-                      labelText: 'عنوان',
-                      hintText: 'عنوان',
-                    )),
+                        labelText: 'عنوان',
+                        hintText: 'عنوان',
+                        prefixIcon: IconButton(
+                          icon: Icon(Icons.open_in_browser),
+                          onPressed: () async {
+                            var url =
+                                'https://ganjoor.net' + narration.poemFullUrl;
+                            if (await canLaunch(url)) {
+                              await launch(url);
+                            } else {
+                              throw 'خطا در نمایش نشانی $url';
+                            }
+                          },
+                        ))),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
