@@ -6,6 +6,7 @@ import 'package:gaudiopanel/forms/login.dart';
 import 'package:gaudiopanel/forms/main-form-sections/profiles-data-section.dart';
 import 'package:gaudiopanel/forms/profile-edit.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
+import 'package:gaudiopanel/models/narration/poem-narration-moderate-viewModel.dart';
 import 'package:gaudiopanel/models/narration/poem-narration-viewmodel.dart';
 import 'package:gaudiopanel/models/narration/uploaded-item-viewmodel.dart';
 import 'package:gaudiopanel/models/narration/user-narration-profile-viewmodel.dart';
@@ -436,7 +437,70 @@ class NarrationWidgetState extends State<MainForm>
                         },
                       ),
                       visible: _activeSection ==
-                          NarrationsActiveFormSection.DraftNarrations)
+                              NarrationsActiveFormSection.DraftNarrations &&
+                          !_canModerate),
+                  Visibility(
+                      child: IconButton(
+                        icon: Icon(Icons.publish),
+                        tooltip: 'انتشار',
+                        onPressed: () async {
+                          var markedNarrations = _narrations.items
+                              .where((element) => element.isMarked)
+                              .toList();
+                          if (markedNarrations.isEmpty) {
+                            _key.currentState.showSnackBar(SnackBar(
+                              content: Text(
+                                  'لطفاً خوانش‌های مد نظر را علامتگذاری کنید.'),
+                              backgroundColor: Colors.red,
+                            ));
+                            return;
+                          }
+                          String confirmation = markedNarrations.length > 1
+                              ? 'آیا از انتشار ' +
+                                  markedNarrations.length.toString() +
+                                  ' خوانش علامتگذاری شده اطمینان دارید؟'
+                              : 'آیا از انتشار «' +
+                                  markedNarrations[0].audioTitle +
+                                  '» اطمینان دارید؟';
+                          if (await _confirm('تأییدیه', confirmation)) {
+                            setState(() {
+                              _isLoading = true;
+                            });
+                            for (var item in markedNarrations) {
+                              item.reviewStatus = 1;
+                              var updateRes = await NarrationService()
+                                  .moderateNarration(
+                                      item.id,
+                                      PoemNarrationModerationResult.Approve,
+                                      '',
+                                      false);
+                              if (updateRes.item2.isNotEmpty) {
+                                _key.currentState.showSnackBar(SnackBar(
+                                  content: Text('خطا در تغییر وضعیت خوانش ' +
+                                      item.audioTitle +
+                                      '، اطلاعات بیستر ' +
+                                      updateRes.item2),
+                                  backgroundColor: Colors.red,
+                                ));
+                              }
+                              if (updateRes.item1 != null) {
+                                setState(() {
+                                  _narrations.items.remove(item);
+                                });
+                              }
+                            }
+                            setState(() {
+                              _isLoading = false;
+                            });
+                          }
+                        },
+                      ),
+                      visible: (_activeSection ==
+                                  NarrationsActiveFormSection.DraftNarrations &&
+                              _canModerate) ||
+                          _activeSection ==
+                              NarrationsActiveFormSection
+                                  .AllUsersPendingNarrations)
                 ],
               ),
               drawer: Drawer(
