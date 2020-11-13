@@ -298,6 +298,44 @@ class NarrationWidgetState extends State<MainForm>
               appBar: AppBar(
                 title: Text(title),
                 actions: [
+                  IconButton(
+                      icon: Icon(Icons.check_box),
+                      tooltip: 'علامتگذاری همه',
+                      onPressed: () {
+                        if (_activeSection ==
+                            NarrationsActiveFormSection.Profiles) {
+                          for (var item in _profiles.items) {
+                            setState(() {
+                              item.isMarked = true;
+                            });
+                          }
+                        } else {
+                          for (var item in _narrations.items) {
+                            setState(() {
+                              item.isMarked = true;
+                            });
+                          }
+                        }
+                      }),
+                  IconButton(
+                      icon: Icon(Icons.check_box_outline_blank),
+                      tooltip: 'برداشتن علامت همه',
+                      onPressed: () {
+                        if (_activeSection ==
+                            NarrationsActiveFormSection.Profiles) {
+                          for (var item in _profiles.items) {
+                            setState(() {
+                              item.isMarked = false;
+                            });
+                          }
+                        } else {
+                          for (var item in _narrations.items) {
+                            setState(() {
+                              item.isMarked = false;
+                            });
+                          }
+                        }
+                      }),
                   Visibility(
                       child: IconButton(
                         icon: Icon(Icons.delete),
@@ -344,7 +382,61 @@ class NarrationWidgetState extends State<MainForm>
                         },
                       ),
                       visible: _activeSection ==
-                          NarrationsActiveFormSection.Profiles)
+                          NarrationsActiveFormSection.Profiles),
+                  Visibility(
+                      child: IconButton(
+                        icon: Icon(Icons.publish),
+                        tooltip: 'درخواست بررسی',
+                        onPressed: () async {
+                          var markedNarrations = _narrations.items
+                              .where((element) => element.isMarked)
+                              .toList();
+                          if (markedNarrations.isEmpty) {
+                            _key.currentState.showSnackBar(SnackBar(
+                              content: Text(
+                                  'لطفاً خوانش‌های مد نظر را علامتگذاری کنید.'),
+                              backgroundColor: Colors.red,
+                            ));
+                            return;
+                          }
+                          String confirmation = markedNarrations.length > 1
+                              ? 'آیا از تغییر وضعیت به درخواست بررسی ' +
+                                  markedNarrations.length.toString() +
+                                  ' خوانش علامتگذاری شده اطمینان دارید؟'
+                              : 'آیا از تغییر وضعیت به درخواست بررسی «' +
+                                  markedNarrations[0].audioTitle +
+                                  '» اطمینان دارید؟';
+                          if (await _confirm('تأییدیه', confirmation)) {
+                            setState(() {
+                              _isLoading = true;
+                            });
+                            for (var item in markedNarrations) {
+                              item.reviewStatus = 1;
+                              var updateRes = await NarrationService()
+                                  .updateNarration(item, false);
+                              if (updateRes.item2.isNotEmpty) {
+                                _key.currentState.showSnackBar(SnackBar(
+                                  content: Text('خطا در تغییر وضعیت خوانش ' +
+                                      item.audioTitle +
+                                      '، اطلاعات بیستر ' +
+                                      updateRes.item2),
+                                  backgroundColor: Colors.red,
+                                ));
+                              }
+                              if (updateRes.item1 != null) {
+                                setState(() {
+                                  _narrations.items.remove(item);
+                                });
+                              }
+                            }
+                            setState(() {
+                              _isLoading = false;
+                            });
+                          }
+                        },
+                      ),
+                      visible: _activeSection ==
+                          NarrationsActiveFormSection.DraftNarrations)
                 ],
               ),
               drawer: Drawer(
