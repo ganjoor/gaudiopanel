@@ -173,6 +173,7 @@ class _NarrationsState extends State<NarrationsDataSection> {
               subtitle: Column(children: [
                 Text(narrations.items[index].poemFullTitle),
                 Text(narrations.items[index].audioArtist),
+                getNarrationIcon(narrations.items[index])
               ]),
               trailing: IconButton(
                 icon: narrations.items[index].isMarked
