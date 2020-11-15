@@ -63,7 +63,10 @@ class NarrationService {
             error: '');
       } else {
         return PaginatedItemsResponseModel<PoemNarrationViewModel>(
-            error: response.body);
+            error: 'کد برگشتی: ' +
+                response.statusCode.toString() +
+                ' ' +
+                response.body);
       }
     } catch (e) {
       return PaginatedItemsResponseModel<PoemNarrationViewModel>(
@@ -216,7 +219,11 @@ class NarrationService {
         return Tuple2<List<UserNarrationProfileViewModel>, String>(ret, '');
       } else {
         return Tuple2<List<UserNarrationProfileViewModel>, String>(
-            null, response.body);
+            null,
+            'کد برگشتی: ' +
+                response.statusCode.toString() +
+                ' ' +
+                response.body);
       }
     } catch (e) {
       return Tuple2<List<UserNarrationProfileViewModel>, String>(
@@ -261,7 +268,11 @@ class NarrationService {
         return Tuple2<UserNarrationProfileViewModel, String>(ret, '');
       } else {
         return Tuple2<UserNarrationProfileViewModel, String>(
-            null, response.body);
+            null,
+            'کد برگشتی: ' +
+                response.statusCode.toString() +
+                ' ' +
+                response.body);
       }
     } catch (e) {
       return Tuple2<UserNarrationProfileViewModel, String>(
@@ -306,7 +317,11 @@ class NarrationService {
         return Tuple2<UserNarrationProfileViewModel, String>(ret, '');
       } else {
         return Tuple2<UserNarrationProfileViewModel, String>(
-            null, response.body);
+            null,
+            'کد برگشتی: ' +
+                response.statusCode.toString() +
+                ' ' +
+                response.body);
       }
     } catch (e) {
       return Tuple2<UserNarrationProfileViewModel, String>(
@@ -345,7 +360,12 @@ class NarrationService {
       if (response.statusCode == 200) {
         return Tuple2<bool, String>(json.decode(response.body), '');
       } else {
-        return Tuple2<bool, String>(false, response.body);
+        return Tuple2<bool, String>(
+            false,
+            'کد برگشتی: ' +
+                response.statusCode.toString() +
+                ' ' +
+                response.body);
       }
     } catch (e) {
       return Tuple2<bool, String>(
@@ -396,7 +416,10 @@ class NarrationService {
             error: '');
       } else {
         return PaginatedItemsResponseModel<UploadedItemViewModel>(
-            error: response.body);
+            error: 'کد برگشتی: ' +
+                response.statusCode.toString() +
+                ' ' +
+                response.body);
       }
     } catch (e) {
       return PaginatedItemsResponseModel<UploadedItemViewModel>(
@@ -437,7 +460,12 @@ class NarrationService {
         }
         return Tuple2<List<NarrationVerseSync>, String>(ret, '');
       } else {
-        return Tuple2<List<NarrationVerseSync>, String>(null, response.body);
+        return Tuple2<List<NarrationVerseSync>, String>(
+            null,
+            'کد برگشتی: ' +
+                response.statusCode.toString() +
+                ' ' +
+                response.body);
       }
     } catch (e) {
       return Tuple2<List<NarrationVerseSync>, String>(
