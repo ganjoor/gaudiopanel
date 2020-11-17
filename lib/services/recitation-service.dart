@@ -19,7 +19,7 @@ class RecitationService {
 
   /// Get Narrations
   ///
-  Future<PaginatedItemsResponseModel<RecitationViewModel>> getNarrations(
+  Future<PaginatedItemsResponseModel<RecitationViewModel>> getRecitations(
       int pageNumber,
       int pageSize,
       bool allUsers,
@@ -45,7 +45,7 @@ class RecitationService {
           return PaginatedItemsResponseModel<RecitationViewModel>(
               error: errSessionRenewal);
         }
-        return await getNarrations(
+        return await getRecitations(
             pageNumber, pageSize, allUsers, status, true);
       }
 
@@ -77,7 +77,7 @@ class RecitationService {
   /// updates an existing narration
   ///
   ///
-  Future<Tuple2<RecitationViewModel, String>> updateNarration(
+  Future<Tuple2<RecitationViewModel, String>> updateRecitation(
       RecitationViewModel narration, bool error401) async {
     try {
       LoggedOnUserModel userInfo = await _storageService.userInfo;
@@ -99,7 +99,7 @@ class RecitationService {
         if (errSessionRenewal.isNotEmpty) {
           return Tuple2<RecitationViewModel, String>(null, errSessionRenewal);
         }
-        return await updateNarration(narration, true);
+        return await updateRecitation(narration, true);
       }
 
       if (response.statusCode == 200) {
@@ -126,7 +126,7 @@ class RecitationService {
   ///moderate narration
   ///
   ///
-  Future<Tuple2<RecitationViewModel, String>> moderateNarration(int id,
+  Future<Tuple2<RecitationViewModel, String>> moderateRecitation(int id,
       RecitationModerationResult res, String message, bool error401) async {
     try {
       LoggedOnUserModel userInfo = await _storageService.userInfo;
@@ -155,7 +155,7 @@ class RecitationService {
         if (errSessionRenewal.isNotEmpty) {
           return Tuple2<RecitationViewModel, String>(null, errSessionRenewal);
         }
-        return await moderateNarration(id, res, message, true);
+        return await moderateRecitation(id, res, message, true);
       }
 
       if (response.statusCode == 200) {

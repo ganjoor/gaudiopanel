@@ -65,7 +65,7 @@ class MainFormWidgetState extends State<MainForm>
     setState(() {
       _isLoading = true;
     });
-    var narrations = await RecitationService().getNarrations(
+    var narrations = await RecitationService().getRecitations(
         _narrationsPageNumber,
         _pageSize,
         _activeSection == GActiveFormSection.AllUsersPendingRecitations,
@@ -407,7 +407,7 @@ class MainFormWidgetState extends State<MainForm>
                             for (var item in markedNarrations) {
                               item.reviewStatus = 1;
                               var updateRes = await RecitationService()
-                                  .updateNarration(item, false);
+                                  .updateRecitation(item, false);
                               if (updateRes.item2.isNotEmpty) {
                                 _key.currentState.showSnackBar(SnackBar(
                                   content: Text('خطا در تغییر وضعیت خوانش ' +
@@ -462,7 +462,7 @@ class MainFormWidgetState extends State<MainForm>
                             for (var item in markedNarrations) {
                               item.reviewStatus = 1;
                               var updateRes = await RecitationService()
-                                  .moderateNarration(
+                                  .moderateRecitation(
                                       item.id,
                                       RecitationModerationResult.Approve,
                                       '',

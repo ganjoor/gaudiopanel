@@ -111,7 +111,7 @@ class _RecitationsState extends State<RecitationsDataSection> {
                         this.loadingStateChanged(true);
                       }
                       var serviceResult = await RecitationService()
-                          .updateNarration(result, false);
+                          .updateRecitation(result, false);
                       if (this.loadingStateChanged != null) {
                         this.loadingStateChanged(false);
                       }
@@ -140,7 +140,7 @@ class _RecitationsState extends State<RecitationsDataSection> {
                         this.loadingStateChanged(true);
                       }
                       var serviceResult = await RecitationService()
-                          .moderateNarration(result.id,
+                          .moderateRecitation(result.id,
                               RecitationModerationResult.Approve, '', false);
                       if (this.loadingStateChanged != null) {
                         this.loadingStateChanged(false);
