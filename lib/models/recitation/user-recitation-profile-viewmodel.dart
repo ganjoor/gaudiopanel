@@ -1,4 +1,4 @@
-class UserNarrationProfileViewModel {
+class UserRecitationProfileViewModel {
   final String id;
   String name;
   String fileSuffixWithoutDash;
@@ -10,7 +10,7 @@ class UserNarrationProfileViewModel {
   bool isExpanded = false;
   bool isMarked = false;
 
-  UserNarrationProfileViewModel(
+  UserRecitationProfileViewModel(
       {this.id,
       this.name,
       this.fileSuffixWithoutDash,
@@ -20,11 +20,11 @@ class UserNarrationProfileViewModel {
       this.audioSrcUrl,
       this.isDefault});
 
-  factory UserNarrationProfileViewModel.fromJson(Map<String, dynamic> json) {
+  factory UserRecitationProfileViewModel.fromJson(Map<String, dynamic> json) {
     if (json == null) {
       return null;
     }
-    return UserNarrationProfileViewModel(
+    return UserRecitationProfileViewModel(
       id: json['id'],
       name: json['name'],
       fileSuffixWithoutDash: json['fileSuffixWithoutDash'],

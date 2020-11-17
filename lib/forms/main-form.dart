@@ -6,58 +6,56 @@ import 'package:gaudiopanel/forms/login.dart';
 import 'package:gaudiopanel/forms/main-form-sections/profiles-data-section.dart';
 import 'package:gaudiopanel/forms/profile-edit.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
-import 'package:gaudiopanel/models/narration/poem-narration-moderate-viewModel.dart';
-import 'package:gaudiopanel/models/narration/poem-narration-viewmodel.dart';
-import 'package:gaudiopanel/models/narration/uploaded-item-viewmodel.dart';
-import 'package:gaudiopanel/models/narration/user-narration-profile-viewmodel.dart';
+import 'package:gaudiopanel/models/recitation/recitation-viewmodel.dart';
+import 'package:gaudiopanel/models/recitation/uploaded-item-viewmodel.dart';
+import 'package:gaudiopanel/models/recitation/user-recitation-profile-viewmodel.dart';
 import 'package:gaudiopanel/services/auth-service.dart';
-import 'package:gaudiopanel/services/upload-narration-service.dart';
-import 'package:gaudiopanel/services/narration-service.dart';
-import 'package:gaudiopanel/forms/main-form-sections/narrtions-data-section.dart';
+import 'package:gaudiopanel/services/upload-recitation-service.dart';
+import 'package:gaudiopanel/services/recitation-service.dart';
+import 'package:gaudiopanel/forms/main-form-sections/recitations-data-section.dart';
 import 'package:gaudiopanel/forms/main-form-sections/uploads-data-section.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 
-enum NarrationsActiveFormSection {
-  DraftNarrations,
-  AllMyNarrations,
-  AllUsersPendingNarrations,
+enum GActiveFormSection {
+  DraftRecitations,
+  AllMyRecitations,
+  AllUsersPendingRecitations,
   Uploads,
   Profiles
 }
 
 class MainForm extends StatefulWidget {
   @override
-  NarrationWidgetState createState() => NarrationWidgetState();
+  MainFormWidgetState createState() => MainFormWidgetState();
 }
 
-class NarrationWidgetState extends State<MainForm>
+class MainFormWidgetState extends State<MainForm>
     with AfterLayoutMixin<MainForm> {
   final GlobalKey<ScaffoldMessengerState> _key =
       GlobalKey<ScaffoldMessengerState>();
   bool _canModerate = false;
   bool _isLoading = false;
-  NarrationsActiveFormSection _activeSection =
-      NarrationsActiveFormSection.DraftNarrations;
+  GActiveFormSection _activeSection = GActiveFormSection.DraftRecitations;
   int _narrationsPageNumber = 1;
   int _uploadsPageNumber = 1;
   int _pageSize = 20;
-  PaginatedItemsResponseModel<PoemNarrationViewModel> _narrations =
-      PaginatedItemsResponseModel<PoemNarrationViewModel>(items: []);
+  PaginatedItemsResponseModel<RecitationViewModel> _narrations =
+      PaginatedItemsResponseModel<RecitationViewModel>(items: []);
   PaginatedItemsResponseModel<UploadedItemViewModel> _uploads =
       PaginatedItemsResponseModel<UploadedItemViewModel>(items: []);
-  PaginatedItemsResponseModel<UserNarrationProfileViewModel> _profiles =
-      PaginatedItemsResponseModel<UserNarrationProfileViewModel>(items: []);
+  PaginatedItemsResponseModel<UserRecitationProfileViewModel> _profiles =
+      PaginatedItemsResponseModel<UserRecitationProfileViewModel>(items: []);
   String get title {
     switch (_activeSection) {
-      case NarrationsActiveFormSection.Uploads:
+      case GActiveFormSection.Uploads:
         return 'پیشخان خوانشگران گنجور » بارگذاری‌های من';
-      case NarrationsActiveFormSection.Profiles:
+      case GActiveFormSection.Profiles:
         return 'پیشخان خوانشگران گنجور » نمایه‌های من';
-      case NarrationsActiveFormSection.DraftNarrations:
+      case GActiveFormSection.DraftRecitations:
         return 'پیشخان خوانشگران گنجور » خوانش‌های پیش‌نویس من';
-      case NarrationsActiveFormSection.AllMyNarrations:
+      case GActiveFormSection.AllMyRecitations:
         return 'پیشخان خوانشگران گنجور » همهٔ خوانش‌های من';
-      case NarrationsActiveFormSection.AllUsersPendingNarrations:
+      case GActiveFormSection.AllUsersPendingRecitations:
         return 'پیشخان خوانشگران گنجور » خوانش‌های در انتظار تأیید';
     }
     return '';
@@ -67,14 +65,13 @@ class NarrationWidgetState extends State<MainForm>
     setState(() {
       _isLoading = true;
     });
-    var narrations = await NarrationService().getNarrations(
+    var narrations = await RecitationService().getNarrations(
         _narrationsPageNumber,
         _pageSize,
-        _activeSection == NarrationsActiveFormSection.AllUsersPendingNarrations,
-        _activeSection == NarrationsActiveFormSection.AllMyNarrations
+        _activeSection == GActiveFormSection.AllUsersPendingRecitations,
+        _activeSection == GActiveFormSection.AllMyRecitations
             ? -1
-            : _activeSection ==
-                    NarrationsActiveFormSection.AllUsersPendingNarrations
+            : _activeSection == GActiveFormSection.AllUsersPendingRecitations
                 ? 1
                 : 0,
         false);
@@ -99,7 +96,7 @@ class NarrationWidgetState extends State<MainForm>
     setState(() {
       _isLoading = true;
     });
-    var uploads = await NarrationService()
+    var uploads = await RecitationService()
         .getUploads(_uploadsPageNumber, _pageSize, false);
 
     if (uploads.error.isEmpty) {
@@ -123,7 +120,7 @@ class NarrationWidgetState extends State<MainForm>
     setState(() {
       _isLoading = true;
     });
-    var profiles = await NarrationService().getProfiles(false);
+    var profiles = await RecitationService().getProfiles(false);
 
     if (profiles.item2.isEmpty) {
       setState(() {
@@ -143,15 +140,15 @@ class NarrationWidgetState extends State<MainForm>
 
   Future<void> _loadData() async {
     switch (_activeSection) {
-      case NarrationsActiveFormSection.DraftNarrations:
-      case NarrationsActiveFormSection.AllMyNarrations:
-      case NarrationsActiveFormSection.AllUsersPendingNarrations:
+      case GActiveFormSection.DraftRecitations:
+      case GActiveFormSection.AllMyRecitations:
+      case GActiveFormSection.AllUsersPendingRecitations:
         await _loadNarrationsData();
         break;
-      case NarrationsActiveFormSection.Uploads:
+      case GActiveFormSection.Uploads:
         await _loadUploadsData();
         break;
-      case NarrationsActiveFormSection.Profiles:
+      case GActiveFormSection.Profiles:
         await _loadProfilesData();
         break;
     }
@@ -180,13 +177,13 @@ class NarrationWidgetState extends State<MainForm>
     ));
   }
 
-  Future<UserNarrationProfileViewModel> _newProfile() async {
-    return showDialog<UserNarrationProfileViewModel>(
+  Future<UserRecitationProfileViewModel> _newProfile() async {
+    return showDialog<UserRecitationProfileViewModel>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         ProfileEdit _profileEdit = ProfileEdit(
-            profile: UserNarrationProfileViewModel(
+            profile: UserRecitationProfileViewModel(
                 id: '00000000-0000-0000-0000-000000000000',
                 name: '',
                 artistName: '',
@@ -246,7 +243,7 @@ class NarrationWidgetState extends State<MainForm>
       });
 
       String err =
-          await UploadNarrationService().uploadFiles(result.files, false);
+          await UploadRecitationService().uploadFiles(result.files, false);
 
       if (err.isNotEmpty) {
         _key.currentState.showSnackBar(SnackBar(
@@ -263,27 +260,26 @@ class NarrationWidgetState extends State<MainForm>
 
   Widget get items {
     switch (_activeSection) {
-      case NarrationsActiveFormSection.DraftNarrations:
-      case NarrationsActiveFormSection.AllMyNarrations:
-      case NarrationsActiveFormSection.AllUsersPendingNarrations:
-      case NarrationsActiveFormSection.DraftNarrations:
-        return NarrationsDataSection(
+      case GActiveFormSection.DraftRecitations:
+      case GActiveFormSection.AllMyRecitations:
+      case GActiveFormSection.AllUsersPendingRecitations:
+      case GActiveFormSection.DraftRecitations:
+        return RecitationsDataSection(
           narrations: _narrations,
           loadingStateChanged: _loadingStateChanged,
           snackbarNeeded: _snackbarNeeded,
-          status: _activeSection == NarrationsActiveFormSection.DraftNarrations
+          status: _activeSection == GActiveFormSection.DraftRecitations
               ? 0
-              : _activeSection ==
-                      NarrationsActiveFormSection.AllUsersPendingNarrations
+              : _activeSection == GActiveFormSection.AllUsersPendingRecitations
                   ? 1
                   : -1,
         );
-      case NarrationsActiveFormSection.Profiles:
+      case GActiveFormSection.Profiles:
         return ProfilesDataSection(
             profiles: _profiles,
             loadingStateChanged: _loadingStateChanged,
             snackbarNeeded: _snackbarNeeded);
-      case NarrationsActiveFormSection.Uploads:
+      case GActiveFormSection.Uploads:
       default:
         return UploadsDataSection(uploads: _uploads);
     }
@@ -303,8 +299,7 @@ class NarrationWidgetState extends State<MainForm>
                       icon: Icon(Icons.check_box),
                       tooltip: 'علامتگذاری همه',
                       onPressed: () {
-                        if (_activeSection ==
-                            NarrationsActiveFormSection.Profiles) {
+                        if (_activeSection == GActiveFormSection.Profiles) {
                           for (var item in _profiles.items) {
                             setState(() {
                               item.isMarked = true;
@@ -322,8 +317,7 @@ class NarrationWidgetState extends State<MainForm>
                       icon: Icon(Icons.check_box_outline_blank),
                       tooltip: 'برداشتن علامت همه',
                       onPressed: () {
-                        if (_activeSection ==
-                            NarrationsActiveFormSection.Profiles) {
+                        if (_activeSection == GActiveFormSection.Profiles) {
                           for (var item in _profiles.items) {
                             setState(() {
                               item.isMarked = false;
@@ -362,7 +356,7 @@ class NarrationWidgetState extends State<MainForm>
                                   '» اطمینان دارید؟';
                           if (await _confirm('تأییدیه', confirmation)) {
                             for (var item in markedProfiles) {
-                              var delRes = await NarrationService()
+                              var delRes = await RecitationService()
                                   .deleteProfile(item.id, false);
                               if (delRes.item2.isNotEmpty) {
                                 _key.currentState.showSnackBar(SnackBar(
@@ -382,8 +376,7 @@ class NarrationWidgetState extends State<MainForm>
                           }
                         },
                       ),
-                      visible: _activeSection ==
-                          NarrationsActiveFormSection.Profiles),
+                      visible: _activeSection == GActiveFormSection.Profiles),
                   Visibility(
                       child: IconButton(
                         icon: Icon(Icons.publish),
@@ -413,7 +406,7 @@ class NarrationWidgetState extends State<MainForm>
                             });
                             for (var item in markedNarrations) {
                               item.reviewStatus = 1;
-                              var updateRes = await NarrationService()
+                              var updateRes = await RecitationService()
                                   .updateNarration(item, false);
                               if (updateRes.item2.isNotEmpty) {
                                 _key.currentState.showSnackBar(SnackBar(
@@ -437,7 +430,7 @@ class NarrationWidgetState extends State<MainForm>
                         },
                       ),
                       visible: _activeSection ==
-                              NarrationsActiveFormSection.DraftNarrations &&
+                              GActiveFormSection.DraftRecitations &&
                           !_canModerate),
                   Visibility(
                       child: IconButton(
@@ -468,10 +461,10 @@ class NarrationWidgetState extends State<MainForm>
                             });
                             for (var item in markedNarrations) {
                               item.reviewStatus = 1;
-                              var updateRes = await NarrationService()
+                              var updateRes = await RecitationService()
                                   .moderateNarration(
                                       item.id,
-                                      PoemNarrationModerationResult.Approve,
+                                      RecitationModerationResult.Approve,
                                       '',
                                       false);
                               if (updateRes.item2.isNotEmpty) {
@@ -496,11 +489,10 @@ class NarrationWidgetState extends State<MainForm>
                         },
                       ),
                       visible: (_activeSection ==
-                                  NarrationsActiveFormSection.DraftNarrations &&
+                                  GActiveFormSection.DraftRecitations &&
                               _canModerate) ||
                           _activeSection ==
-                              NarrationsActiveFormSection
-                                  .AllUsersPendingNarrations)
+                              GActiveFormSection.AllUsersPendingRecitations)
                 ],
               ),
               drawer: Drawer(
@@ -524,16 +516,16 @@ class NarrationWidgetState extends State<MainForm>
                       title: Text('خوانش‌های پیش‌نویس من'),
                       leading: Icon(Icons.music_note,
                           color: Theme.of(context).primaryColor),
-                      selected: _activeSection ==
-                          NarrationsActiveFormSection.DraftNarrations,
+                      selected:
+                          _activeSection == GActiveFormSection.DraftRecitations,
                       onTap: () async {
                         if (_activeSection !=
-                            NarrationsActiveFormSection.DraftNarrations) {
+                            GActiveFormSection.DraftRecitations) {
                           setState(() {
                             _narrations.items.clear();
                             _narrationsPageNumber = 1;
                             _activeSection =
-                                NarrationsActiveFormSection.DraftNarrations;
+                                GActiveFormSection.DraftRecitations;
                           });
                           await _loadData();
 
@@ -545,14 +537,11 @@ class NarrationWidgetState extends State<MainForm>
                       title: Text('بارگذاری‌های من'),
                       leading: Icon(Icons.upload_file,
                           color: Theme.of(context).primaryColor),
-                      selected:
-                          _activeSection == NarrationsActiveFormSection.Uploads,
+                      selected: _activeSection == GActiveFormSection.Uploads,
                       onTap: () async {
-                        if (_activeSection !=
-                            NarrationsActiveFormSection.Uploads) {
+                        if (_activeSection != GActiveFormSection.Uploads) {
                           setState(() {
-                            _activeSection =
-                                NarrationsActiveFormSection.Uploads;
+                            _activeSection = GActiveFormSection.Uploads;
                           });
                           if (_uploads.items.length == 0) {
                             await _loadData();
@@ -566,16 +555,16 @@ class NarrationWidgetState extends State<MainForm>
                       title: Text('همهٔ خوانش‌های من'),
                       leading: Icon(Icons.music_note,
                           color: Theme.of(context).primaryColor),
-                      selected: _activeSection ==
-                          NarrationsActiveFormSection.AllMyNarrations,
+                      selected:
+                          _activeSection == GActiveFormSection.AllMyRecitations,
                       onTap: () async {
                         if (_activeSection !=
-                            NarrationsActiveFormSection.AllMyNarrations) {
+                            GActiveFormSection.AllMyRecitations) {
                           setState(() {
                             _narrationsPageNumber = 1;
                             _narrations.items.clear();
                             _activeSection =
-                                NarrationsActiveFormSection.AllMyNarrations;
+                                GActiveFormSection.AllMyRecitations;
                           });
                           await _loadData();
 
@@ -589,17 +578,15 @@ class NarrationWidgetState extends State<MainForm>
                           leading: Icon(Icons.music_note,
                               color: Theme.of(context).primaryColor),
                           selected: _activeSection ==
-                              NarrationsActiveFormSection
-                                  .AllUsersPendingNarrations,
+                              GActiveFormSection.AllUsersPendingRecitations,
                           onTap: () async {
                             if (_activeSection !=
-                                NarrationsActiveFormSection
-                                    .AllUsersPendingNarrations) {
+                                GActiveFormSection.AllUsersPendingRecitations) {
                               setState(() {
                                 _narrationsPageNumber = 1;
                                 _narrations.items.clear();
-                                _activeSection = NarrationsActiveFormSection
-                                    .AllUsersPendingNarrations;
+                                _activeSection = GActiveFormSection
+                                    .AllUsersPendingRecitations;
                               });
                               await _loadData();
 
@@ -612,14 +599,11 @@ class NarrationWidgetState extends State<MainForm>
                       title: Text('نمایه‌های من'),
                       leading: Icon(Icons.people,
                           color: Theme.of(context).primaryColor),
-                      selected: _activeSection ==
-                          NarrationsActiveFormSection.Profiles,
+                      selected: _activeSection == GActiveFormSection.Profiles,
                       onTap: () async {
-                        if (_activeSection !=
-                            NarrationsActiveFormSection.Profiles) {
+                        if (_activeSection != GActiveFormSection.Profiles) {
                           setState(() {
-                            _activeSection =
-                                NarrationsActiveFormSection.Profiles;
+                            _activeSection = GActiveFormSection.Profiles;
                           });
                           if (_profiles.items.length == 0) {
                             await _loadData();
@@ -662,12 +646,10 @@ class NarrationWidgetState extends State<MainForm>
                                     scrollInfo.metrics.maxScrollExtent) {
                               setState(() {
                                 switch (_activeSection) {
-                                  case NarrationsActiveFormSection
-                                      .DraftNarrations:
-                                  case NarrationsActiveFormSection
-                                      .AllMyNarrations:
-                                  case NarrationsActiveFormSection
-                                      .AllUsersPendingNarrations:
+                                  case GActiveFormSection.DraftRecitations:
+                                  case GActiveFormSection.AllMyRecitations:
+                                  case GActiveFormSection
+                                      .AllUsersPendingRecitations:
                                     _narrationsPageNumber =
                                         _narrations.paginationMetadata == null
                                             ? 1
@@ -675,7 +657,7 @@ class NarrationWidgetState extends State<MainForm>
                                                     .currentPage +
                                                 1;
                                     break;
-                                  case NarrationsActiveFormSection.Uploads:
+                                  case GActiveFormSection.Uploads:
                                     _uploadsPageNumber =
                                         _uploads.paginationMetadata == null
                                             ? 1
@@ -683,7 +665,7 @@ class NarrationWidgetState extends State<MainForm>
                                                     .currentPage +
                                                 1;
                                     break;
-                                  case NarrationsActiveFormSection.Profiles:
+                                  case GActiveFormSection.Profiles:
                                     //do nothing
                                     break;
                                 }
@@ -696,24 +678,23 @@ class NarrationWidgetState extends State<MainForm>
               floatingActionButton: FloatingActionButton(
                 onPressed: () async {
                   switch (_activeSection) {
-                    case NarrationsActiveFormSection.DraftNarrations:
-                    case NarrationsActiveFormSection.AllMyNarrations:
-                    case NarrationsActiveFormSection.AllUsersPendingNarrations:
-                    case NarrationsActiveFormSection.Uploads:
+                    case GActiveFormSection.DraftRecitations:
+                    case GActiveFormSection.AllMyRecitations:
+                    case GActiveFormSection.AllUsersPendingRecitations:
+                    case GActiveFormSection.Uploads:
                       await _newNarrations();
-                      if (_activeSection ==
-                          NarrationsActiveFormSection.Uploads) {
+                      if (_activeSection == GActiveFormSection.Uploads) {
                         await _loadData();
                       }
                       break;
-                    case NarrationsActiveFormSection.Profiles:
+                    case GActiveFormSection.Profiles:
                       var result = await _newProfile();
                       if (result != null) {
                         setState(() {
                           _isLoading = true;
                         });
                         var serviceResult =
-                            await NarrationService().addProfile(result, false);
+                            await RecitationService().addProfile(result, false);
                         setState(() {
                           _isLoading = false;
                         });
@@ -738,7 +719,7 @@ class NarrationWidgetState extends State<MainForm>
                   }
                 },
                 child: Icon(Icons.add),
-                tooltip: _activeSection == NarrationsActiveFormSection.Profiles
+                tooltip: _activeSection == GActiveFormSection.Profiles
                     ? 'ایجاد نمایهٔ جدید'
                     : 'ارسال خوانش‌های جدید',
               ),

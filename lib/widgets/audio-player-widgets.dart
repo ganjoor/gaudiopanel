@@ -1,13 +1,13 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:gaudiopanel/models/narration/poem-narration-viewmodel.dart';
-import 'package:gaudiopanel/services/narration-service.dart';
+import 'package:gaudiopanel/models/recitation/recitation-viewmodel.dart';
+import 'package:gaudiopanel/services/recitation-service.dart';
 import 'package:just_audio/just_audio.dart';
 
 class ControlButtons extends StatelessWidget {
   final AudioPlayer player;
-  final PoemNarrationViewModel narration;
+  final RecitationViewModel narration;
 
   ControlButtons(this.player, this.narration);
 
@@ -49,7 +49,7 @@ class ControlButtons extends StatelessWidget {
                 icon: Icon(Icons.play_arrow),
                 iconSize: 64.0,
                 onPressed: () async {
-                  var service = NarrationService();
+                  var service = RecitationService();
                   if (this.narration.verses == null) {
                     this.narration.verses =
                         (await service.getVerses(this.narration.id, false))

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
-import 'package:gaudiopanel/models/narration/uploaded-item-viewmodel.dart';
+import 'package:gaudiopanel/models/recitation/uploaded-item-viewmodel.dart';
 
 class UploadsDataSection extends StatefulWidget {
   final PaginatedItemsResponseModel<UploadedItemViewModel> uploads;

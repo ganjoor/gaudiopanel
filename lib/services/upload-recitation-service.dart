@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:gaudiopanel/services/gservice-address.dart';
 
-class UploadNarrationService {
+class UploadRecitationService {
   Future<String> uploadFiles(List<PlatformFile> files, bool error401) async {
     try {
       LoggedOnUserModel userInfo = await StorageService().userInfo;

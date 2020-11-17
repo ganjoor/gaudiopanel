@@ -3,24 +3,23 @@ import 'dart:io';
 
 import 'package:gaudiopanel/models/auth/logged-on-user-model.dart';
 import 'package:gaudiopanel/models/common/pagination-metadata.dart';
-import 'package:gaudiopanel/models/narration/narration-verse-sync.dart';
-import 'package:gaudiopanel/models/narration/poem-narration-moderate-viewModel.dart';
-import 'package:gaudiopanel/models/narration/poem-narration-viewmodel.dart';
+import 'package:gaudiopanel/models/recitation/recitation-verse-sync.dart';
+import 'package:gaudiopanel/models/recitation/recitation-viewmodel.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
-import 'package:gaudiopanel/models/narration/uploaded-item-viewmodel.dart';
-import 'package:gaudiopanel/models/narration/user-narration-profile-viewmodel.dart';
+import 'package:gaudiopanel/models/recitation/uploaded-item-viewmodel.dart';
+import 'package:gaudiopanel/models/recitation/user-recitation-profile-viewmodel.dart';
 import 'package:gaudiopanel/services/auth-service.dart';
 import 'package:gaudiopanel/services/gservice-address.dart';
 import 'package:gaudiopanel/services/storage-service.dart';
 import 'package:http/http.dart' as http;
 import 'package:tuple/tuple.dart';
 
-class NarrationService {
+class RecitationService {
   final StorageService _storageService = StorageService();
 
   /// Get Narrations
   ///
-  Future<PaginatedItemsResponseModel<PoemNarrationViewModel>> getNarrations(
+  Future<PaginatedItemsResponseModel<RecitationViewModel>> getNarrations(
       int pageNumber,
       int pageSize,
       bool allUsers,
@@ -29,7 +28,7 @@ class NarrationService {
     try {
       LoggedOnUserModel userInfo = await _storageService.userInfo;
       if (userInfo == null) {
-        return PaginatedItemsResponseModel<PoemNarrationViewModel>(
+        return PaginatedItemsResponseModel<RecitationViewModel>(
             error: 'کاربر وارد سیستم نشده است.');
       }
       var apiRoot = GServiceAddress.Url;
@@ -43,33 +42,33 @@ class NarrationService {
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
         if (errSessionRenewal.isNotEmpty) {
-          return PaginatedItemsResponseModel<PoemNarrationViewModel>(
+          return PaginatedItemsResponseModel<RecitationViewModel>(
               error: errSessionRenewal);
         }
         return await getNarrations(
             pageNumber, pageSize, allUsers, status, true);
       }
 
-      List<PoemNarrationViewModel> ret = [];
+      List<RecitationViewModel> ret = [];
       if (response.statusCode == 200) {
         List<dynamic> items = json.decode(response.body);
         for (var item in items) {
-          ret.add(PoemNarrationViewModel.fromJson(item));
+          ret.add(RecitationViewModel.fromJson(item));
         }
-        return PaginatedItemsResponseModel<PoemNarrationViewModel>(
+        return PaginatedItemsResponseModel<RecitationViewModel>(
             items: ret,
             paginationMetadata: PaginationMetadata.fromJson(
                 json.decode(response.headers['paging-headers'])),
             error: '');
       } else {
-        return PaginatedItemsResponseModel<PoemNarrationViewModel>(
+        return PaginatedItemsResponseModel<RecitationViewModel>(
             error: 'کد برگشتی: ' +
                 response.statusCode.toString() +
                 ' ' +
                 response.body);
       }
     } catch (e) {
-      return PaginatedItemsResponseModel<PoemNarrationViewModel>(
+      return PaginatedItemsResponseModel<RecitationViewModel>(
           error: 'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
               e.toString());
     }
@@ -78,12 +77,12 @@ class NarrationService {
   /// updates an existing narration
   ///
   ///
-  Future<Tuple2<PoemNarrationViewModel, String>> updateNarration(
-      PoemNarrationViewModel narration, bool error401) async {
+  Future<Tuple2<RecitationViewModel, String>> updateNarration(
+      RecitationViewModel narration, bool error401) async {
     try {
       LoggedOnUserModel userInfo = await _storageService.userInfo;
       if (userInfo == null) {
-        return Tuple2<PoemNarrationViewModel, String>(
+        return Tuple2<RecitationViewModel, String>(
             null, 'کاربر وارد سیستم نشده است.');
       }
       var apiRoot = GServiceAddress.Url;
@@ -98,19 +97,18 @@ class NarrationService {
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
         if (errSessionRenewal.isNotEmpty) {
-          return Tuple2<PoemNarrationViewModel, String>(
-              null, errSessionRenewal);
+          return Tuple2<RecitationViewModel, String>(null, errSessionRenewal);
         }
         return await updateNarration(narration, true);
       }
 
       if (response.statusCode == 200) {
-        PoemNarrationViewModel ret =
-            PoemNarrationViewModel.fromJson(json.decode(response.body));
+        RecitationViewModel ret =
+            RecitationViewModel.fromJson(json.decode(response.body));
 
-        return Tuple2<PoemNarrationViewModel, String>(ret, '');
+        return Tuple2<RecitationViewModel, String>(ret, '');
       } else {
-        return Tuple2<PoemNarrationViewModel, String>(
+        return Tuple2<RecitationViewModel, String>(
             null,
             'کد برگشتی: ' +
                 response.statusCode.toString() +
@@ -118,7 +116,7 @@ class NarrationService {
                 response.body);
       }
     } catch (e) {
-      return Tuple2<PoemNarrationViewModel, String>(
+      return Tuple2<RecitationViewModel, String>(
           null,
           'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
               e.toString());
@@ -128,22 +126,22 @@ class NarrationService {
   ///moderate narration
   ///
   ///
-  Future<Tuple2<PoemNarrationViewModel, String>> moderateNarration(int id,
-      PoemNarrationModerationResult res, String message, bool error401) async {
+  Future<Tuple2<RecitationViewModel, String>> moderateNarration(int id,
+      RecitationModerationResult res, String message, bool error401) async {
     try {
       LoggedOnUserModel userInfo = await _storageService.userInfo;
       if (userInfo == null) {
-        return Tuple2<PoemNarrationViewModel, String>(
+        return Tuple2<RecitationViewModel, String>(
             null, 'کاربر وارد سیستم نشده است.');
       }
 
-      int mres = res == PoemNarrationModerationResult.MetadataNeedsFixation
+      int mres = res == RecitationModerationResult.MetadataNeedsFixation
           ? 0
-          : res == PoemNarrationModerationResult.Approve
+          : res == RecitationModerationResult.Approve
               ? 1
               : 2;
-      PoemNarrationModerateViewModel model =
-          PoemNarrationModerateViewModel(result: mres, message: message);
+      RecitationModerateViewModel model =
+          RecitationModerateViewModel(result: mres, message: message);
       var apiRoot = GServiceAddress.Url;
       http.Response response = await http.put('$apiRoot/api/audio/moderate/$id',
           headers: {
@@ -155,19 +153,18 @@ class NarrationService {
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
         if (errSessionRenewal.isNotEmpty) {
-          return Tuple2<PoemNarrationViewModel, String>(
-              null, errSessionRenewal);
+          return Tuple2<RecitationViewModel, String>(null, errSessionRenewal);
         }
         return await moderateNarration(id, res, message, true);
       }
 
       if (response.statusCode == 200) {
-        PoemNarrationViewModel ret =
-            PoemNarrationViewModel.fromJson(json.decode(response.body));
+        RecitationViewModel ret =
+            RecitationViewModel.fromJson(json.decode(response.body));
 
-        return Tuple2<PoemNarrationViewModel, String>(ret, '');
+        return Tuple2<RecitationViewModel, String>(ret, '');
       } else {
-        return Tuple2<PoemNarrationViewModel, String>(
+        return Tuple2<RecitationViewModel, String>(
             null,
             'کد برگشتی: ' +
                 response.statusCode.toString() +
@@ -175,7 +172,7 @@ class NarrationService {
                 response.body);
       }
     } catch (e) {
-      return Tuple2<PoemNarrationViewModel, String>(
+      return Tuple2<RecitationViewModel, String>(
           null,
           'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
               e.toString());
@@ -186,12 +183,12 @@ class NarrationService {
   ///
   ///returns a Tuple2, if any error occurs Items1 is null and Item2 contains the error message
   ///Items1 is the actual response if the call is successful
-  Future<Tuple2<List<UserNarrationProfileViewModel>, String>> getProfiles(
+  Future<Tuple2<List<UserRecitationProfileViewModel>, String>> getProfiles(
       bool error401) async {
     try {
       LoggedOnUserModel userInfo = await _storageService.userInfo;
       if (userInfo == null) {
-        return Tuple2<List<UserNarrationProfileViewModel>, String>(
+        return Tuple2<List<UserRecitationProfileViewModel>, String>(
             null, 'کاربر وارد سیستم نشده است.');
       }
       var apiRoot = GServiceAddress.Url;
@@ -204,21 +201,21 @@ class NarrationService {
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
         if (errSessionRenewal.isNotEmpty) {
-          return Tuple2<List<UserNarrationProfileViewModel>, String>(
+          return Tuple2<List<UserRecitationProfileViewModel>, String>(
               null, errSessionRenewal);
         }
         return await getProfiles(true);
       }
 
-      List<UserNarrationProfileViewModel> ret = [];
+      List<UserRecitationProfileViewModel> ret = [];
       if (response.statusCode == 200) {
         List<dynamic> items = json.decode(response.body);
         for (var item in items) {
-          ret.add(UserNarrationProfileViewModel.fromJson(item));
+          ret.add(UserRecitationProfileViewModel.fromJson(item));
         }
-        return Tuple2<List<UserNarrationProfileViewModel>, String>(ret, '');
+        return Tuple2<List<UserRecitationProfileViewModel>, String>(ret, '');
       } else {
-        return Tuple2<List<UserNarrationProfileViewModel>, String>(
+        return Tuple2<List<UserRecitationProfileViewModel>, String>(
             null,
             'کد برگشتی: ' +
                 response.statusCode.toString() +
@@ -226,7 +223,7 @@ class NarrationService {
                 response.body);
       }
     } catch (e) {
-      return Tuple2<List<UserNarrationProfileViewModel>, String>(
+      return Tuple2<List<UserRecitationProfileViewModel>, String>(
           null,
           'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
               e.toString());
@@ -236,12 +233,12 @@ class NarrationService {
   /// adds a new profile
   ///
   ///
-  Future<Tuple2<UserNarrationProfileViewModel, String>> addProfile(
-      UserNarrationProfileViewModel profile, bool error401) async {
+  Future<Tuple2<UserRecitationProfileViewModel, String>> addProfile(
+      UserRecitationProfileViewModel profile, bool error401) async {
     try {
       LoggedOnUserModel userInfo = await _storageService.userInfo;
       if (userInfo == null) {
-        return Tuple2<UserNarrationProfileViewModel, String>(
+        return Tuple2<UserRecitationProfileViewModel, String>(
             null, 'کاربر وارد سیستم نشده است.');
       }
       var apiRoot = GServiceAddress.Url;
@@ -255,19 +252,19 @@ class NarrationService {
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
         if (errSessionRenewal.isNotEmpty) {
-          return Tuple2<UserNarrationProfileViewModel, String>(
+          return Tuple2<UserRecitationProfileViewModel, String>(
               null, errSessionRenewal);
         }
         return await addProfile(profile, true);
       }
 
       if (response.statusCode == 200) {
-        UserNarrationProfileViewModel ret =
-            UserNarrationProfileViewModel.fromJson(json.decode(response.body));
+        UserRecitationProfileViewModel ret =
+            UserRecitationProfileViewModel.fromJson(json.decode(response.body));
 
-        return Tuple2<UserNarrationProfileViewModel, String>(ret, '');
+        return Tuple2<UserRecitationProfileViewModel, String>(ret, '');
       } else {
-        return Tuple2<UserNarrationProfileViewModel, String>(
+        return Tuple2<UserRecitationProfileViewModel, String>(
             null,
             'کد برگشتی: ' +
                 response.statusCode.toString() +
@@ -275,7 +272,7 @@ class NarrationService {
                 response.body);
       }
     } catch (e) {
-      return Tuple2<UserNarrationProfileViewModel, String>(
+      return Tuple2<UserRecitationProfileViewModel, String>(
           null,
           'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
               e.toString());
@@ -285,12 +282,12 @@ class NarrationService {
   /// updates an existing profile
   ///
   ///
-  Future<Tuple2<UserNarrationProfileViewModel, String>> updateProfile(
-      UserNarrationProfileViewModel profile, bool error401) async {
+  Future<Tuple2<UserRecitationProfileViewModel, String>> updateProfile(
+      UserRecitationProfileViewModel profile, bool error401) async {
     try {
       LoggedOnUserModel userInfo = await _storageService.userInfo;
       if (userInfo == null) {
-        return Tuple2<UserNarrationProfileViewModel, String>(
+        return Tuple2<UserRecitationProfileViewModel, String>(
             null, 'کاربر وارد سیستم نشده است.');
       }
       var apiRoot = GServiceAddress.Url;
@@ -304,19 +301,19 @@ class NarrationService {
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
         if (errSessionRenewal.isNotEmpty) {
-          return Tuple2<UserNarrationProfileViewModel, String>(
+          return Tuple2<UserRecitationProfileViewModel, String>(
               null, errSessionRenewal);
         }
         return await updateProfile(profile, true);
       }
 
       if (response.statusCode == 200) {
-        UserNarrationProfileViewModel ret =
-            UserNarrationProfileViewModel.fromJson(json.decode(response.body));
+        UserRecitationProfileViewModel ret =
+            UserRecitationProfileViewModel.fromJson(json.decode(response.body));
 
-        return Tuple2<UserNarrationProfileViewModel, String>(ret, '');
+        return Tuple2<UserRecitationProfileViewModel, String>(ret, '');
       } else {
-        return Tuple2<UserNarrationProfileViewModel, String>(
+        return Tuple2<UserRecitationProfileViewModel, String>(
             null,
             'کد برگشتی: ' +
                 response.statusCode.toString() +
@@ -324,7 +321,7 @@ class NarrationService {
                 response.body);
       }
     } catch (e) {
-      return Tuple2<UserNarrationProfileViewModel, String>(
+      return Tuple2<UserRecitationProfileViewModel, String>(
           null,
           'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
               e.toString());
@@ -428,12 +425,12 @@ class NarrationService {
     }
   }
 
-  Future<Tuple2<List<NarrationVerseSync>, String>> getVerses(
+  Future<Tuple2<List<RecitationVerseSync>, String>> getVerses(
       int id, bool error401) async {
     try {
       LoggedOnUserModel userInfo = await _storageService.userInfo;
       if (userInfo == null) {
-        return Tuple2<List<NarrationVerseSync>, String>(
+        return Tuple2<List<RecitationVerseSync>, String>(
             null, 'کاربر وارد سیستم نشده است.');
       }
       var apiRoot = GServiceAddress.Url;
@@ -446,21 +443,21 @@ class NarrationService {
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
         if (errSessionRenewal.isNotEmpty) {
-          return Tuple2<List<NarrationVerseSync>, String>(
+          return Tuple2<List<RecitationVerseSync>, String>(
               null, errSessionRenewal);
         }
         return await getVerses(id, true);
       }
 
-      List<NarrationVerseSync> ret = [];
+      List<RecitationVerseSync> ret = [];
       if (response.statusCode == 200) {
         List<dynamic> items = json.decode(response.body);
         for (var item in items) {
-          ret.add(NarrationVerseSync.fromJson(item));
+          ret.add(RecitationVerseSync.fromJson(item));
         }
-        return Tuple2<List<NarrationVerseSync>, String>(ret, '');
+        return Tuple2<List<RecitationVerseSync>, String>(ret, '');
       } else {
-        return Tuple2<List<NarrationVerseSync>, String>(
+        return Tuple2<List<RecitationVerseSync>, String>(
             null,
             'کد برگشتی: ' +
                 response.statusCode.toString() +
@@ -468,7 +465,7 @@ class NarrationService {
                 response.body);
       }
     } catch (e) {
-      return Tuple2<List<NarrationVerseSync>, String>(
+      return Tuple2<List<RecitationVerseSync>, String>(
           null,
           'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
               e.toString());

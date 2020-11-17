@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:gaudiopanel/models/narration/user-narration-profile-viewmodel.dart';
+import 'package:gaudiopanel/models/recitation/user-recitation-profile-viewmodel.dart';
 
 class ProfileEdit extends StatefulWidget {
-  final UserNarrationProfileViewModel profile;
+  final UserRecitationProfileViewModel profile;
 
   const ProfileEdit({Key key, this.profile}) : super(key: key);
 
@@ -11,7 +11,7 @@ class ProfileEdit extends StatefulWidget {
 }
 
 class _ProfileEditState extends State<ProfileEdit> {
-  final UserNarrationProfileViewModel profile;
+  final UserRecitationProfileViewModel profile;
 
   _ProfileEditState(this.profile);
 

@@ -1,5 +1,24 @@
 import 'package:gaudiopanel/models/auth/public-rapp-user.dart';
-import 'package:gaudiopanel/models/narration/narration-verse-sync.dart';
+import 'package:gaudiopanel/models/recitation/recitation-verse-sync.dart';
+
+enum RecitationModerationResult { MetadataNeedsFixation, Approve, Reject }
+
+class RecitationModerateViewModel {
+  /// MetadataNeedsFixation = 0
+  /// Approve = 1
+  /// Reject = 2
+  final int result;
+  final String message;
+
+  RecitationModerateViewModel({this.result, this.message});
+
+  toJson() {
+    Map<String, dynamic> m = new Map();
+    m['result'] = result;
+    m['message'] = message;
+    return m;
+  }
+}
 
 class AudioReviewStatus {
   static const int draft = 0;
@@ -23,7 +42,7 @@ class AudioReviewStatus {
   }
 }
 
-class PoemNarrationViewModel {
+class RecitationViewModel {
   bool isMarked = false;
   bool isModified = false;
   final int id;
@@ -43,9 +62,9 @@ class PoemNarrationViewModel {
   final String uploadDate;
   final List<int> audioSyncStatusArray;
   int reviewStatus;
-  List<NarrationVerseSync> verses;
+  List<RecitationVerseSync> verses;
 
-  PoemNarrationViewModel(
+  RecitationViewModel(
       {this.id,
       this.owner,
       this.ganjoorAudioId,
@@ -64,11 +83,11 @@ class PoemNarrationViewModel {
       this.audioSyncStatusArray,
       this.reviewStatus});
 
-  factory PoemNarrationViewModel.fromJson(Map<String, dynamic> json) {
+  factory RecitationViewModel.fromJson(Map<String, dynamic> json) {
     if (json == null) {
       return null;
     }
-    return PoemNarrationViewModel(
+    return RecitationViewModel(
         id: json['id'],
         owner: PublicRAppUser.fromJson(json['owner']),
         ganjoorAudioId: json['ganjoorAudioId'],

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:gaudiopanel/callbacks/g-ui-callbacks.dart';
 import 'package:gaudiopanel/forms/profile-edit.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
-import 'package:gaudiopanel/models/narration/user-narration-profile-viewmodel.dart';
-import 'package:gaudiopanel/services/narration-service.dart';
+import 'package:gaudiopanel/models/recitation/user-recitation-profile-viewmodel.dart';
+import 'package:gaudiopanel/services/recitation-service.dart';
 
 class ProfilesDataSection extends StatefulWidget {
-  final PaginatedItemsResponseModel<UserNarrationProfileViewModel> profiles;
+  final PaginatedItemsResponseModel<UserRecitationProfileViewModel> profiles;
   final LoadingStateChanged loadingStateChanged;
   final SnackbarNeeded snackbarNeeded;
 
@@ -20,16 +20,16 @@ class ProfilesDataSection extends StatefulWidget {
 }
 
 class _ProfilesState extends State<ProfilesDataSection> {
-  final PaginatedItemsResponseModel<UserNarrationProfileViewModel> profiles;
+  final PaginatedItemsResponseModel<UserRecitationProfileViewModel> profiles;
   final LoadingStateChanged loadingStateChanged;
   final SnackbarNeeded snackbarNeeded;
   _ProfilesState(this.profiles, this.loadingStateChanged, this.snackbarNeeded);
 
-  Future<UserNarrationProfileViewModel> _edit(
-      UserNarrationProfileViewModel profile) async {
+  Future<UserRecitationProfileViewModel> _edit(
+      UserRecitationProfileViewModel profile) async {
     bool _isNew = profile == null;
     if (profile == null) {
-      profile = UserNarrationProfileViewModel(
+      profile = UserRecitationProfileViewModel(
           name: '',
           artistName: '',
           artistUrl: '',
@@ -39,9 +39,9 @@ class _ProfilesState extends State<ProfilesDataSection> {
           isDefault: true);
     }
 
-    var profileCopy = UserNarrationProfileViewModel.fromJson(profile.toJson());
+    var profileCopy = UserRecitationProfileViewModel.fromJson(profile.toJson());
 
-    return showDialog<UserNarrationProfileViewModel>(
+    return showDialog<UserRecitationProfileViewModel>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
@@ -72,7 +72,7 @@ class _ProfilesState extends State<ProfilesDataSection> {
                       this.loadingStateChanged(true);
                     }
                     var serviceResult =
-                        await NarrationService().updateProfile(result, false);
+                        await RecitationService().updateProfile(result, false);
                     if (this.loadingStateChanged != null) {
                       this.loadingStateChanged(false);
                     }

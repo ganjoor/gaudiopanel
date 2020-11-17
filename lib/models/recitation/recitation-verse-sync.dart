@@ -1,16 +1,16 @@
-class NarrationVerseSync {
+class RecitationVerseSync {
   final int verseOrder;
   final String verseText;
   final int audioStartMilliseconds;
 
-  NarrationVerseSync(
+  RecitationVerseSync(
       {this.verseOrder, this.verseText, this.audioStartMilliseconds});
 
-  factory NarrationVerseSync.fromJson(Map<String, dynamic> json) {
+  factory RecitationVerseSync.fromJson(Map<String, dynamic> json) {
     if (json == null) {
       return null;
     }
-    return NarrationVerseSync(
+    return RecitationVerseSync(
         verseOrder: json['verseOrder'],
         verseText: json['verseText'],
         audioStartMilliseconds: json['audioStartMilliseconds']);

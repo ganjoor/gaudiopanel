@@ -3,13 +3,12 @@ import 'package:flutter/services.dart';
 import 'package:gaudiopanel/callbacks/g-ui-callbacks.dart';
 import 'package:gaudiopanel/forms/narration-edit.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
-import 'package:gaudiopanel/models/narration/poem-narration-moderate-viewModel.dart';
-import 'package:gaudiopanel/models/narration/poem-narration-viewmodel.dart';
-import 'package:gaudiopanel/services/narration-service.dart';
+import 'package:gaudiopanel/models/recitation/recitation-viewmodel.dart';
+import 'package:gaudiopanel/services/recitation-service.dart';
 import 'package:just_audio/just_audio.dart';
 
-class NarrationsDataSection extends StatefulWidget {
-  const NarrationsDataSection(
+class RecitationsDataSection extends StatefulWidget {
+  const RecitationsDataSection(
       {Key key,
       this.narrations,
       this.loadingStateChanged,
@@ -17,22 +16,22 @@ class NarrationsDataSection extends StatefulWidget {
       this.status})
       : super(key: key);
 
-  final PaginatedItemsResponseModel<PoemNarrationViewModel> narrations;
+  final PaginatedItemsResponseModel<RecitationViewModel> narrations;
   final LoadingStateChanged loadingStateChanged;
   final SnackbarNeeded snackbarNeeded;
   final int status;
 
   @override
-  _NarrationsState createState() => _NarrationsState(this.narrations,
+  _RecitationsState createState() => _RecitationsState(this.narrations,
       this.loadingStateChanged, this.snackbarNeeded, this.status);
 }
 
-class _NarrationsState extends State<NarrationsDataSection> {
-  _NarrationsState(this.narrations, this.loadingStateChanged,
+class _RecitationsState extends State<RecitationsDataSection> {
+  _RecitationsState(this.narrations, this.loadingStateChanged,
       this.snackbarNeeded, this.status);
   AudioPlayer _player;
 
-  final PaginatedItemsResponseModel<PoemNarrationViewModel> narrations;
+  final PaginatedItemsResponseModel<RecitationViewModel> narrations;
   final LoadingStateChanged loadingStateChanged;
   final SnackbarNeeded snackbarNeeded;
   final int status;
@@ -52,7 +51,7 @@ class _NarrationsState extends State<NarrationsDataSection> {
     super.dispose();
   }
 
-  Icon getNarrationIcon(PoemNarrationViewModel narration) {
+  Icon getNarrationIcon(RecitationViewModel narration) {
     switch (narration.reviewStatus) {
       case AudioReviewStatus.draft:
         return Icon(Icons.edit);
@@ -70,13 +69,13 @@ class _NarrationsState extends State<NarrationsDataSection> {
     }
   }
 
-  Future<PoemNarrationViewModel> _edit(PoemNarrationViewModel narration) async {
-    return showDialog<PoemNarrationViewModel>(
+  Future<RecitationViewModel> _edit(RecitationViewModel narration) async {
+    return showDialog<RecitationViewModel>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        PoemNarrationViewModel narrationCopy =
-            PoemNarrationViewModel.fromJson(narration.toJson());
+        RecitationViewModel narrationCopy =
+            RecitationViewModel.fromJson(narration.toJson());
         narrationCopy.isModified = false;
         NarrationEdit _narrationEdit = NarrationEdit(narration: narrationCopy);
         return AlertDialog(
@@ -111,7 +110,7 @@ class _NarrationsState extends State<NarrationsDataSection> {
                       if (this.loadingStateChanged != null) {
                         this.loadingStateChanged(true);
                       }
-                      var serviceResult = await NarrationService()
+                      var serviceResult = await RecitationService()
                           .updateNarration(result, false);
                       if (this.loadingStateChanged != null) {
                         this.loadingStateChanged(false);
@@ -140,9 +139,9 @@ class _NarrationsState extends State<NarrationsDataSection> {
                       if (this.loadingStateChanged != null) {
                         this.loadingStateChanged(true);
                       }
-                      var serviceResult = await NarrationService()
+                      var serviceResult = await RecitationService()
                           .moderateNarration(result.id,
-                              PoemNarrationModerationResult.Approve, '', false);
+                              RecitationModerationResult.Approve, '', false);
                       if (this.loadingStateChanged != null) {
                         this.loadingStateChanged(false);
                       }

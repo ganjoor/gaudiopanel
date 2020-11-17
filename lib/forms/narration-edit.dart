@@ -1,14 +1,14 @@
 import 'package:after_layout/after_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gaudiopanel/models/narration/poem-narration-viewmodel.dart';
+import 'package:gaudiopanel/models/recitation/recitation-viewmodel.dart';
 import 'package:gaudiopanel/services/auth-service.dart';
 import 'package:gaudiopanel/widgets/audio-player-widgets.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class NarrationEdit extends StatefulWidget {
-  final PoemNarrationViewModel narration;
+  final RecitationViewModel narration;
 
   const NarrationEdit({Key key, this.narration}) : super(key: key);
 
@@ -18,7 +18,7 @@ class NarrationEdit extends StatefulWidget {
 
 class _NarrationEditState extends State<NarrationEdit>
     with AfterLayoutMixin<NarrationEdit> {
-  final PoemNarrationViewModel narration;
+  final RecitationViewModel narration;
   AudioPlayer _player;
   bool _canModerate = false;
 
@@ -50,7 +50,7 @@ class _NarrationEditState extends State<NarrationEdit>
     super.dispose();
   }
 
-  String getVerse(PoemNarrationViewModel narration, Duration position) {
+  String getVerse(RecitationViewModel narration, Duration position) {
     if (position == null || narration == null || narration.verses == null) {
       return '';
     }
