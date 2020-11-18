@@ -295,42 +295,48 @@ class MainFormWidgetState extends State<MainForm>
               appBar: AppBar(
                 title: Text(title),
                 actions: [
-                  IconButton(
-                      icon: Icon(Icons.check_box),
-                      tooltip: 'علامتگذاری همه',
-                      onPressed: () {
-                        if (_activeSection == GActiveFormSection.Profiles) {
-                          for (var item in _profiles.items) {
-                            setState(() {
-                              item.isMarked = true;
-                            });
+                  Visibility(
+                    child: IconButton(
+                        icon: Icon(Icons.check_box),
+                        tooltip: 'علامتگذاری همه',
+                        onPressed: () {
+                          if (_activeSection == GActiveFormSection.Profiles) {
+                            for (var item in _profiles.items) {
+                              setState(() {
+                                item.isMarked = true;
+                              });
+                            }
+                          } else {
+                            for (var item in _narrations.items) {
+                              setState(() {
+                                item.isMarked = true;
+                              });
+                            }
                           }
-                        } else {
-                          for (var item in _narrations.items) {
-                            setState(() {
-                              item.isMarked = true;
-                            });
+                        }),
+                    visible: _activeSection != GActiveFormSection.Uploads,
+                  ),
+                  Visibility(
+                    child: IconButton(
+                        icon: Icon(Icons.check_box_outline_blank),
+                        tooltip: 'برداشتن علامت همه',
+                        onPressed: () {
+                          if (_activeSection == GActiveFormSection.Profiles) {
+                            for (var item in _profiles.items) {
+                              setState(() {
+                                item.isMarked = false;
+                              });
+                            }
+                          } else {
+                            for (var item in _narrations.items) {
+                              setState(() {
+                                item.isMarked = false;
+                              });
+                            }
                           }
-                        }
-                      }),
-                  IconButton(
-                      icon: Icon(Icons.check_box_outline_blank),
-                      tooltip: 'برداشتن علامت همه',
-                      onPressed: () {
-                        if (_activeSection == GActiveFormSection.Profiles) {
-                          for (var item in _profiles.items) {
-                            setState(() {
-                              item.isMarked = false;
-                            });
-                          }
-                        } else {
-                          for (var item in _narrations.items) {
-                            setState(() {
-                              item.isMarked = false;
-                            });
-                          }
-                        }
-                      }),
+                        }),
+                    visible: _activeSection != GActiveFormSection.Uploads,
+                  ),
                   Visibility(
                       child: IconButton(
                         icon: Icon(Icons.delete),
