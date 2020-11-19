@@ -258,6 +258,80 @@ class MainFormWidgetState extends State<MainForm>
     }
   }
 
+  Future _deleteMarkedProfiles() async {
+    var markedProfiles =
+        _profiles.items.where((element) => element.isMarked).toList();
+    if (markedProfiles.isEmpty) {
+      _key.currentState.showSnackBar(SnackBar(
+        content: Text('لطفاً نمایه‌های مد نظر را علامتگذاری کنید.'),
+        backgroundColor: Colors.red,
+      ));
+      return;
+    }
+    String confirmation = markedProfiles.length > 1
+        ? 'آیا از حذف ' +
+            markedProfiles.length.toString() +
+            ' نمایهٔ علامتگذاری شده اطمینان دارید؟'
+        : 'آیا از حذف نمایهٔ «' + markedProfiles[0].name + '» اطمینان دارید؟';
+    if (await _confirm('تأییدیه', confirmation)) {
+      for (var item in markedProfiles) {
+        var delRes = await RecitationService().deleteProfile(item.id, false);
+        if (delRes.item2.isNotEmpty) {
+          _key.currentState.showSnackBar(SnackBar(
+            content: Text('خطا در حذف نمایهٔ ' +
+                item.name +
+                '، اطلاعات بیستر ' +
+                delRes.item2),
+            backgroundColor: Colors.red,
+          ));
+        }
+        if (delRes.item1) {
+          setState(() {
+            _profiles.items.remove(item);
+          });
+        }
+      }
+    }
+  }
+
+  Future _deleteMarkedRecitations() async {
+    var markedRecitations =
+        _narrations.items.where((element) => element.isMarked).toList();
+    if (markedRecitations.isEmpty) {
+      _key.currentState.showSnackBar(SnackBar(
+        content: Text('لطفاً خوانش‌های مد نظر را علامتگذاری کنید.'),
+        backgroundColor: Colors.red,
+      ));
+      return;
+    }
+    String confirmation = markedRecitations.length > 1
+        ? 'آیا از حذف ' +
+            markedRecitations.length.toString() +
+            ' خوانش علامتگذاری شده اطمینان دارید؟'
+        : 'آیا از حذف خوامش «' +
+            markedRecitations[0].audioTitle +
+            '» اطمینان دارید؟';
+    if (await _confirm('تأییدیه', confirmation)) {
+      for (var item in markedRecitations) {
+        var delRes = await RecitationService().deleteRecitation(item.id, false);
+        if (delRes.item2.isNotEmpty) {
+          _key.currentState.showSnackBar(SnackBar(
+            content: Text('خطا در حذف خوانش ' +
+                item.audioTitle +
+                '، اطلاعات بیستر ' +
+                delRes.item2),
+            backgroundColor: Colors.red,
+          ));
+        }
+        if (delRes.item1) {
+          setState(() {
+            _narrations.items.remove(item);
+          });
+        }
+      }
+    }
+  }
+
   Widget get items {
     switch (_activeSection) {
       case GActiveFormSection.DraftRecitations:
@@ -342,47 +416,14 @@ class MainFormWidgetState extends State<MainForm>
                         icon: Icon(Icons.delete),
                         tooltip: 'حذف',
                         onPressed: () async {
-                          var markedProfiles = _profiles.items
-                              .where((element) => element.isMarked)
-                              .toList();
-                          if (markedProfiles.isEmpty) {
-                            _key.currentState.showSnackBar(SnackBar(
-                              content: Text(
-                                  'لطفاً نمایه‌های مد نظر را علامتگذاری کنید.'),
-                              backgroundColor: Colors.red,
-                            ));
-                            return;
-                          }
-                          String confirmation = markedProfiles.length > 1
-                              ? 'آیا از حذف ' +
-                                  markedProfiles.length.toString() +
-                                  ' نمایهٔ علامتگذاری شده اطمینان دارید؟'
-                              : 'آیا از حذف نمایهٔ «' +
-                                  markedProfiles[0].name +
-                                  '» اطمینان دارید؟';
-                          if (await _confirm('تأییدیه', confirmation)) {
-                            for (var item in markedProfiles) {
-                              var delRes = await RecitationService()
-                                  .deleteProfile(item.id, false);
-                              if (delRes.item2.isNotEmpty) {
-                                _key.currentState.showSnackBar(SnackBar(
-                                  content: Text('خطا در حذف نمایهٔ ' +
-                                      item.name +
-                                      '، اطلاعات بیستر ' +
-                                      delRes.item2),
-                                  backgroundColor: Colors.red,
-                                ));
-                              }
-                              if (delRes.item1) {
-                                setState(() {
-                                  _profiles.items.remove(item);
-                                });
-                              }
-                            }
+                          if (_activeSection == GActiveFormSection.Profiles) {
+                            await _deleteMarkedProfiles();
+                          } else {
+                            await _deleteMarkedRecitations();
                           }
                         },
                       ),
-                      visible: _activeSection == GActiveFormSection.Profiles),
+                      visible: _activeSection != GActiveFormSection.Uploads),
                   Visibility(
                       child: IconButton(
                         icon: Icon(Icons.publish),
