@@ -218,6 +218,25 @@ class _NarrationEditState extends State<NarrationEdit>
                     children: [
                       Visibility(
                           child: ElevatedButton(
+                            child: Text('رد خوانش'),
+                            style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.red)),
+                            onPressed: () {
+                              narration.reviewStatus =
+                                  AudioReviewStatus.rejected; //Rejected
+                              Navigator.of(context).pop(narration);
+                            },
+                          ),
+                          visible: _canModerate &&
+                              ((narration.reviewStatus ==
+                                      AudioReviewStatus.draft /* Draft */) ||
+                                  (narration.reviewStatus ==
+                                      AudioReviewStatus
+                                          .pending /* Pending */))),
+                      Visibility(
+                          child: ElevatedButton(
                             child: Text('ذخیره و درخواست بررسی'),
                             onPressed: () {
                               narration.audioTitle = _titleController.text;
@@ -228,13 +247,15 @@ class _NarrationEditState extends State<NarrationEdit>
                               narration.audioSrc = _audioSrcController.text;
                               narration.audioSrcUrl =
                                   _audioSrcUrlController.text;
-                              narration.reviewStatus = 1; //Pending
+                              narration.reviewStatus =
+                                  AudioReviewStatus.pending; //Pending
                               narration.isModified = true;
                               Navigator.of(context).pop(narration);
                             },
                           ),
                           visible: !_canModerate &&
-                              narration.reviewStatus == 0 /* Draft */),
+                              narration.reviewStatus ==
+                                  AudioReviewStatus.draft /* Draft */),
                       Visibility(
                           child: ElevatedButton(
                             child: Text('ذخیره و انتشار'),
@@ -248,13 +269,17 @@ class _NarrationEditState extends State<NarrationEdit>
                               narration.audioSrc = _audioSrcController.text;
                               narration.audioSrcUrl =
                                   _audioSrcUrlController.text;
-                              narration.reviewStatus = 2; //Approved
+                              narration.reviewStatus =
+                                  AudioReviewStatus.approved; //Approved
                               Navigator.of(context).pop(narration);
                             },
                           ),
                           visible: _canModerate &&
-                              ((narration.reviewStatus == 0 /* Draft */) ||
-                                  (narration.reviewStatus == 1 /* Pending */))),
+                              ((narration.reviewStatus ==
+                                      AudioReviewStatus.draft /* Draft */) ||
+                                  (narration.reviewStatus ==
+                                      AudioReviewStatus
+                                          .pending /* Pending */))),
                       ElevatedButton(
                         child: Text('ذخیره'),
                         onPressed: () {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gaudiopanel/callbacks/g-ui-callbacks.dart';
 import 'package:gaudiopanel/forms/narration-edit.dart';
+import 'package:gaudiopanel/forms/reject-recitation.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
 import 'package:gaudiopanel/models/recitation/recitation-viewmodel.dart';
 import 'package:gaudiopanel/services/recitation-service.dart';
@@ -88,71 +89,140 @@ class _RecitationsState extends State<RecitationsDataSection> {
     );
   }
 
+  Future<String> _reject(RecitationViewModel recitation) async {
+    return showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        RejectRecitation _narrationReject =
+            RejectRecitation(recitation: recitation);
+        return AlertDialog(
+          title: Text('رد خوانش'),
+          content: SingleChildScrollView(
+            child: _narrationReject,
+          ),
+        );
+      },
+    );
+  }
+
   Future _doEdit(int index) async {
     final result = await _edit(narrations.items[index]);
     if (result != null) {
-      bool approve = result.reviewStatus == 2 &&
+      bool reject = result.reviewStatus == AudioReviewStatus.rejected &&
           ((narrations.items[index].reviewStatus == 0) ||
               (narrations.items[index].reviewStatus == 1));
-      if (approve) {
-        result.reviewStatus =
-            1; //updateNarration does not support approve/reject operation directy
-      }
-      if (result.isModified) {
-        if (this.loadingStateChanged != null) {
-          this.loadingStateChanged(true);
+
+      if (reject) {
+        var rejectResult = await _reject(narrations.items[index]);
+        if (rejectResult == null) {
+          return;
         }
-        var serviceResult =
-            await RecitationService().updateRecitation(result, false);
-        if (this.loadingStateChanged != null) {
-          this.loadingStateChanged(false);
-        }
-        if (serviceResult.item1 != null && serviceResult.item2 == '') {
-          setState(() {
-            if (status == -1) {
-              narrations.items[index] = serviceResult.item1;
-            } else if (status == 0 || status == 1) {
-              if (serviceResult.item1.reviewStatus == status) {
+        if (rejectResult.isNotEmpty) {
+          if (this.loadingStateChanged != null) {
+            this.loadingStateChanged(true);
+          }
+          var serviceResult = await RecitationService().moderateRecitation(
+              result.id,
+              RecitationModerationResult.Reject,
+              rejectResult,
+              false);
+          if (this.loadingStateChanged != null) {
+            this.loadingStateChanged(false);
+          }
+          if (serviceResult.item1 != null && serviceResult.item2 == '') {
+            setState(() {
+              if (status == -1) {
                 narrations.items[index] = serviceResult.item1;
-              } else {
-                narrations.items.removeAt(index);
+              } else if (status == AudioReviewStatus.draft ||
+                  status == AudioReviewStatus.pending) {
+                if (serviceResult.item1.reviewStatus == status) {
+                  narrations.items[index] = serviceResult.item1;
+                } else {
+                  narrations.items.removeAt(index);
+                }
               }
+            });
+          } else {
+            if (this.snackbarNeeded != null) {
+              this.snackbarNeeded('خطا در رد خوانش: ' + serviceResult.item2);
             }
-          });
-        } else {
-          if (this.snackbarNeeded != null) {
-            this.snackbarNeeded('خطا در ذخیرهٔ خوانش: ' + serviceResult.item2);
           }
         }
-      }
-      if (approve) {
-        if (this.loadingStateChanged != null) {
-          this.loadingStateChanged(true);
+      } else {
+        bool approve = result.reviewStatus == AudioReviewStatus.approved &&
+            ((narrations.items[index].reviewStatus ==
+                    AudioReviewStatus.draft) ||
+                (narrations.items[index].reviewStatus ==
+                    AudioReviewStatus.pending));
+        if (approve) {
+          result.reviewStatus =
+              1; //updateNarration does not support approve/reject operation directy
         }
-        var serviceResult = await RecitationService().moderateRecitation(
-            result.id, RecitationModerationResult.Approve, '', false);
-        if (this.loadingStateChanged != null) {
-          this.loadingStateChanged(false);
-        }
-        if (serviceResult.item1 != null && serviceResult.item2 == '') {
-          setState(() {
-            if (status == -1) {
-              narrations.items[index] = serviceResult.item1;
-            } else if (status == 0 || status == 1) {
-              if (serviceResult.item1.reviewStatus == status) {
+        if (result.isModified) {
+          if (this.loadingStateChanged != null) {
+            this.loadingStateChanged(true);
+          }
+          var serviceResult =
+              await RecitationService().updateRecitation(result, false);
+          if (this.loadingStateChanged != null) {
+            this.loadingStateChanged(false);
+          }
+          if (serviceResult.item1 != null && serviceResult.item2 == '') {
+            setState(() {
+              if (status == -1) {
                 narrations.items[index] = serviceResult.item1;
-              } else {
-                narrations.items.removeAt(index);
+              } else if (status == AudioReviewStatus.draft ||
+                  status == AudioReviewStatus.pending) {
+                if (serviceResult.item1.reviewStatus == status) {
+                  narrations.items[index] = serviceResult.item1;
+                } else {
+                  narrations.items.removeAt(index);
+                }
               }
+            });
+          } else {
+            if (this.snackbarNeeded != null) {
+              this.snackbarNeeded(
+                  'خطا در ذخیرهٔ خوانش: ' + serviceResult.item2);
             }
-          });
-        } else {
-          if (this.snackbarNeeded != null) {
-            this.snackbarNeeded('خطا در تأیید خوانش: ' + serviceResult.item2);
+          }
+        }
+        if (approve) {
+          if (this.loadingStateChanged != null) {
+            this.loadingStateChanged(true);
+          }
+          var serviceResult = await RecitationService().moderateRecitation(
+              result.id, RecitationModerationResult.Approve, '', false);
+          if (this.loadingStateChanged != null) {
+            this.loadingStateChanged(false);
+          }
+          if (serviceResult.item1 != null && serviceResult.item2 == '') {
+            setState(() {
+              if (status == -1) {
+                narrations.items[index] = serviceResult.item1;
+              } else if (status == AudioReviewStatus.draft ||
+                  status == AudioReviewStatus.pending) {
+                if (serviceResult.item1.reviewStatus == status) {
+                  narrations.items[index] = serviceResult.item1;
+                } else {
+                  narrations.items.removeAt(index);
+                }
+              }
+            });
+          } else {
+            if (this.snackbarNeeded != null) {
+              this.snackbarNeeded('خطا در تأیید خوانش: ' + serviceResult.item2);
+            }
           }
         }
       }
     }
+  }
+
+  String _getReviewMsg(String msg) {
+    if (msg == null) return '';
+    return msg;
   }
 
   @override
@@ -175,7 +245,12 @@ class _RecitationsState extends State<RecitationsDataSection> {
                     icon: getNarrationIcon(narrations.items[index]),
                     onPressed: () async {
                       await _doEdit(index);
-                    })
+                    }),
+                Visibility(
+                    child:
+                        Text(_getReviewMsg(narrations.items[index].reviewMsg)),
+                    visible: narrations.items[index].reviewStatus ==
+                        AudioReviewStatus.rejected)
               ]),
               trailing: IconButton(
                 icon: narrations.items[index].isMarked

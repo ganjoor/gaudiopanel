@@ -63,6 +63,7 @@ class RecitationViewModel {
   final List<int> audioSyncStatusArray;
   int reviewStatus;
   List<RecitationVerseSync> verses;
+  final String reviewMsg;
 
   RecitationViewModel(
       {this.id,
@@ -81,7 +82,8 @@ class RecitationViewModel {
       this.mp3SizeInBytes,
       this.uploadDate,
       this.audioSyncStatusArray,
-      this.reviewStatus});
+      this.reviewStatus,
+      this.reviewMsg});
 
   factory RecitationViewModel.fromJson(Map<String, dynamic> json) {
     if (json == null) {
@@ -105,7 +107,8 @@ class RecitationViewModel {
         uploadDate: json['uploadDate'],
         audioSyncStatusArray:
             (json['audioSyncStatusArray'] as List).cast<int>().toList(),
-        reviewStatus: json['reviewStatus']);
+        reviewStatus: json['reviewStatus'],
+        reviewMsg: json['reviewMsg']);
   }
 
   toJson() {
@@ -127,6 +130,7 @@ class RecitationViewModel {
     m['uploadDate'] = uploadDate;
     m['audioSyncStatusArray'] = audioSyncStatusArray;
     m['reviewStatus'] = reviewStatus;
+    m['reviewMsg'] = reviewMsg;
     return m;
   }
 }
