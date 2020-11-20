@@ -88,6 +88,73 @@ class _RecitationsState extends State<RecitationsDataSection> {
     );
   }
 
+  Future _doEdit(int index) async {
+    final result = await _edit(narrations.items[index]);
+    if (result != null) {
+      bool approve = result.reviewStatus == 2 &&
+          ((narrations.items[index].reviewStatus == 0) ||
+              (narrations.items[index].reviewStatus == 1));
+      if (approve) {
+        result.reviewStatus =
+            1; //updateNarration does not support approve/reject operation directy
+      }
+      if (result.isModified) {
+        if (this.loadingStateChanged != null) {
+          this.loadingStateChanged(true);
+        }
+        var serviceResult =
+            await RecitationService().updateRecitation(result, false);
+        if (this.loadingStateChanged != null) {
+          this.loadingStateChanged(false);
+        }
+        if (serviceResult.item1 != null && serviceResult.item2 == '') {
+          setState(() {
+            if (status == -1) {
+              narrations.items[index] = serviceResult.item1;
+            } else if (status == 0 || status == 1) {
+              if (serviceResult.item1.reviewStatus == status) {
+                narrations.items[index] = serviceResult.item1;
+              } else {
+                narrations.items.removeAt(index);
+              }
+            }
+          });
+        } else {
+          if (this.snackbarNeeded != null) {
+            this.snackbarNeeded('خطا در ذخیرهٔ خوانش: ' + serviceResult.item2);
+          }
+        }
+      }
+      if (approve) {
+        if (this.loadingStateChanged != null) {
+          this.loadingStateChanged(true);
+        }
+        var serviceResult = await RecitationService().moderateRecitation(
+            result.id, RecitationModerationResult.Approve, '', false);
+        if (this.loadingStateChanged != null) {
+          this.loadingStateChanged(false);
+        }
+        if (serviceResult.item1 != null && serviceResult.item2 == '') {
+          setState(() {
+            if (status == -1) {
+              narrations.items[index] = serviceResult.item1;
+            } else if (status == 0 || status == 1) {
+              if (serviceResult.item1.reviewStatus == status) {
+                narrations.items[index] = serviceResult.item1;
+              } else {
+                narrations.items.removeAt(index);
+              }
+            }
+          });
+        } else {
+          if (this.snackbarNeeded != null) {
+            this.snackbarNeeded('خطا در تأیید خوانش: ' + serviceResult.item2);
+          }
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -97,82 +164,18 @@ class _RecitationsState extends State<RecitationsDataSection> {
               leading: IconButton(
                 icon: Icon(Icons.edit),
                 onPressed: () async {
-                  final result = await _edit(narrations.items[index]);
-                  if (result != null) {
-                    bool approve = result.reviewStatus == 2 &&
-                        ((narrations.items[index].reviewStatus == 0) ||
-                            (narrations.items[index].reviewStatus == 1));
-                    if (approve) {
-                      result.reviewStatus =
-                          1; //updateNarration does not support approve/reject operation directy
-                    }
-                    if (result.isModified) {
-                      if (this.loadingStateChanged != null) {
-                        this.loadingStateChanged(true);
-                      }
-                      var serviceResult = await RecitationService()
-                          .updateRecitation(result, false);
-                      if (this.loadingStateChanged != null) {
-                        this.loadingStateChanged(false);
-                      }
-                      if (serviceResult.item1 != null &&
-                          serviceResult.item2 == '') {
-                        setState(() {
-                          if (status == -1) {
-                            narrations.items[index] = serviceResult.item1;
-                          } else if (status == 0 || status == 1) {
-                            if (serviceResult.item1.reviewStatus == status) {
-                              narrations.items[index] = serviceResult.item1;
-                            } else {
-                              narrations.items.removeAt(index);
-                            }
-                          }
-                        });
-                      } else {
-                        if (this.snackbarNeeded != null) {
-                          this.snackbarNeeded(
-                              'خطا در ذخیرهٔ خوانش: ' + serviceResult.item2);
-                        }
-                      }
-                    }
-                    if (approve) {
-                      if (this.loadingStateChanged != null) {
-                        this.loadingStateChanged(true);
-                      }
-                      var serviceResult = await RecitationService()
-                          .moderateRecitation(result.id,
-                              RecitationModerationResult.Approve, '', false);
-                      if (this.loadingStateChanged != null) {
-                        this.loadingStateChanged(false);
-                      }
-                      if (serviceResult.item1 != null &&
-                          serviceResult.item2 == '') {
-                        setState(() {
-                          if (status == -1) {
-                            narrations.items[index] = serviceResult.item1;
-                          } else if (status == 0 || status == 1) {
-                            if (serviceResult.item1.reviewStatus == status) {
-                              narrations.items[index] = serviceResult.item1;
-                            } else {
-                              narrations.items.removeAt(index);
-                            }
-                          }
-                        });
-                      } else {
-                        if (this.snackbarNeeded != null) {
-                          this.snackbarNeeded(
-                              'خطا در تأیید خوانش: ' + serviceResult.item2);
-                        }
-                      }
-                    }
-                  }
+                  await _doEdit(index);
                 },
               ),
               title: Text(narrations.items[index].audioTitle),
               subtitle: Column(children: [
                 Text(narrations.items[index].poemFullTitle),
                 Text(narrations.items[index].audioArtist),
-                getNarrationIcon(narrations.items[index])
+                IconButton(
+                    icon: getNarrationIcon(narrations.items[index]),
+                    onPressed: () async {
+                      await _doEdit(index);
+                    })
               ]),
               trailing: IconButton(
                 icon: narrations.items[index].isMarked
