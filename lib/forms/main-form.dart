@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:gaudiopanel/forms/login.dart';
 import 'package:gaudiopanel/forms/main-form-sections/profiles-data-section.dart';
 import 'package:gaudiopanel/forms/profile-edit.dart';
+import 'package:gaudiopanel/forms/upload-files.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
 import 'package:gaudiopanel/models/recitation/recitation-viewmodel.dart';
 import 'package:gaudiopanel/models/recitation/uploaded-item-viewmodel.dart';
@@ -202,6 +203,23 @@ class MainFormWidgetState extends State<MainForm>
     );
   }
 
+  Future<bool> _getNewRecitationParams(
+      UserRecitationProfileViewModel profile) async {
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        UploadFiles _uploadFiles = UploadFiles(profile: profile);
+        return AlertDialog(
+          title: Text('ارسال خوانش‌های جدید'),
+          content: SingleChildScrollView(
+            child: _uploadFiles,
+          ),
+        );
+      },
+    );
+  }
+
   Future<bool> _confirm(String title, String text) async {
     return showDialog<bool>(
       context: context,
@@ -232,6 +250,34 @@ class MainFormWidgetState extends State<MainForm>
   }
 
   Future _newNarrations() async {
+    setState(() {
+      _isLoading = true;
+    });
+    var profileResult = await RecitationService().getDefProfile(false);
+    setState(() {
+      _isLoading = false;
+    });
+    if (profileResult.item2.isNotEmpty) {
+      _key.currentState.showSnackBar(SnackBar(
+        content: Text('خطا در یافتن نمایهٔ پیش‌فرض ' +
+            '، اطلاعات بیشتر ' +
+            profileResult.item2),
+        backgroundColor: Colors.red,
+      ));
+      return;
+    }
+    if (profileResult.item1 == null) {
+      _key.currentState.showSnackBar(SnackBar(
+        content: Text(
+            'برای ارسال خوانش لازم است ابتدا نمایه‌ای پیش‌فرض تعریف کنید.'),
+        backgroundColor: Colors.red,
+      ));
+      return;
+    }
+    var replace = await _getNewRecitationParams(profileResult.item1);
+    if (replace == null) {
+      return;
+    }
     FilePickerResult result = await FilePicker.platform.pickFiles(
       allowMultiple: true,
       type: FileType.custom,
@@ -242,8 +288,8 @@ class MainFormWidgetState extends State<MainForm>
         _isLoading = true;
       });
 
-      String err =
-          await UploadRecitationService().uploadFiles(result.files, false);
+      String err = await UploadRecitationService()
+          .uploadFiles(result.files, replace, false);
 
       if (err.isNotEmpty) {
         _key.currentState.showSnackBar(SnackBar(
@@ -280,7 +326,7 @@ class MainFormWidgetState extends State<MainForm>
           _key.currentState.showSnackBar(SnackBar(
             content: Text('خطا در حذف نمایهٔ ' +
                 item.name +
-                '، اطلاعات بیستر ' +
+                '، اطلاعات بیشتر ' +
                 delRes.item2),
             backgroundColor: Colors.red,
           ));
@@ -318,7 +364,7 @@ class MainFormWidgetState extends State<MainForm>
           _key.currentState.showSnackBar(SnackBar(
             content: Text('خطا در حذف خوانش ' +
                 item.audioTitle +
-                '، اطلاعات بیستر ' +
+                '، اطلاعات بیشتر ' +
                 delRes.item2),
             backgroundColor: Colors.red,
           ));
@@ -459,7 +505,7 @@ class MainFormWidgetState extends State<MainForm>
                                 _key.currentState.showSnackBar(SnackBar(
                                   content: Text('خطا در تغییر وضعیت خوانش ' +
                                       item.audioTitle +
-                                      '، اطلاعات بیستر ' +
+                                      '، اطلاعات بیشتر ' +
                                       updateRes.item2),
                                   backgroundColor: Colors.red,
                                 ));
@@ -518,7 +564,7 @@ class MainFormWidgetState extends State<MainForm>
                                 _key.currentState.showSnackBar(SnackBar(
                                   content: Text('خطا در تغییر وضعیت خوانش ' +
                                       item.audioTitle +
-                                      '، اطلاعات بیستر ' +
+                                      '، اطلاعات بیشتر ' +
                                       updateRes.item2),
                                   backgroundColor: Colors.red,
                                 ));

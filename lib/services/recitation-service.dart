@@ -274,6 +274,53 @@ class RecitationService {
     }
   }
 
+  /// Get User Default Profile
+  ///
+  ///returns a Tuple2, if any error occurs Items1 is null and Item2 contains the error message
+  ///Items1 is the actual response if the call is successful
+  Future<Tuple2<UserRecitationProfileViewModel, String>> getDefProfile(
+      bool error401) async {
+    try {
+      LoggedOnUserModel userInfo = await _storageService.userInfo;
+      if (userInfo == null) {
+        return Tuple2<UserRecitationProfileViewModel, String>(
+            null, 'کاربر وارد سیستم نشده است.');
+      }
+      var apiRoot = GServiceAddress.Url;
+      http.Response response =
+          await http.get('$apiRoot/api/audio/profile/def', headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
+      });
+
+      if (!error401 && response.statusCode == 401) {
+        String errSessionRenewal = await AuthService().relogin();
+        if (errSessionRenewal.isNotEmpty) {
+          return Tuple2<UserRecitationProfileViewModel, String>(
+              null, errSessionRenewal);
+        }
+        return await getDefProfile(true);
+      }
+      if (response.statusCode == 200) {
+        return Tuple2<UserRecitationProfileViewModel, String>(
+            UserRecitationProfileViewModel.fromJson(json.decode(response.body)),
+            '');
+      } else {
+        return Tuple2<UserRecitationProfileViewModel, String>(
+            null,
+            'کد برگشتی: ' +
+                response.statusCode.toString() +
+                ' ' +
+                response.body);
+      }
+    } catch (e) {
+      return Tuple2<UserRecitationProfileViewModel, String>(
+          null,
+          'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
+              e.toString());
+    }
+  }
+
   /// adds a new profile
   ///
   ///

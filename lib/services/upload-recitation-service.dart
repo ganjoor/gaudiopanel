@@ -10,13 +10,14 @@ import 'package:http/http.dart' as http;
 import 'package:gaudiopanel/services/gservice-address.dart';
 
 class UploadRecitationService {
-  Future<String> uploadFiles(List<PlatformFile> files, bool error401) async {
+  Future<String> uploadFiles(
+      List<PlatformFile> files, bool replace, bool error401) async {
     try {
       LoggedOnUserModel userInfo = await StorageService().userInfo;
 
       var baseUrl = GServiceAddress.Url;
-      var request =
-          new http.MultipartRequest("POST", Uri.parse('$baseUrl/api/audio'));
+      var request = new http.MultipartRequest(
+          "POST", Uri.parse('$baseUrl/api/audio?replace=$replace'));
       for (var file in files) {
         request.files.add(http.MultipartFile.fromBytes(file.name, file.bytes,
             filename: file.name));
@@ -31,7 +32,7 @@ class UploadRecitationService {
 
       if (!error401 && response.statusCode == 401) {
         if ((await AuthService().relogin()) != null) {
-          return await uploadFiles(files, true);
+          return await uploadFiles(files, replace, true);
         }
       }
 
