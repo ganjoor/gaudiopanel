@@ -89,9 +89,8 @@ class _RejectRecitationState extends State<RejectRecitation> {
                       ElevatedButton(
                         child: Text('رد خوانش'),
                         onPressed: () {
-                          if (_recitationController.text.isNotEmpty) {
-                            Navigator.of(context)
-                                .pop(_recitationController.text);
+                          if (_causeController.text.isNotEmpty) {
+                            Navigator.of(context).pop(_causeController.text);
                           }
                         },
                       ),
