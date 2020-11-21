@@ -78,6 +78,7 @@ class MainFormWidgetState extends State<MainForm>
         false);
     if (narrations.error.isEmpty) {
       setState(() {
+        _narrations.items.clear();
         _narrations.items.addAll(narrations.items);
         _narrations.paginationMetadata = narrations.paginationMetadata;
         _isLoading = false;
@@ -102,6 +103,7 @@ class MainFormWidgetState extends State<MainForm>
 
     if (uploads.error.isEmpty) {
       setState(() {
+        _uploads.items.clear();
         _uploads.items.addAll(uploads.items);
         _uploads.paginationMetadata = uploads.paginationMetadata;
         _isLoading = false;
@@ -403,6 +405,38 @@ class MainFormWidgetState extends State<MainForm>
       default:
         return UploadsDataSection(uploads: _uploads);
     }
+  }
+
+  String get currentPageText {
+    if (_narrations != null &&
+        _narrations.paginationMetadata != null &&
+        (_activeSection == GActiveFormSection.DraftRecitations ||
+            _activeSection == GActiveFormSection.AllMyRecitations ||
+            _activeSection == GActiveFormSection.AllUsersPendingRecitations)) {
+      return 'صفحهٔ ' +
+          _narrations.paginationMetadata.currentPage.toString() +
+          ' از ' +
+          _narrations.paginationMetadata.totalPages.toString() +
+          ' (' +
+          _narrations.items.length.toString() +
+          ' از ' +
+          _narrations.paginationMetadata.totalCount.toString() +
+          ')';
+    }
+    if (_activeSection == GActiveFormSection.Uploads &&
+        _uploads != null &&
+        _uploads.paginationMetadata != null) {
+      return 'صفحهٔ ' +
+          _uploads.paginationMetadata.currentPage.toString() +
+          ' از ' +
+          _uploads.paginationMetadata.totalPages.toString() +
+          ' (' +
+          _uploads.items.length.toString() +
+          ' از ' +
+          _uploads.paginationMetadata.totalCount.toString() +
+          ')';
+    }
+    return '';
   }
 
   @override
@@ -730,44 +764,113 @@ class MainFormWidgetState extends State<MainForm>
                   ],
                 ),
               ),
-              body: Builder(
-                  builder: (context) => Center(
-                      child: NotificationListener<ScrollNotification>(
-                          onNotification: (ScrollNotification scrollInfo) {
-                            if (!_isLoading &&
-                                scrollInfo.metrics.pixels ==
-                                    scrollInfo.metrics.maxScrollExtent) {
-                              setState(() {
-                                switch (_activeSection) {
-                                  case GActiveFormSection.DraftRecitations:
-                                  case GActiveFormSection.AllMyRecitations:
-                                  case GActiveFormSection
-                                      .AllUsersPendingRecitations:
-                                    _narrationsPageNumber =
-                                        _narrations.paginationMetadata == null
-                                            ? 1
-                                            : _narrations.paginationMetadata
-                                                    .currentPage +
-                                                1;
-                                    break;
-                                  case GActiveFormSection.Uploads:
-                                    _uploadsPageNumber =
-                                        _uploads.paginationMetadata == null
-                                            ? 1
-                                            : _uploads.paginationMetadata
-                                                    .currentPage +
-                                                1;
-                                    break;
-                                  case GActiveFormSection.Profiles:
-                                    //do nothing
-                                    break;
-                                }
-                              });
-                              _loadData();
-                            }
-                            return true;
-                          },
-                          child: items))),
+              persistentFooterButtons: [
+                Text(currentPageText),
+                Visibility(
+                    child: IconButton(
+                      icon: Icon(Icons.first_page),
+                      onPressed: () async {
+                        if (_activeSection ==
+                                GActiveFormSection.DraftRecitations ||
+                            _activeSection ==
+                                GActiveFormSection.AllMyRecitations ||
+                            _activeSection ==
+                                GActiveFormSection.AllUsersPendingRecitations) {
+                          _narrationsPageNumber = 1;
+                          await _loadData();
+                        } else if (_activeSection ==
+                            GActiveFormSection.Uploads) {
+                          _uploadsPageNumber = 1;
+                          await _loadData();
+                        }
+                      },
+                    ),
+                    visible: _activeSection != GActiveFormSection.Profiles),
+                Visibility(
+                    child: IconButton(
+                      icon: Icon(Icons.navigate_before),
+                      onPressed: () async {
+                        if (_activeSection ==
+                                GActiveFormSection.DraftRecitations ||
+                            _activeSection ==
+                                GActiveFormSection.AllMyRecitations ||
+                            _activeSection ==
+                                GActiveFormSection.AllUsersPendingRecitations) {
+                          _narrationsPageNumber =
+                              _narrations.paginationMetadata == null
+                                  ? 1
+                                  : _narrations.paginationMetadata.currentPage -
+                                      1;
+                          if (_narrationsPageNumber <= 0)
+                            _narrationsPageNumber = 1;
+                          await _loadData();
+                        } else if (_activeSection ==
+                            GActiveFormSection.Uploads) {
+                          _uploadsPageNumber =
+                              _uploads.paginationMetadata == null
+                                  ? 1
+                                  : _uploads.paginationMetadata.currentPage - 1;
+                          if (_uploadsPageNumber <= 0) _uploadsPageNumber = 1;
+                          await _loadData();
+                        }
+                      },
+                    ),
+                    visible: _activeSection != GActiveFormSection.Profiles),
+                Visibility(
+                    child: IconButton(
+                      icon: Icon(Icons.navigate_next),
+                      onPressed: () async {
+                        if (_activeSection ==
+                                GActiveFormSection.DraftRecitations ||
+                            _activeSection ==
+                                GActiveFormSection.AllMyRecitations ||
+                            _activeSection ==
+                                GActiveFormSection.AllUsersPendingRecitations) {
+                          _narrationsPageNumber =
+                              _narrations.paginationMetadata == null
+                                  ? 1
+                                  : _narrations.paginationMetadata.currentPage +
+                                      1;
+                          await _loadData();
+                        } else if (_activeSection ==
+                            GActiveFormSection.Uploads) {
+                          _uploadsPageNumber =
+                              _uploads.paginationMetadata == null
+                                  ? 1
+                                  : _uploads.paginationMetadata.currentPage + 1;
+                          await _loadData();
+                        }
+                      },
+                    ),
+                    visible: _activeSection != GActiveFormSection.Profiles),
+                Visibility(
+                    child: IconButton(
+                      icon: Icon(Icons.last_page),
+                      onPressed: () async {
+                        if (_activeSection ==
+                                GActiveFormSection.DraftRecitations ||
+                            _activeSection ==
+                                GActiveFormSection.AllMyRecitations ||
+                            _activeSection ==
+                                GActiveFormSection.AllUsersPendingRecitations) {
+                          _narrationsPageNumber =
+                              _narrations.paginationMetadata == null
+                                  ? 1
+                                  : _narrations.paginationMetadata.totalPages;
+                          await _loadData();
+                        } else if (_activeSection ==
+                            GActiveFormSection.Uploads) {
+                          _uploadsPageNumber =
+                              _uploads.paginationMetadata == null
+                                  ? 1
+                                  : _uploads.paginationMetadata.totalPages;
+                          await _loadData();
+                        }
+                      },
+                    ),
+                    visible: _activeSection != GActiveFormSection.Profiles),
+              ],
+              body: Builder(builder: (context) => Center(child: items)),
               floatingActionButton: FloatingActionButton(
                 onPressed: () async {
                   switch (_activeSection) {
