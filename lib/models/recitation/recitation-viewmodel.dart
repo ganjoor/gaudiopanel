@@ -21,6 +21,7 @@ class RecitationModerateViewModel {
 }
 
 class AudioReviewStatus {
+  static const int all = -1;
   static const int draft = 0;
   static const int pending = 1;
   static const int approved = 2;

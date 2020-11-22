@@ -132,7 +132,7 @@ class _RecitationsState extends State<RecitationsDataSection> {
           }
           if (serviceResult.item1 != null && serviceResult.item2 == '') {
             setState(() {
-              if (status == -1) {
+              if (status == AudioReviewStatus.all) {
                 narrations.items[index] = serviceResult.item1;
               } else if (status == AudioReviewStatus.draft ||
                   status == AudioReviewStatus.pending) {
@@ -170,7 +170,7 @@ class _RecitationsState extends State<RecitationsDataSection> {
           }
           if (serviceResult.item1 != null && serviceResult.item2 == '') {
             setState(() {
-              if (status == -1) {
+              if (status == AudioReviewStatus.all) {
                 narrations.items[index] = serviceResult.item1;
               } else if (status == AudioReviewStatus.draft ||
                   status == AudioReviewStatus.pending) {
@@ -199,7 +199,7 @@ class _RecitationsState extends State<RecitationsDataSection> {
           }
           if (serviceResult.item1 != null && serviceResult.item2 == '') {
             setState(() {
-              if (status == -1) {
+              if (status == AudioReviewStatus.all) {
                 narrations.items[index] = serviceResult.item1;
               } else if (status == AudioReviewStatus.draft ||
                   status == AudioReviewStatus.pending) {

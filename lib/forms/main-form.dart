@@ -385,7 +385,6 @@ class MainFormWidgetState extends State<MainForm>
       case GActiveFormSection.DraftRecitations:
       case GActiveFormSection.AllMyRecitations:
       case GActiveFormSection.AllUsersPendingRecitations:
-      case GActiveFormSection.DraftRecitations:
         return RecitationsDataSection(
           narrations: _narrations,
           loadingStateChanged: _loadingStateChanged,
@@ -449,6 +448,12 @@ class MainFormWidgetState extends State<MainForm>
               appBar: AppBar(
                 title: Text(title),
                 actions: [
+                  IconButton(
+                      icon: Icon(Icons.refresh),
+                      tooltip: 'تازه‌سازی',
+                      onPressed: () async {
+                        await _loadData();
+                      }),
                   Visibility(
                     child: IconButton(
                         icon: Icon(Icons.check_box),
