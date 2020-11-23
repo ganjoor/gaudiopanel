@@ -56,8 +56,8 @@ class _NarrationEditState extends State<NarrationEdit>
     }
     var verse = narration.verses
         .where((element) =>
-            element.audioStartMilliseconds < position.inMilliseconds)
-        .last;
+            position.inMilliseconds >= element.audioStartMilliseconds)
+        .first;
     if (verse == null) {
       return '';
     }
