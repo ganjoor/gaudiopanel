@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:gaudiopanel/forms/login.dart';
 import 'package:gaudiopanel/forms/main-form-sections/profiles-data-section.dart';
 import 'package:gaudiopanel/forms/profile-edit.dart';
+import 'package:gaudiopanel/forms/search-params.dart';
 import 'package:gaudiopanel/forms/upload-files.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
 import 'package:gaudiopanel/models/recitation/recitation-viewmodel.dart';
@@ -16,6 +17,7 @@ import 'package:gaudiopanel/services/recitation-service.dart';
 import 'package:gaudiopanel/forms/main-form-sections/recitations-data-section.dart';
 import 'package:gaudiopanel/forms/main-form-sections/uploads-data-section.dart';
 import 'package:loading_overlay/loading_overlay.dart';
+import 'package:tuple/tuple.dart';
 
 enum GActiveFormSection {
   DraftRecitations,
@@ -40,6 +42,8 @@ class MainFormWidgetState extends State<MainForm>
   int _narrationsPageNumber = 1;
   int _uploadsPageNumber = 1;
   int _pageSize = 20;
+  String _searchTerm = '';
+
   PaginatedItemsResponseModel<RecitationViewModel> _narrations =
       PaginatedItemsResponseModel<RecitationViewModel>(items: []);
   PaginatedItemsResponseModel<UploadedItemViewModel> _uploads =
@@ -75,6 +79,7 @@ class MainFormWidgetState extends State<MainForm>
             : _activeSection == GActiveFormSection.AllUsersPendingRecitations
                 ? 1
                 : 0,
+        _searchTerm,
         false);
     if (narrations.error.isEmpty) {
       setState(() {
@@ -216,6 +221,23 @@ class MainFormWidgetState extends State<MainForm>
           title: Text('ارسال خوانش‌های جدید'),
           content: SingleChildScrollView(
             child: _uploadFiles,
+          ),
+        );
+      },
+    );
+  }
+
+  Future<Tuple2<int, String>> _getSearchParams() async {
+    return showDialog<Tuple2<int, String>>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        SearchParams _searchParams =
+            SearchParams(sparams: Tuple2<int, String>(_pageSize, _searchTerm));
+        return AlertDialog(
+          title: Text('جستجو'),
+          content: SingleChildScrollView(
+            child: _searchParams,
           ),
         );
       },
@@ -874,6 +896,19 @@ class MainFormWidgetState extends State<MainForm>
                       },
                     ),
                     visible: _activeSection != GActiveFormSection.Profiles),
+                IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: () async {
+                    var res = await _getSearchParams();
+                    if (res != null) {
+                      setState(() {
+                        _pageSize = res.item1;
+                        _searchTerm = res.item2;
+                      });
+                      await _loadData();
+                    }
+                  },
+                )
               ],
               body: Builder(builder: (context) => Center(child: items)),
               floatingActionButton: FloatingActionButton(
