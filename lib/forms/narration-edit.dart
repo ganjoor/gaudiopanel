@@ -210,8 +210,7 @@ class _NarrationEditState extends State<NarrationEdit>
                                       _player.seek(newPosition);
                                     },
                                   ),
-                                  Text(getVerse(narration, position)),
-                                  Text(position.inMilliseconds.toString())
+                                  Text(getVerse(narration, position))
                                 ]);
                           },
                         );

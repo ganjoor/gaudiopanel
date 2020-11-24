@@ -128,10 +128,11 @@ class MainFormWidgetState extends State<MainForm>
     setState(() {
       _isLoading = true;
     });
-    var profiles = await RecitationService().getProfiles(false);
+    var profiles = await RecitationService().getProfiles(_searchTerm, false);
 
     if (profiles.item2.isEmpty) {
       setState(() {
+        _profiles.items.clear();
         _profiles.items.addAll(profiles.item1);
         _isLoading = false;
       });

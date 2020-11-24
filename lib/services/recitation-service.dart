@@ -229,7 +229,7 @@ class RecitationService {
   ///returns a Tuple2, if any error occurs Items1 is null and Item2 contains the error message
   ///Items1 is the actual response if the call is successful
   Future<Tuple2<List<UserRecitationProfileViewModel>, String>> getProfiles(
-      bool error401) async {
+      String artistName, bool error401) async {
     try {
       LoggedOnUserModel userInfo = await _storageService.userInfo;
       if (userInfo == null) {
@@ -237,8 +237,8 @@ class RecitationService {
             null, 'کاربر وارد سیستم نشده است.');
       }
       var apiRoot = GServiceAddress.Url;
-      http.Response response =
-          await http.get('$apiRoot/api/audio/profile', headers: {
+      http.Response response = await http
+          .get('$apiRoot/api/audio/profile?artistName=$artistName', headers: {
         'Content-Type': 'application/json; charset=UTF-8',
         HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
       });
@@ -249,7 +249,7 @@ class RecitationService {
           return Tuple2<List<UserRecitationProfileViewModel>, String>(
               null, errSessionRenewal);
         }
-        return await getProfiles(true);
+        return await getProfiles(artistName, true);
       }
 
       List<UserRecitationProfileViewModel> ret = [];
