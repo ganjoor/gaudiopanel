@@ -63,10 +63,8 @@ class _NarrationEditState extends State<NarrationEdit>
     if (position == null || narration == null || narration.verses == null) {
       return '';
     }
-    var verse = narration.verses
-        .where((element) =>
-            element.audioStartMilliseconds < position.inMilliseconds)
-        .last;
+    var verse = narration.verses.lastWhere(
+        (element) => element.audioStartMilliseconds <= position.inMilliseconds);
     if (verse == null) {
       return '';
     }
@@ -212,7 +210,8 @@ class _NarrationEditState extends State<NarrationEdit>
                                       _player.seek(newPosition);
                                     },
                                   ),
-                                  Text(getVerse(narration, position))
+                                  Text(getVerse(narration, position)),
+                                  Text(position.inMilliseconds.toString())
                                 ]);
                           },
                         );
