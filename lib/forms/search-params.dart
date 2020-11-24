@@ -15,6 +15,7 @@ class _SearchParamsState extends State<SearchParams> {
   TextEditingController _searchController = TextEditingController();
 
   _SearchParamsState(this.sparams);
+  int _pageSize;
 
   @override
   void dispose() {
@@ -23,8 +24,14 @@ class _SearchParamsState extends State<SearchParams> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     _searchController.text = this.sparams.item2;
+    _pageSize = this.sparams.item1;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return FocusTraversalGroup(
         child: Form(
             autovalidateMode: AutovalidateMode.always,
@@ -40,6 +47,31 @@ class _SearchParamsState extends State<SearchParams> {
                 ),
               ),
               Padding(
+                padding: EdgeInsets.all(20.0),
+                child: DropdownButtonFormField(
+                    value: this.sparams.item1,
+                    decoration: InputDecoration(
+                      labelText: 'تعداد در هر صفحه',
+                    ),
+                    items: [
+                      DropdownMenuItem(
+                        child: Text("20"),
+                        value: 20,
+                      ),
+                      DropdownMenuItem(
+                        child: Text("50"),
+                        value: 50,
+                      ),
+                      DropdownMenuItem(child: Text("100"), value: 100),
+                      DropdownMenuItem(child: Text("همه"), value: -1)
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        _pageSize = value;
+                      });
+                    }),
+              ),
+              Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ButtonBar(
                     alignment: MainAxisAlignment.end,
@@ -47,8 +79,8 @@ class _SearchParamsState extends State<SearchParams> {
                       ElevatedButton(
                         child: Text('تأیید'),
                         onPressed: () {
-                          Navigator.of(context).pop(
-                              Tuple2<int, String>(20, _searchController.text));
+                          Navigator.of(context).pop(Tuple2<int, String>(
+                              _pageSize, _searchController.text));
                         },
                       ),
                       TextButton(

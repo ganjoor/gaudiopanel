@@ -78,7 +78,11 @@ class _RecitationsState extends State<RecitationsDataSection> {
         RecitationViewModel narrationCopy =
             RecitationViewModel.fromJson(narration.toJson());
         narrationCopy.isModified = false;
-        NarrationEdit _narrationEdit = NarrationEdit(narration: narrationCopy);
+        NarrationEdit _narrationEdit = NarrationEdit(
+          narration: narrationCopy,
+          loadingStateChanged: this.loadingStateChanged,
+          snackbarNeeded: this.snackbarNeeded,
+        );
         return AlertDialog(
           title: Text('ویرایش خوانش'),
           content: SingleChildScrollView(

@@ -1,6 +1,7 @@
 import 'package:after_layout/after_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gaudiopanel/callbacks/g-ui-callbacks.dart';
 import 'package:gaudiopanel/models/recitation/recitation-viewmodel.dart';
 import 'package:gaudiopanel/services/auth-service.dart';
 import 'package:gaudiopanel/widgets/audio-player-widgets.dart';
@@ -9,20 +10,28 @@ import 'package:url_launcher/url_launcher.dart';
 
 class NarrationEdit extends StatefulWidget {
   final RecitationViewModel narration;
+  final LoadingStateChanged loadingStateChanged;
+  final SnackbarNeeded snackbarNeeded;
 
-  const NarrationEdit({Key key, this.narration}) : super(key: key);
+  const NarrationEdit(
+      {Key key, this.narration, this.loadingStateChanged, this.snackbarNeeded})
+      : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _NarrationEditState(this.narration);
+  State<StatefulWidget> createState() => _NarrationEditState(
+      this.narration, this.loadingStateChanged, this.snackbarNeeded);
 }
 
 class _NarrationEditState extends State<NarrationEdit>
     with AfterLayoutMixin<NarrationEdit> {
   final RecitationViewModel narration;
+  final LoadingStateChanged loadingStateChanged;
+  final SnackbarNeeded snackbarNeeded;
   AudioPlayer _player;
   bool _canModerate = false;
 
-  _NarrationEditState(this.narration);
+  _NarrationEditState(
+      this.narration, this.loadingStateChanged, this.snackbarNeeded);
 
   TextEditingController _titleController = TextEditingController();
   TextEditingController _artistNameController = TextEditingController();
@@ -56,8 +65,8 @@ class _NarrationEditState extends State<NarrationEdit>
     }
     var verse = narration.verses
         .where((element) =>
-            position.inMilliseconds >= element.audioStartMilliseconds)
-        .first;
+            element.audioStartMilliseconds < position.inMilliseconds)
+        .last;
     if (verse == null) {
       return '';
     }
@@ -179,7 +188,8 @@ class _NarrationEditState extends State<NarrationEdit>
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ControlButtons(_player, narration),
+                    ControlButtons(_player, narration, this.loadingStateChanged,
+                        this.snackbarNeeded),
                     StreamBuilder<Duration>(
                       stream: _player.durationStream,
                       builder: (context, snapshot) {

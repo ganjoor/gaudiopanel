@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:gaudiopanel/callbacks/g-ui-callbacks.dart';
 import 'package:gaudiopanel/models/recitation/recitation-viewmodel.dart';
 import 'package:gaudiopanel/services/recitation-service.dart';
 import 'package:just_audio/just_audio.dart';
@@ -8,8 +9,11 @@ import 'package:just_audio/just_audio.dart';
 class ControlButtons extends StatelessWidget {
   final AudioPlayer player;
   final RecitationViewModel narration;
+  final LoadingStateChanged loadingStateChanged;
+  final SnackbarNeeded snackbarNeeded;
 
-  ControlButtons(this.player, this.narration);
+  ControlButtons(this.player, this.narration, this.loadingStateChanged,
+      this.snackbarNeeded);
 
   @override
   Widget build(BuildContext context) {
@@ -51,9 +55,14 @@ class ControlButtons extends StatelessWidget {
                 onPressed: () async {
                   var service = RecitationService();
                   if (this.narration.verses == null) {
-                    this.narration.verses =
-                        (await service.getVerses(this.narration.id, false))
-                            .item1;
+                    this.loadingStateChanged(true);
+                    var res = await service.getVerses(this.narration.id, false);
+                    this.loadingStateChanged(false);
+                    if (res.item2.isNotEmpty) {
+                      this.snackbarNeeded(res.item2);
+                    } else {
+                      this.narration.verses = res.item1;
+                    }
                   }
                   player.setUrl(service.getAudioFileUrl(this.narration.id));
                   player.play();
