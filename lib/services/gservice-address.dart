@@ -1,3 +1,3 @@
 class GServiceAddress {
-  static const String Url = 'http://localhost:3439';
+  static const String Url = 'https://ganjgah.ir';
 }
