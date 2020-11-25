@@ -463,7 +463,7 @@ class MainFormWidgetState extends State<MainForm>
 
       _key.currentState.showSnackBar(SnackBar(
         content: Text('موارد منتقل شده: ' + transfered.toString()),
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.green,
       ));
 
       await _loadData();
@@ -722,6 +722,41 @@ class MainFormWidgetState extends State<MainForm>
                         await _transferOwnership();
                       },
                     ),
+                    visible: _canImport &&
+                        _activeSection == GActiveFormSection.Profiles,
+                  ),
+                  Visibility(
+                    child: IconButton(
+                        icon: Icon(Icons.people),
+                        onPressed: () async {
+                          if (await _confirm('انتقال به بالا',
+                              'از انتقال خوانشهای فریدون فرح‌اندوز به بالا اطمینان دارید؟')) {
+                            setState(() {
+                              _isLoading = true;
+                            });
+
+                            var ret = await RecitationService()
+                                .makeFFRecitationsFirst(false);
+
+                            setState(() {
+                              _isLoading = false;
+                            });
+
+                            if (ret.item2.isNotEmpty) {
+                              _key.currentState.showSnackBar(SnackBar(
+                                content: Text(ret.item2),
+                                backgroundColor: Colors.red,
+                              ));
+                            } else {
+                              _key.currentState.showSnackBar(SnackBar(
+                                content: Text(
+                                    'تعداد خوانش‌های تحت تأثیر قرار گرفته: ' +
+                                        ret.item1.toString()),
+                                backgroundColor: Colors.green,
+                              ));
+                            }
+                          }
+                        }),
                     visible: _canImport &&
                         _activeSection == GActiveFormSection.Profiles,
                   )
