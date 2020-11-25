@@ -73,7 +73,7 @@ class _NarrationEditState extends State<NarrationEdit>
 
   @override
   void afterFirstLayout(BuildContext context) async {
-    if (await AuthService().hasPermission('narration', 'moderate')) {
+    if (await AuthService().hasPermission('recitation', 'moderate')) {
       setState(() {
         _canModerate = true;
       });

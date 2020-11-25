@@ -571,4 +571,52 @@ class RecitationService {
     var apiRoot = GServiceAddress.Url;
     return '$apiRoot/api/audio/file/$id.mp3';
   }
+
+  /// Transfer Recitations Ownership
+  ///
+  ///
+  Future<Tuple2<int, String>> transferRecitationsOwnership(
+      String targetEmailAddress, String artistName, bool error401) async {
+    try {
+      LoggedOnUserModel userInfo = await _storageService.userInfo;
+      if (userInfo == null) {
+        return Tuple2<int, String>(0, 'کاربر وارد سیستم نشده است.');
+      }
+      var apiRoot = GServiceAddress.Url;
+      http.Response response = await http.put(
+        '$apiRoot/api/audio/chown?targetEmailAddress=$targetEmailAddress&artistName=$artistName',
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
+        },
+      );
+
+      if (!error401 && response.statusCode == 401) {
+        String errSessionRenewal = await AuthService().relogin();
+        if (errSessionRenewal.isNotEmpty) {
+          return Tuple2<int, String>(0, errSessionRenewal);
+        }
+        return await transferRecitationsOwnership(
+            targetEmailAddress, artistName, true);
+      }
+
+      if (response.statusCode == 200) {
+        int ret = json.decode(response.body);
+
+        return Tuple2<int, String>(ret, '');
+      } else {
+        return Tuple2<int, String>(
+            0,
+            'کد برگشتی: ' +
+                response.statusCode.toString() +
+                ' ' +
+                response.body);
+      }
+    } catch (e) {
+      return Tuple2<int, String>(
+          0,
+          'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
+              e.toString());
+    }
+  }
 }

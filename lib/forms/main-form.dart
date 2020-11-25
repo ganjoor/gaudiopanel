@@ -2,6 +2,7 @@ import 'package:after_layout/after_layout.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gaudiopanel/forms/chwon-to-email.dart';
 import 'package:gaudiopanel/forms/login.dart';
 import 'package:gaudiopanel/forms/main-form-sections/profiles-data-section.dart';
 import 'package:gaudiopanel/forms/profile-edit.dart';
@@ -37,6 +38,7 @@ class MainFormWidgetState extends State<MainForm>
   final GlobalKey<ScaffoldMessengerState> _key =
       GlobalKey<ScaffoldMessengerState>();
   bool _canModerate = false;
+  bool _canImport = false;
   bool _isLoading = false;
   GActiveFormSection _activeSection = GActiveFormSection.DraftRecitations;
   int _narrationsPageNumber = 1;
@@ -165,9 +167,14 @@ class MainFormWidgetState extends State<MainForm>
 
   @override
   void afterFirstLayout(BuildContext context) async {
-    if (await AuthService().hasPermission('narration', 'moderate')) {
+    if (await AuthService().hasPermission('recitation', 'moderate')) {
       setState(() {
         _canModerate = true;
+      });
+    }
+    if (await AuthService().hasPermission('recitation', 'import')) {
+      setState(() {
+        _canImport = true;
       });
     }
     await _loadData();
@@ -400,6 +407,66 @@ class MainFormWidgetState extends State<MainForm>
           });
         }
       }
+    }
+  }
+
+  Future<String> _getEmail() async {
+    return showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('انتقال مالکیت'),
+          content: SingleChildScrollView(
+            child: ChownToEmail(),
+          ),
+        );
+      },
+    );
+  }
+
+  Future _transferOwnership() async {
+    var markedProfiles =
+        _profiles.items.where((element) => element.isMarked).toList();
+    if (markedProfiles.isEmpty) {
+      _key.currentState.showSnackBar(SnackBar(
+        content: Text('لطفاً نمایه‌های مد نظر را علامتگذاری کنید.'),
+        backgroundColor: Colors.red,
+      ));
+      return;
+    }
+    String email = await _getEmail();
+    if (email != null) {
+      int transfered = 0;
+      for (var profile in markedProfiles) {
+        setState(() {
+          _isLoading = true;
+        });
+
+        var ret = await RecitationService()
+            .transferRecitationsOwnership(email, profile.artistName, false);
+
+        setState(() {
+          _isLoading = false;
+        });
+
+        if (ret.item2.isNotEmpty) {
+          _key.currentState.showSnackBar(SnackBar(
+            content: Text(ret.item2),
+            backgroundColor: Colors.red,
+          ));
+          break;
+        } else {
+          transfered += ret.item1;
+        }
+      }
+
+      _key.currentState.showSnackBar(SnackBar(
+        content: Text('موارد منتقل شده: ' + transfered.toString()),
+        backgroundColor: Colors.red,
+      ));
+
+      await _loadData();
     }
   }
 
@@ -647,7 +714,17 @@ class MainFormWidgetState extends State<MainForm>
                                   GActiveFormSection.DraftRecitations &&
                               _canModerate) ||
                           _activeSection ==
-                              GActiveFormSection.AllUsersPendingRecitations)
+                              GActiveFormSection.AllUsersPendingRecitations),
+                  Visibility(
+                    child: IconButton(
+                      icon: Icon(Icons.transfer_within_a_station),
+                      onPressed: () async {
+                        await _transferOwnership();
+                      },
+                    ),
+                    visible: _canImport &&
+                        _activeSection == GActiveFormSection.Profiles,
+                  )
                 ],
               ),
               drawer: Drawer(
