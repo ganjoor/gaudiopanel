@@ -716,4 +716,43 @@ class RecitationService {
               e.toString());
     }
   }
+
+  /// Retry publish
+  ///
+  ///returns error string if any error occurs
+  ///retrurns empty response if the call is successful
+  Future<String> retryPublish(bool error401) async {
+    try {
+      LoggedOnUserModel userInfo = await _storageService.userInfo;
+      if (userInfo == null) {
+        return 'کاربر وارد سیستم نشده است.';
+      }
+      var apiRoot = GServiceAddress.Url;
+      http.Response response =
+          await http.post('$apiRoot/api/audio/retrypublish', headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
+      });
+
+      if (!error401 && response.statusCode == 401) {
+        String errSessionRenewal = await AuthService().relogin();
+        if (errSessionRenewal.isNotEmpty) {
+          return errSessionRenewal;
+        }
+        return await retryPublish(true);
+      }
+
+      if (response.statusCode == 200) {
+        return '';
+      } else {
+        return 'کد برگشتی: ' +
+            response.statusCode.toString() +
+            ' ' +
+            response.body;
+      }
+    } catch (e) {
+      return 'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
+          e.toString();
+    }
+  }
 }

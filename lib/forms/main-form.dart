@@ -13,12 +13,14 @@ import 'package:gaudiopanel/models/recitation/recitation-viewmodel.dart';
 import 'package:gaudiopanel/models/recitation/uploaded-item-viewmodel.dart';
 import 'package:gaudiopanel/models/recitation/user-recitation-profile-viewmodel.dart';
 import 'package:gaudiopanel/services/auth-service.dart';
+import 'package:gaudiopanel/services/storage-service.dart';
 import 'package:gaudiopanel/services/upload-recitation-service.dart';
 import 'package:gaudiopanel/services/recitation-service.dart';
 import 'package:gaudiopanel/forms/main-form-sections/recitations-data-section.dart';
 import 'package:gaudiopanel/forms/main-form-sections/uploads-data-section.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:tuple/tuple.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 enum GActiveFormSection {
   DraftRecitations,
@@ -40,6 +42,7 @@ class MainFormWidgetState extends State<MainForm>
       GlobalKey<ScaffoldMessengerState>();
   bool _canModerate = false;
   bool _canImport = false;
+  String _userFrinedlyName = '';
   bool _isLoading = false;
   GActiveFormSection _activeSection = GActiveFormSection.DraftRecitations;
   int _narrationsPageNumber = 1;
@@ -195,6 +198,11 @@ class MainFormWidgetState extends State<MainForm>
 
   @override
   void afterFirstLayout(BuildContext context) async {
+    var user = await StorageService().userInfo;
+    if (user != null) {
+      _userFrinedlyName = user.user.firstName + ' ' + user.user.sureName;
+    }
+
     if (await AuthService().hasPermission('recitation', 'moderate')) {
       setState(() {
         _canModerate = true;
@@ -554,6 +562,11 @@ class MainFormWidgetState extends State<MainForm>
           _uploads.paginationMetadata.totalCount.toString() +
           ')';
     }
+
+    if (_activeSection == GActiveFormSection.SynchronizationQueue &&
+        _narrations != null) {
+      return _narrations.items.length.toString() + ' مورد';
+    }
     return '';
   }
 
@@ -592,7 +605,9 @@ class MainFormWidgetState extends State<MainForm>
                             }
                           }
                         }),
-                    visible: _activeSection != GActiveFormSection.Uploads,
+                    visible: _activeSection != GActiveFormSection.Uploads &&
+                        _activeSection !=
+                            GActiveFormSection.SynchronizationQueue,
                   ),
                   Visibility(
                     child: IconButton(
@@ -613,7 +628,9 @@ class MainFormWidgetState extends State<MainForm>
                             }
                           }
                         }),
-                    visible: _activeSection != GActiveFormSection.Uploads,
+                    visible: _activeSection != GActiveFormSection.Uploads &&
+                        _activeSection !=
+                            GActiveFormSection.SynchronizationQueue,
                   ),
                   Visibility(
                       child: IconButton(
@@ -627,7 +644,9 @@ class MainFormWidgetState extends State<MainForm>
                           }
                         },
                       ),
-                      visible: _activeSection != GActiveFormSection.Uploads),
+                      visible: _activeSection != GActiveFormSection.Uploads &&
+                          _activeSection !=
+                              GActiveFormSection.SynchronizationQueue),
                   Visibility(
                       child: IconButton(
                         icon: Icon(Icons.publish),
@@ -746,6 +765,7 @@ class MainFormWidgetState extends State<MainForm>
                               GActiveFormSection.AllUsersPendingRecitations),
                   Visibility(
                     child: IconButton(
+                      tooltip: 'انتقال مالکیت',
                       icon: Icon(Icons.transfer_within_a_station),
                       onPressed: () async {
                         await _transferOwnership();
@@ -757,6 +777,7 @@ class MainFormWidgetState extends State<MainForm>
                   Visibility(
                     child: IconButton(
                         icon: Icon(Icons.people),
+                        tooltip: 'انتقال خوانش‌های فریدون فرح‌اندوز',
                         onPressed: () async {
                           if (await _confirm('انتقال به بالا',
                               'از انتقال خوانشهای فریدون فرح‌اندوز به بالا اطمینان دارید؟')) {
@@ -788,7 +809,31 @@ class MainFormWidgetState extends State<MainForm>
                         }),
                     visible: _canImport &&
                         _activeSection == GActiveFormSection.Profiles,
-                  )
+                  ),
+                  Visibility(
+                    child: IconButton(
+                      icon: Icon(Icons.upload_file),
+                      tooltip: 'تلاش مجدد',
+                      onPressed: () async {
+                        setState(() {
+                          _isLoading = true;
+                        });
+                        var ret = await RecitationService().retryPublish(false);
+                        setState(() {
+                          _isLoading = false;
+                        });
+                        if (ret.isNotEmpty) {
+                          _key.currentState.showSnackBar(SnackBar(
+                            content: Text('خطا در تلاش مجدد: ' + ret),
+                            backgroundColor: Colors.red,
+                          ));
+                        }
+                      },
+                    ),
+                    visible: _canModerate &&
+                        _activeSection ==
+                            GActiveFormSection.SynchronizationQueue,
+                  ),
                 ],
               ),
               drawer: Drawer(
@@ -803,7 +848,7 @@ class MainFormWidgetState extends State<MainForm>
                       child: Column(
                         children: [
                           Text(
-                            'سلام!',
+                            'سلام ' + _userFrinedlyName,
                           ),
                         ],
                       ),
@@ -931,6 +976,20 @@ class MainFormWidgetState extends State<MainForm>
                       },
                     ),
                     ListTile(
+                      title: Text('مشخصات کاربری'),
+                      leading: Icon(Icons.person,
+                          color: Theme.of(context).primaryColor),
+                      onTap: () async {
+                        var url = 'https://museum.ganjoor.net/profile';
+                        if (await canLaunch(url)) {
+                          await launch(url);
+                        } else {
+                          throw 'خطا در نمایش نشانی $url';
+                        }
+                        Navigator.of(context).pop(); //close drawer
+                      },
+                    ),
+                    ListTile(
                       title: Text('خروج'),
                       leading: Icon(Icons.logout,
                           color: Theme.of(context).primaryColor),
@@ -959,6 +1018,7 @@ class MainFormWidgetState extends State<MainForm>
                 Visibility(
                     child: IconButton(
                       icon: Icon(Icons.first_page),
+                      tooltip: 'اولین صفحه',
                       onPressed: () async {
                         if (_activeSection ==
                                 GActiveFormSection.DraftRecitations ||
@@ -981,6 +1041,7 @@ class MainFormWidgetState extends State<MainForm>
                 Visibility(
                     child: IconButton(
                       icon: Icon(Icons.navigate_before),
+                      tooltip: 'صفحهٔ قبل',
                       onPressed: () async {
                         if (_activeSection ==
                                 GActiveFormSection.DraftRecitations ||
@@ -1013,6 +1074,7 @@ class MainFormWidgetState extends State<MainForm>
                 Visibility(
                     child: IconButton(
                       icon: Icon(Icons.navigate_next),
+                      tooltip: 'صفحهٔ بعد',
                       onPressed: () async {
                         if (_activeSection ==
                                 GActiveFormSection.DraftRecitations ||
@@ -1042,6 +1104,7 @@ class MainFormWidgetState extends State<MainForm>
                 Visibility(
                     child: IconButton(
                       icon: Icon(Icons.last_page),
+                      tooltip: 'صفحهٔ آخر',
                       onPressed: () async {
                         if (_activeSection ==
                                 GActiveFormSection.DraftRecitations ||
@@ -1070,6 +1133,7 @@ class MainFormWidgetState extends State<MainForm>
                 Visibility(
                     child: IconButton(
                       icon: Icon(Icons.search),
+                      tooltip: 'جستجو',
                       onPressed: () async {
                         var res = await _getSearchParams();
                         if (res != null) {
