@@ -61,7 +61,7 @@ class RecitationViewModel {
   String audioSrcUrl;
   final int mp3SizeInBytes;
   final String uploadDate;
-  final List<int> audioSyncStatusArray;
+  final int audioSyncStatus;
   int reviewStatus;
   List<RecitationVerseSync> verses;
   final String reviewMsg;
@@ -82,7 +82,7 @@ class RecitationViewModel {
       this.audioSrcUrl,
       this.mp3SizeInBytes,
       this.uploadDate,
-      this.audioSyncStatusArray,
+      this.audioSyncStatus,
       this.reviewStatus,
       this.reviewMsg});
 
@@ -106,8 +106,7 @@ class RecitationViewModel {
         audioSrcUrl: json['audioSrcUrl'],
         mp3SizeInBytes: json['mp3SizeInBytes'],
         uploadDate: json['uploadDate'],
-        audioSyncStatusArray:
-            (json['audioSyncStatusArray'] as List).cast<int>().toList(),
+        audioSyncStatus: json['audioSyncStatus'],
         reviewStatus: json['reviewStatus'],
         reviewMsg: json['reviewMsg']);
   }
@@ -129,7 +128,7 @@ class RecitationViewModel {
     m['audioSrcUrl'] = audioSrcUrl;
     m['mp3SizeInBytes'] = mp3SizeInBytes;
     m['uploadDate'] = uploadDate;
-    m['audioSyncStatusArray'] = audioSyncStatusArray;
+    m['audioSyncStatus'] = audioSyncStatus;
     m['reviewStatus'] = reviewStatus;
     m['reviewMsg'] = reviewMsg;
     return m;
