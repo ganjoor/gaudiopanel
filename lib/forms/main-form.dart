@@ -166,6 +166,17 @@ class MainFormWidgetState extends State<MainForm>
         _narrations.items.addAll(narrations.item1);
         _isLoading = false;
       });
+
+      if (_canImport) {
+        setState(() {
+          _isLoading = true;
+        });
+        var publishQueue = await RecitationService().getPublishQueue(false);
+        setState(() {
+          _isLoading = false;
+        });
+        print(publishQueue);
+      }
     } else {
       setState(() {
         _isLoading = false;

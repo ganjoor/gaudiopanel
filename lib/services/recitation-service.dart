@@ -755,4 +755,46 @@ class RecitationService {
           e.toString();
     }
   }
+
+  /// get publish queue
+  ///
+  Future<Tuple2<dynamic, String>> getPublishQueue(bool error401) async {
+    try {
+      LoggedOnUserModel userInfo = await _storageService.userInfo;
+      if (userInfo == null) {
+        return Tuple2<dynamic, String>(null, 'کاربر وارد سیستم نشده است.');
+      }
+      var apiRoot = GServiceAddress.Url;
+      http.Response response = await http.get(
+          '$apiRoot/api/audio/publishqueue?inProgress=true&finished=false',
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
+          });
+
+      if (!error401 && response.statusCode == 401) {
+        String errSessionRenewal = await AuthService().relogin();
+        if (errSessionRenewal.isNotEmpty) {
+          return Tuple2<dynamic, String>(null, errSessionRenewal);
+        }
+        return await getPublishQueue(true);
+      }
+
+      if (response.statusCode == 200) {
+        return Tuple2<dynamic, String>(json.decode(response.body), '');
+      } else {
+        return Tuple2<dynamic, String>(
+            null,
+            'کد برگشتی: ' +
+                response.statusCode.toString() +
+                ' ' +
+                response.body);
+      }
+    } catch (e) {
+      return Tuple2<dynamic, String>(
+          null,
+          'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
+              e.toString());
+    }
+  }
 }
