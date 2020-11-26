@@ -102,21 +102,48 @@ class LoginFormState extends State<LoginForm> {
                               decoration: InputDecoration(
                                   hintText: 'گذرواژه', labelText: 'گذرواژه'),
                             ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            SizedBox(
+                                width: double.maxFinite,
+                                child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: RaisedButton.icon(
+                                      icon: Icon(Icons.login),
+                                      label: Text('ورود'),
+                                      color: Colors.green,
+                                      onPressed: _login,
+                                    ))),
+                            SizedBox(
+                              height: 10.0,
+                            ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                RaisedButton.icon(
-                                  icon: Icon(Icons.login),
-                                  label: Text('ورود'),
-                                  onPressed: _login,
-                                ),
                                 RaisedButton.icon(
                                   icon: Icon(Icons.launch),
                                   label: Text('ثبت نام'),
                                   onPressed: () async {
                                     var url =
                                         'https://museum.ganjoor.net/signup';
+                                    if (await canLaunch(url)) {
+                                      await launch(url);
+                                    } else {
+                                      throw 'خطا در نمایش نشانی $url';
+                                    }
+                                  },
+                                ),
+                                SizedBox(
+                                  width: 10.0,
+                                ),
+                                RaisedButton.icon(
+                                  icon: Icon(Icons.help),
+                                  label: Text('فراموشی گذرواژه'),
+                                  onPressed: () async {
+                                    var url =
+                                        'https://museum.ganjoor.net/forgot-password';
                                     if (await canLaunch(url)) {
                                       await launch(url);
                                     } else {

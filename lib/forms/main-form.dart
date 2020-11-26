@@ -42,6 +42,7 @@ class MainFormWidgetState extends State<MainForm>
       GlobalKey<ScaffoldMessengerState>();
   bool _canModerate = false;
   bool _canImport = false;
+  bool _canReOrder = false;
   String _userFrinedlyName = '';
   bool _isLoading = false;
   GActiveFormSection _activeSection = GActiveFormSection.DraftRecitations;
@@ -222,6 +223,11 @@ class MainFormWidgetState extends State<MainForm>
     if (await AuthService().hasPermission('recitation', 'import')) {
       setState(() {
         _canImport = true;
+      });
+    }
+    if (await AuthService().hasPermission('recitation', 'reorder')) {
+      setState(() {
+        _canReOrder = true;
       });
     }
     await _loadData();
@@ -782,7 +788,7 @@ class MainFormWidgetState extends State<MainForm>
                         await _transferOwnership();
                       },
                     ),
-                    visible: _canImport &&
+                    visible: _canModerate &&
                         _activeSection == GActiveFormSection.Profiles,
                   ),
                   Visibility(
@@ -818,7 +824,7 @@ class MainFormWidgetState extends State<MainForm>
                             }
                           }
                         }),
-                    visible: _canImport &&
+                    visible: _canReOrder &&
                         _activeSection == GActiveFormSection.Profiles,
                   ),
                   Visibility(
