@@ -25,7 +25,8 @@ enum GActiveFormSection {
   AllMyRecitations,
   AllUsersPendingRecitations,
   Uploads,
-  Profiles
+  Profiles,
+  SynchronizationQueue
 }
 
 class MainForm extends StatefulWidget {
@@ -64,6 +65,8 @@ class MainFormWidgetState extends State<MainForm>
         return 'پیشخان خوانشگران گنجور » همهٔ خوانش‌های من';
       case GActiveFormSection.AllUsersPendingRecitations:
         return 'پیشخان خوانشگران گنجور » خوانش‌های در انتظار تأیید';
+      case GActiveFormSection.SynchronizationQueue:
+        return 'پیشخان خوانشگران گنجور » صف انتشار در گنجور';
     }
     return '';
   }
@@ -149,6 +152,28 @@ class MainFormWidgetState extends State<MainForm>
     }
   }
 
+  Future<void> _loadSyncronizationQueueData() async {
+    setState(() {
+      _isLoading = true;
+    });
+    var narrations = await RecitationService().getSynchronizationQueue(false);
+    if (narrations.item2.isEmpty) {
+      setState(() {
+        _narrations.items.clear();
+        _narrations.items.addAll(narrations.item1);
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+      _key.currentState.showSnackBar(SnackBar(
+        content: Text("خطا در دریافت صف انتشار در سایت: " + narrations.item2),
+        backgroundColor: Colors.red,
+      ));
+    }
+  }
+
   Future<void> _loadData() async {
     switch (_activeSection) {
       case GActiveFormSection.DraftRecitations:
@@ -161,6 +186,9 @@ class MainFormWidgetState extends State<MainForm>
         break;
       case GActiveFormSection.Profiles:
         await _loadProfilesData();
+        break;
+      case GActiveFormSection.SynchronizationQueue:
+        await _loadSyncronizationQueueData();
         break;
     }
   }
@@ -475,6 +503,7 @@ class MainFormWidgetState extends State<MainForm>
       case GActiveFormSection.DraftRecitations:
       case GActiveFormSection.AllMyRecitations:
       case GActiveFormSection.AllUsersPendingRecitations:
+      case GActiveFormSection.SynchronizationQueue:
         return RecitationsDataSection(
           narrations: _narrations,
           loadingStateChanged: _loadingStateChanged,
@@ -881,6 +910,27 @@ class MainFormWidgetState extends State<MainForm>
                       },
                     ),
                     ListTile(
+                      title: Text('صف انتشار در گنجور'),
+                      leading: Icon(Icons.send_to_mobile,
+                          color: Theme.of(context).primaryColor),
+                      selected: _activeSection ==
+                          GActiveFormSection.SynchronizationQueue,
+                      onTap: () async {
+                        if (_activeSection !=
+                            GActiveFormSection.SynchronizationQueue) {
+                          setState(() {
+                            _activeSection =
+                                GActiveFormSection.SynchronizationQueue;
+                          });
+                          if (_profiles.items.length == 0) {
+                            await _loadData();
+                          }
+
+                          Navigator.of(context).pop(); //close drawer
+                        }
+                      },
+                    ),
+                    ListTile(
                       title: Text('خروج'),
                       leading: Icon(Icons.logout,
                           color: Theme.of(context).primaryColor),
@@ -925,7 +975,9 @@ class MainFormWidgetState extends State<MainForm>
                         }
                       },
                     ),
-                    visible: _activeSection != GActiveFormSection.Profiles),
+                    visible: _activeSection != GActiveFormSection.Profiles &&
+                        _activeSection !=
+                            GActiveFormSection.SynchronizationQueue),
                 Visibility(
                     child: IconButton(
                       icon: Icon(Icons.navigate_before),
@@ -955,7 +1007,9 @@ class MainFormWidgetState extends State<MainForm>
                         }
                       },
                     ),
-                    visible: _activeSection != GActiveFormSection.Profiles),
+                    visible: _activeSection != GActiveFormSection.Profiles &&
+                        _activeSection !=
+                            GActiveFormSection.SynchronizationQueue),
                 Visibility(
                     child: IconButton(
                       icon: Icon(Icons.navigate_next),
@@ -982,7 +1036,9 @@ class MainFormWidgetState extends State<MainForm>
                         }
                       },
                     ),
-                    visible: _activeSection != GActiveFormSection.Profiles),
+                    visible: _activeSection != GActiveFormSection.Profiles &&
+                        _activeSection !=
+                            GActiveFormSection.SynchronizationQueue),
                 Visibility(
                     child: IconButton(
                       icon: Icon(Icons.last_page),
@@ -1008,20 +1064,26 @@ class MainFormWidgetState extends State<MainForm>
                         }
                       },
                     ),
-                    visible: _activeSection != GActiveFormSection.Profiles),
-                IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: () async {
-                    var res = await _getSearchParams();
-                    if (res != null) {
-                      setState(() {
-                        _pageSize = res.item1;
-                        _searchTerm = res.item2;
-                      });
-                      await _loadData();
-                    }
-                  },
-                )
+                    visible: _activeSection != GActiveFormSection.Profiles &&
+                        _activeSection !=
+                            GActiveFormSection.SynchronizationQueue),
+                Visibility(
+                    child: IconButton(
+                      icon: Icon(Icons.search),
+                      onPressed: () async {
+                        var res = await _getSearchParams();
+                        if (res != null) {
+                          setState(() {
+                            _pageSize = res.item1;
+                            _searchTerm = res.item2;
+                          });
+                          await _loadData();
+                        }
+                      },
+                    ),
+                    visible: _activeSection != GActiveFormSection.Uploads &&
+                        _activeSection !=
+                            GActiveFormSection.SynchronizationQueue)
               ],
               body: Builder(builder: (context) => Center(child: items)),
               floatingActionButton: FloatingActionButton(
@@ -1031,6 +1093,7 @@ class MainFormWidgetState extends State<MainForm>
                     case GActiveFormSection.AllMyRecitations:
                     case GActiveFormSection.AllUsersPendingRecitations:
                     case GActiveFormSection.Uploads:
+                    case GActiveFormSection.SynchronizationQueue:
                       await _newNarrations();
                       if (_activeSection == GActiveFormSection.Uploads) {
                         await _loadData();
