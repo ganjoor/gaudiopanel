@@ -168,7 +168,7 @@ class MainFormWidgetState extends State<MainForm>
         _isLoading = false;
       });
 
-      if (_canImport) {
+      if (_canModerate) {
         setState(() {
           _isLoading = true;
         });
