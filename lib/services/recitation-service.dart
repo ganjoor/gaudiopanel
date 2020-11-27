@@ -759,17 +759,19 @@ class RecitationService {
 
   /// get publish queue
   ///
-  Future<Tuple2<List<RecitationPublishingTrackerViewModel>, String>>
-      getPublishQueue(bool error401) async {
+  Future<
+      Tuple2<PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>,
+          String>> getPublishQueue(bool error401) async {
     try {
       LoggedOnUserModel userInfo = await _storageService.userInfo;
       if (userInfo == null) {
-        return Tuple2<List<RecitationPublishingTrackerViewModel>, String>(
-            null, 'کاربر وارد سیستم نشده است.');
+        return Tuple2<
+            PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>,
+            String>(null, 'کاربر وارد سیستم نشده است.');
       }
       var apiRoot = GServiceAddress.Url;
       http.Response response = await http
-          .get('$apiRoot/api/audio/publishqueue?unfinished=false', headers: {
+          .get('$apiRoot/api/audio/publishqueue?unfinished=true', headers: {
         'Content-Type': 'application/json; charset=UTF-8',
         HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
       });
@@ -777,8 +779,9 @@ class RecitationService {
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
         if (errSessionRenewal.isNotEmpty) {
-          return Tuple2<List<RecitationPublishingTrackerViewModel>, String>(
-              null, errSessionRenewal);
+          return Tuple2<
+              PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>,
+              String>(null, errSessionRenewal);
         }
         return await getPublishQueue(true);
       }
@@ -791,10 +794,18 @@ class RecitationService {
         for (var item in items) {
           ret.add(RecitationPublishingTrackerViewModel.fromJson(item));
         }
-        return Tuple2<List<RecitationPublishingTrackerViewModel>, String>(
-            ret, '');
+        return Tuple2<
+                PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>,
+                String>(
+            PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>(
+                items: ret,
+                paginationMetadata: PaginationMetadata.fromJson(
+                    json.decode(response.headers['paging-headers']))),
+            '');
       } else {
-        return Tuple2<List<RecitationPublishingTrackerViewModel>, String>(
+        return Tuple2<
+                PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>,
+                String>(
             null,
             'کد برگشتی: ' +
                 response.statusCode.toString() +
@@ -802,7 +813,9 @@ class RecitationService {
                 response.body);
       }
     } catch (e) {
-      return Tuple2<List<RecitationPublishingTrackerViewModel>, String>(
+      return Tuple2<
+              PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>,
+              String>(
           null,
           'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
               e.toString());

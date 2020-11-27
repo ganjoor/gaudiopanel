@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:gaudiopanel/forms/chwon-to-email.dart';
 import 'package:gaudiopanel/forms/login.dart';
 import 'package:gaudiopanel/forms/main-form-sections/profiles-data-section.dart';
+import 'package:gaudiopanel/forms/main-form-sections/publish-queue-section.dart';
 import 'package:gaudiopanel/forms/profile-edit.dart';
 import 'package:gaudiopanel/forms/search-params.dart';
 import 'package:gaudiopanel/forms/upload-files.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
+import 'package:gaudiopanel/models/recitation/recitation-publishing-tracker-viewmodel.dart';
 import 'package:gaudiopanel/models/recitation/recitation-viewmodel.dart';
 import 'package:gaudiopanel/models/recitation/uploaded-item-viewmodel.dart';
 import 'package:gaudiopanel/models/recitation/user-recitation-profile-viewmodel.dart';
@@ -56,6 +58,9 @@ class MainFormWidgetState extends State<MainForm>
       PaginatedItemsResponseModel<UploadedItemViewModel>(items: []);
   PaginatedItemsResponseModel<UserRecitationProfileViewModel> _profiles =
       PaginatedItemsResponseModel<UserRecitationProfileViewModel>(items: []);
+  PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel> _queue =
+      PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>(
+          items: []);
   String get title {
     switch (_activeSection) {
       case GActiveFormSection.Uploads:
@@ -159,30 +164,19 @@ class MainFormWidgetState extends State<MainForm>
     setState(() {
       _isLoading = true;
     });
-    var narrations = await RecitationService().getSynchronizationQueue(false);
-    if (narrations.item2.isEmpty) {
+    var publishQueue = await RecitationService().getPublishQueue(false);
+    setState(() {
+      _isLoading = false;
+    });
+    if (publishQueue.item2.isEmpty) {
       setState(() {
-        _narrations.items.clear();
-        _narrations.items.addAll(narrations.item1);
-        _isLoading = false;
+        this._queue.items.clear();
+        this._queue.items.addAll(publishQueue.item1.items);
+        this._queue.paginationMetadata = publishQueue.item1.paginationMetadata;
       });
-
-      if (_canModerate) {
-        setState(() {
-          _isLoading = true;
-        });
-        var publishQueue = await RecitationService().getPublishQueue(false);
-        setState(() {
-          _isLoading = false;
-        });
-        print(publishQueue);
-      }
     } else {
-      setState(() {
-        _isLoading = false;
-      });
       _key.currentState.showSnackBar(SnackBar(
-        content: Text("خطا در دریافت صف انتشار در سایت: " + narrations.item2),
+        content: Text("خطا در دریافت صف انتشار در سایت: " + publishQueue.item2),
         backgroundColor: Colors.red,
       ));
     }
@@ -523,7 +517,6 @@ class MainFormWidgetState extends State<MainForm>
       case GActiveFormSection.DraftRecitations:
       case GActiveFormSection.AllMyRecitations:
       case GActiveFormSection.AllUsersPendingRecitations:
-      case GActiveFormSection.SynchronizationQueue:
         return RecitationsDataSection(
           narrations: _narrations,
           loadingStateChanged: _loadingStateChanged,
@@ -539,6 +532,8 @@ class MainFormWidgetState extends State<MainForm>
             profiles: _profiles,
             loadingStateChanged: _loadingStateChanged,
             snackbarNeeded: _snackbarNeeded);
+      case GActiveFormSection.SynchronizationQueue:
+        return PublishQueueSection(queue: this._queue);
       case GActiveFormSection.Uploads:
       default:
         return UploadsDataSection(uploads: _uploads);
@@ -577,7 +572,7 @@ class MainFormWidgetState extends State<MainForm>
 
     if (_activeSection == GActiveFormSection.SynchronizationQueue &&
         _narrations != null) {
-      return _narrations.items.length.toString() + ' مورد';
+      return this._queue.items.length.toString() + ' مورد';
     }
     return '';
   }
@@ -896,9 +891,7 @@ class MainFormWidgetState extends State<MainForm>
                           setState(() {
                             _activeSection = GActiveFormSection.Uploads;
                           });
-                          if (_uploads.items.length == 0) {
-                            await _loadData();
-                          }
+                          await _loadData();
 
                           Navigator.of(context).pop(); //close drawer
                         }
@@ -958,10 +951,7 @@ class MainFormWidgetState extends State<MainForm>
                           setState(() {
                             _activeSection = GActiveFormSection.Profiles;
                           });
-                          if (_profiles.items.length == 0) {
-                            await _loadData();
-                          }
-
+                          await _loadData();
                           Navigator.of(context).pop(); //close drawer
                         }
                       },
@@ -979,9 +969,7 @@ class MainFormWidgetState extends State<MainForm>
                             _activeSection =
                                 GActiveFormSection.SynchronizationQueue;
                           });
-                          if (_profiles.items.length == 0) {
-                            await _loadData();
-                          }
+                          await _loadData();
 
                           Navigator.of(context).pop(); //close drawer
                         }
