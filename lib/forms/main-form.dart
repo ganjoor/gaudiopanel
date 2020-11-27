@@ -41,7 +41,6 @@ class MainFormWidgetState extends State<MainForm>
   final GlobalKey<ScaffoldMessengerState> _key =
       GlobalKey<ScaffoldMessengerState>();
   bool _canModerate = false;
-  bool _canImport = false;
   bool _canReOrder = false;
   String _userFrinedlyName = '';
   bool _isLoading = false;
@@ -220,11 +219,7 @@ class MainFormWidgetState extends State<MainForm>
         _canModerate = true;
       });
     }
-    if (await AuthService().hasPermission('recitation', 'import')) {
-      setState(() {
-        _canImport = true;
-      });
-    }
+
     if (await AuthService().hasPermission('recitation', 'reorder')) {
       setState(() {
         _canReOrder = true;
