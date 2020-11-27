@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:gaudiopanel/models/auth/logged-on-user-model.dart';
 import 'package:gaudiopanel/models/common/pagination-metadata.dart';
+import 'package:gaudiopanel/models/recitation/recitation-publishing-tracker-viewmodel.dart';
 import 'package:gaudiopanel/models/recitation/recitation-verse-sync.dart';
 import 'package:gaudiopanel/models/recitation/recitation-viewmodel.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
@@ -758,32 +759,42 @@ class RecitationService {
 
   /// get publish queue
   ///
-  Future<Tuple2<dynamic, String>> getPublishQueue(bool error401) async {
+  Future<Tuple2<List<RecitationPublishingTrackerViewModel>, String>>
+      getPublishQueue(bool error401) async {
     try {
       LoggedOnUserModel userInfo = await _storageService.userInfo;
       if (userInfo == null) {
-        return Tuple2<dynamic, String>(null, 'کاربر وارد سیستم نشده است.');
+        return Tuple2<List<RecitationPublishingTrackerViewModel>, String>(
+            null, 'کاربر وارد سیستم نشده است.');
       }
       var apiRoot = GServiceAddress.Url;
-      http.Response response = await http.get(
-          '$apiRoot/api/audio/publishqueue?inProgress=true&finished=false',
-          headers: {
-            'Content-Type': 'application/json; charset=UTF-8',
-            HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
-          });
+      http.Response response = await http
+          .get('$apiRoot/api/audio/publishqueue?unfinished=false', headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
+      });
 
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
         if (errSessionRenewal.isNotEmpty) {
-          return Tuple2<dynamic, String>(null, errSessionRenewal);
+          return Tuple2<List<RecitationPublishingTrackerViewModel>, String>(
+              null, errSessionRenewal);
         }
         return await getPublishQueue(true);
       }
 
       if (response.statusCode == 200) {
-        return Tuple2<dynamic, String>(json.decode(response.body), '');
+        List<RecitationPublishingTrackerViewModel> ret =
+            List<RecitationPublishingTrackerViewModel>();
+        List<dynamic> items = json.decode(response.body);
+
+        for (var item in items) {
+          ret.add(RecitationPublishingTrackerViewModel.fromJson(item));
+        }
+        return Tuple2<List<RecitationPublishingTrackerViewModel>, String>(
+            ret, '');
       } else {
-        return Tuple2<dynamic, String>(
+        return Tuple2<List<RecitationPublishingTrackerViewModel>, String>(
             null,
             'کد برگشتی: ' +
                 response.statusCode.toString() +
@@ -791,7 +802,7 @@ class RecitationService {
                 response.body);
       }
     } catch (e) {
-      return Tuple2<dynamic, String>(
+      return Tuple2<List<RecitationPublishingTrackerViewModel>, String>(
           null,
           'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
               e.toString());
