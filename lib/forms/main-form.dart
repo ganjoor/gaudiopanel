@@ -452,6 +452,75 @@ class MainFormWidgetState extends State<MainForm>
     }
   }
 
+  Future _applyDefProfileToMarkedRecitations() async {
+    var markedRecitations =
+        _narrations.items.where((element) => element.isMarked).toList();
+    if (markedRecitations.isEmpty) {
+      _key.currentState.showSnackBar(SnackBar(
+        content: Text('لطفاً خوانش‌های مد نظر را علامتگذاری کنید.'),
+        backgroundColor: Colors.red,
+      ));
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+    var defProfile = await RecitationService().getDefProfile(false);
+    setState(() {
+      _isLoading = false;
+    });
+    if (defProfile.item2.isNotEmpty) {
+      _key.currentState.showSnackBar(SnackBar(
+        content: Text('خطا در دریافت نمایهٔ فعال ' +
+            '، اطلاعات بیشتر ' +
+            defProfile.item2),
+        backgroundColor: Colors.red,
+      ));
+      return;
+    }
+    if (defProfile.item1 == null) {
+      _key.currentState.showSnackBar(SnackBar(
+        content: Text('شما نمایهٔ پیش‌فرضی ندارید.'),
+        backgroundColor: Colors.red,
+      ));
+      return;
+    }
+
+    bool confirmed = await _confirm(
+        'تأییدیه',
+        'آیا از اعمال نمایهٔ ' +
+            defProfile.item1.name +
+            ' به خوانش‌های علامتگذاری شده اطمینان دارید؟');
+    if (!confirmed) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+    var service = RecitationService();
+    var profile = defProfile.item1;
+    for (var recitation in markedRecitations) {
+      recitation.audioArtist = profile.artistName;
+      recitation.audioArtistUrl = profile.artistUrl;
+      recitation.audioSrc = profile.audioSrc;
+      recitation.audioSrcUrl = profile.audioSrcUrl;
+
+      var res = await service.updateRecitation(recitation, false);
+      if (res.item1 == null || res.item2.isNotEmpty) {
+        _key.currentState.showSnackBar(SnackBar(
+          content: Text(res.item2),
+          backgroundColor: Colors.red,
+        ));
+        break;
+      }
+    }
+    setState(() {
+      _isLoading = false;
+    });
+
+    await _loadData();
+  }
+
   Future<String> _getEmail() async {
     return showDialog<String>(
       context: context,
@@ -639,6 +708,18 @@ class MainFormWidgetState extends State<MainForm>
                         _activeSection !=
                             GActiveFormSection.SynchronizationQueue,
                   ),
+                  Visibility(
+                      child: IconButton(
+                        icon: Icon(Icons.edit),
+                        tooltip: 'اعمال نمایهٔ پیش‌فرض',
+                        onPressed: () async {
+                          await _applyDefProfileToMarkedRecitations();
+                        },
+                      ),
+                      visible: _activeSection ==
+                              GActiveFormSection.AllMyRecitations ||
+                          _activeSection ==
+                              GActiveFormSection.DraftRecitations),
                   Visibility(
                       child: IconButton(
                         icon: Icon(Icons.delete),
