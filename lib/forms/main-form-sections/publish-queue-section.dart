@@ -24,6 +24,12 @@ class _PublishQueueSectionState extends State<PublishQueueSection> {
             : Icon(Icons.query_builder, color: Colors.orange);
   }
 
+  String _lastException(index) {
+    return queue.items[index].lastException == null
+        ? ''
+        : 'خطا: ' + queue.items[index].lastException;
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -38,7 +44,7 @@ class _PublishQueueSectionState extends State<PublishQueueSection> {
                 Text(queue.items[index].artistName),
                 Text(queue.items[index].operation),
                 Visibility(
-                  child: Text('خطا: ' + queue.items[index].lastException),
+                  child: Text(_lastException(index)),
                   visible: queue.items[index].error,
                 )
               ]));
