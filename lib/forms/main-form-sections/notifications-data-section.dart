@@ -10,26 +10,32 @@ class NotificationsDataSection extends StatefulWidget {
   final PaginatedItemsResponseModel<RUserNotificationViewModel> notifications;
   final LoadingStateChanged loadingStateChanged;
   final SnackbarNeeded snackbarNeeded;
+  final UpdateUnreadNotificationsCount updateUnreadNotificationsCount;
 
   const NotificationsDataSection(
       {Key key,
       this.notifications,
       this.loadingStateChanged,
-      this.snackbarNeeded})
+      this.snackbarNeeded,
+      this.updateUnreadNotificationsCount})
       : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _NotificationsState(
-      this.notifications, this.loadingStateChanged, this.snackbarNeeded);
+      this.notifications,
+      this.loadingStateChanged,
+      this.snackbarNeeded,
+      this.updateUnreadNotificationsCount);
 }
 
 class _NotificationsState extends State<NotificationsDataSection> {
   final PaginatedItemsResponseModel<RUserNotificationViewModel> notifications;
   final LoadingStateChanged loadingStateChanged;
   final SnackbarNeeded snackbarNeeded;
+  final UpdateUnreadNotificationsCount updateUnreadNotificationsCount;
 
-  _NotificationsState(
-      this.notifications, this.loadingStateChanged, this.snackbarNeeded);
+  _NotificationsState(this.notifications, this.loadingStateChanged,
+      this.snackbarNeeded, this.updateUnreadNotificationsCount);
 
   Icon getNotificationIcon(RUserNotificationViewModel notification) {
     return notification.status == NotificationStatus.Unread
@@ -66,6 +72,13 @@ class _NotificationsState extends State<NotificationsDataSection> {
                               NotificationStatus.Read;
                         });
                       this.loadingStateChanged(false);
+
+                      if (this.updateUnreadNotificationsCount != null) {
+                        this.updateUnreadNotificationsCount(notifications.items
+                            .where((element) =>
+                                element.status == NotificationStatus.Unread)
+                            .length);
+                      }
                     }
                   } else {
                     throw 'خطا در نمایش نشانی $url';

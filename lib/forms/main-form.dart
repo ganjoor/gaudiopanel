@@ -293,6 +293,12 @@ class MainFormWidgetState extends State<MainForm>
     ));
   }
 
+  void _updateUnreadNotificationsCount(int count) {
+    setState(() {
+      this._unreadNotificationsCount = count;
+    });
+  }
+
   Future<UserRecitationProfileViewModel> _newProfile() async {
     return showDialog<UserRecitationProfileViewModel>(
       context: context,
@@ -474,6 +480,9 @@ class MainFormWidgetState extends State<MainForm>
     }
     setState(() {
       _isLoading = false;
+      _unreadNotificationsCount = _notifications.items
+          .where((element) => element.status == NotificationStatus.Unread)
+          .length;
     });
   }
 
@@ -766,7 +775,8 @@ class MainFormWidgetState extends State<MainForm>
         return NotificationsDataSection(
             notifications: this._notifications,
             loadingStateChanged: _loadingStateChanged,
-            snackbarNeeded: _snackbarNeeded);
+            snackbarNeeded: _snackbarNeeded,
+            updateUnreadNotificationsCount: _updateUnreadNotificationsCount);
       case GActiveFormSection.Uploads:
       default:
         return UploadsDataSection(uploads: _uploads);
