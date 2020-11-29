@@ -1311,7 +1311,8 @@ class MainFormWidgetState extends State<MainForm>
                     ),
                     visible: _activeSection != GActiveFormSection.Profiles &&
                         _activeSection !=
-                            GActiveFormSection.SynchronizationQueue),
+                            GActiveFormSection.SynchronizationQueue &&
+                        _activeSection != GActiveFormSection.Notifications),
                 Visibility(
                     child: IconButton(
                       icon: Icon(Icons.navigate_before),
@@ -1344,7 +1345,8 @@ class MainFormWidgetState extends State<MainForm>
                     ),
                     visible: _activeSection != GActiveFormSection.Profiles &&
                         _activeSection !=
-                            GActiveFormSection.SynchronizationQueue),
+                            GActiveFormSection.SynchronizationQueue &&
+                        _activeSection != GActiveFormSection.Notifications),
                 Visibility(
                     child: IconButton(
                       icon: Icon(Icons.navigate_next),
@@ -1374,7 +1376,8 @@ class MainFormWidgetState extends State<MainForm>
                     ),
                     visible: _activeSection != GActiveFormSection.Profiles &&
                         _activeSection !=
-                            GActiveFormSection.SynchronizationQueue),
+                            GActiveFormSection.SynchronizationQueue &&
+                        _activeSection != GActiveFormSection.Notifications),
                 Visibility(
                     child: IconButton(
                       icon: Icon(Icons.last_page),
@@ -1403,7 +1406,8 @@ class MainFormWidgetState extends State<MainForm>
                     ),
                     visible: _activeSection != GActiveFormSection.Profiles &&
                         _activeSection !=
-                            GActiveFormSection.SynchronizationQueue),
+                            GActiveFormSection.SynchronizationQueue &&
+                        _activeSection != GActiveFormSection.Notifications),
                 Visibility(
                     child: IconButton(
                       icon: Icon(Icons.search),
@@ -1421,7 +1425,8 @@ class MainFormWidgetState extends State<MainForm>
                     ),
                     visible: _activeSection != GActiveFormSection.Uploads &&
                         _activeSection !=
-                            GActiveFormSection.SynchronizationQueue)
+                            GActiveFormSection.SynchronizationQueue &&
+                        _activeSection != GActiveFormSection.Notifications)
               ],
               body: Builder(builder: (context) => Center(child: items)),
               floatingActionButton: FloatingActionButton(
