@@ -16,8 +16,8 @@ class NotificationService {
   ///
   ///returns a Tuple2, if any error occurs Items1 is null and Item2 contains the error message
   ///Items1 is the actual response if the call is successful
-  Future<Tuple2<List<RUserNotificationViewModel>, String>> getProfiles(
-      String artistName, bool error401) async {
+  Future<Tuple2<List<RUserNotificationViewModel>, String>> getNotifications(
+      bool error401) async {
     try {
       LoggedOnUserModel userInfo = await _storageService.userInfo;
       if (userInfo == null) {
@@ -37,7 +37,7 @@ class NotificationService {
           return Tuple2<List<RUserNotificationViewModel>, String>(
               null, errSessionRenewal);
         }
-        return await getProfiles(artistName, true);
+        return await getNotifications(true);
       }
 
       List<RUserNotificationViewModel> ret = [];

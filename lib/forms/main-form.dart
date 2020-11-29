@@ -4,17 +4,20 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gaudiopanel/forms/chwon-to-email.dart';
 import 'package:gaudiopanel/forms/login.dart';
+import 'package:gaudiopanel/forms/main-form-sections/notifications-data-section.dart';
 import 'package:gaudiopanel/forms/main-form-sections/profiles-data-section.dart';
 import 'package:gaudiopanel/forms/main-form-sections/publish-queue-section.dart';
 import 'package:gaudiopanel/forms/profile-edit.dart';
 import 'package:gaudiopanel/forms/search-params.dart';
 import 'package:gaudiopanel/forms/upload-files.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
+import 'package:gaudiopanel/models/notifications/ruser-notification-viewmodel.dart';
 import 'package:gaudiopanel/models/recitation/recitation-publishing-tracker-viewmodel.dart';
 import 'package:gaudiopanel/models/recitation/recitation-viewmodel.dart';
 import 'package:gaudiopanel/models/recitation/uploaded-item-viewmodel.dart';
 import 'package:gaudiopanel/models/recitation/user-recitation-profile-viewmodel.dart';
 import 'package:gaudiopanel/services/auth-service.dart';
+import 'package:gaudiopanel/services/notification-service.dart';
 import 'package:gaudiopanel/services/storage-service.dart';
 import 'package:gaudiopanel/services/upload-recitation-service.dart';
 import 'package:gaudiopanel/services/recitation-service.dart';
@@ -30,7 +33,8 @@ enum GActiveFormSection {
   AllUsersPendingRecitations,
   Uploads,
   Profiles,
-  SynchronizationQueue
+  SynchronizationQueue,
+  Notifications
 }
 
 class MainForm extends StatefulWidget {
@@ -61,6 +65,8 @@ class MainFormWidgetState extends State<MainForm>
   PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel> _queue =
       PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>(
           items: []);
+  PaginatedItemsResponseModel<RUserNotificationViewModel> _notifications =
+      PaginatedItemsResponseModel<RUserNotificationViewModel>(items: []);
   String get title {
     switch (_activeSection) {
       case GActiveFormSection.Uploads:
@@ -75,6 +81,8 @@ class MainFormWidgetState extends State<MainForm>
         return 'پیشخان خوانشگران گنجور » خوانش‌های در انتظار تأیید';
       case GActiveFormSection.SynchronizationQueue:
         return 'پیشخان خوانشگران گنجور » صف انتشار در گنجور';
+      case GActiveFormSection.Notifications:
+        return 'پیشخان خوانشگران گنجور » اعلان‌های من';
     }
     return '';
   }
@@ -182,6 +190,27 @@ class MainFormWidgetState extends State<MainForm>
     }
   }
 
+  Future<void> _loadNotificationsData() async {
+    setState(() {
+      _isLoading = true;
+    });
+    var notificationsList = await NotificationService().getNotifications(false);
+    setState(() {
+      _isLoading = false;
+    });
+    if (notificationsList.item2.isEmpty) {
+      setState(() {
+        this._notifications.items.clear();
+        this._notifications.items.addAll(notificationsList.item1);
+      });
+    } else {
+      _key.currentState.showSnackBar(SnackBar(
+        content: Text("خطا در دریافت اعلان‌ها: " + notificationsList.item2),
+        backgroundColor: Colors.red,
+      ));
+    }
+  }
+
   Future<void> _loadData() async {
     switch (_activeSection) {
       case GActiveFormSection.DraftRecitations:
@@ -197,6 +226,9 @@ class MainFormWidgetState extends State<MainForm>
         break;
       case GActiveFormSection.SynchronizationQueue:
         await _loadSyncronizationQueueData();
+        break;
+      case GActiveFormSection.Notifications:
+        await _loadNotificationsData();
         break;
     }
   }
@@ -603,6 +635,8 @@ class MainFormWidgetState extends State<MainForm>
             snackbarNeeded: _snackbarNeeded);
       case GActiveFormSection.SynchronizationQueue:
         return PublishQueueSection(queue: this._queue);
+      case GActiveFormSection.Notifications:
+        return NotificationsDataSection(notifications: this._notifications);
       case GActiveFormSection.Uploads:
       default:
         return UploadsDataSection(uploads: _uploads);
@@ -1057,6 +1091,24 @@ class MainFormWidgetState extends State<MainForm>
                       },
                     ),
                     ListTile(
+                      title: Text('اعلان‌های من'),
+                      leading: Icon(Icons.notifications,
+                          color: Theme.of(context).primaryColor),
+                      selected:
+                          _activeSection == GActiveFormSection.Notifications,
+                      onTap: () async {
+                        if (_activeSection !=
+                            GActiveFormSection.Notifications) {
+                          setState(() {
+                            _activeSection = GActiveFormSection.Notifications;
+                          });
+                          await _loadData();
+
+                          Navigator.of(context).pop(); //close drawer
+                        }
+                      },
+                    ),
+                    ListTile(
                       title: Text('مشخصات کاربری'),
                       leading: Icon(Icons.person,
                           color: Theme.of(context).primaryColor),
@@ -1239,6 +1291,7 @@ class MainFormWidgetState extends State<MainForm>
                     case GActiveFormSection.AllUsersPendingRecitations:
                     case GActiveFormSection.Uploads:
                     case GActiveFormSection.SynchronizationQueue:
+                    case GActiveFormSection.Notifications:
                       await _newNarrations();
                       if (_activeSection == GActiveFormSection.Uploads) {
                         await _loadData();
