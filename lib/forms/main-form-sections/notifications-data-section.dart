@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
 import 'package:gaudiopanel/models/notifications/ruser-notification-viewmodel.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NotificationsDataSection extends StatefulWidget {
   final PaginatedItemsResponseModel<RUserNotificationViewModel> notifications;
@@ -32,7 +34,16 @@ class _NotificationsState extends State<NotificationsDataSection> {
           return ListTile(
               leading: getNotificationIcon(notifications.items[index]),
               title: Text(notifications.items[index].subject),
-              subtitle: Text(notifications.items[index].htmlText));
+              subtitle: Html(
+                data: notifications.items[index].htmlText,
+                onLinkTap: (url) async {
+                  if (await canLaunch(url)) {
+                    await launch(url);
+                  } else {
+                    throw 'خطا در نمایش نشانی $url';
+                  }
+                },
+              ));
         });
   }
 }
