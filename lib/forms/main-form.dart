@@ -410,6 +410,93 @@ class MainFormWidgetState extends State<MainForm>
     }
   }
 
+  Future _changeMarkedNotificationsStatus(bool read) async {
+    var markedNotifications =
+        _notifications.items.where((element) => element.isMarked).toList();
+    if (markedNotifications.isEmpty) {
+      _key.currentState.showSnackBar(SnackBar(
+        content: Text('لطفاً اعلان‌های مد نظر را علامتگذاری کنید.'),
+        backgroundColor: Colors.red,
+      ));
+      return;
+    }
+    setState(() {
+      _isLoading = true;
+    });
+    for (var item in markedNotifications) {
+      if (read && item.status == NotificationStatus.Read) {
+        continue;
+      }
+      if (!read && item.status == NotificationStatus.Unread) {
+        continue;
+      }
+      String error = await NotificationService().switchStatus(item.id, false);
+      if (error.isNotEmpty) {
+        _key.currentState.showSnackBar(SnackBar(
+          content: Text('خطا در تغییر وضعیت اعلان  ' +
+              item.subject +
+              '، اطلاعات بیشتر ' +
+              error),
+          backgroundColor: Colors.red,
+        ));
+        break;
+      }
+      setState(() {
+        item.status =
+            read ? NotificationStatus.Read : NotificationStatus.Unread;
+      });
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  Future _deleteMarkedNotificaions() async {
+    var markedNotifications =
+        _notifications.items.where((element) => element.isMarked).toList();
+    if (markedNotifications.isEmpty) {
+      _key.currentState.showSnackBar(SnackBar(
+        content: Text('لطفاً اعلان‌های مد نظر را علامتگذاری کنید.'),
+        backgroundColor: Colors.red,
+      ));
+      return;
+    }
+    String confirmation = markedNotifications.length > 1
+        ? 'آیا از حذف ' +
+            markedNotifications.length.toString() +
+            ' اعلان علامتگذاری شده اطمینان دارید؟'
+        : 'آیا از حذف اعلان «' +
+            markedNotifications[0].subject +
+            '» اطمینان دارید؟';
+    if (await _confirm('تأییدیه', confirmation)) {
+      setState(() {
+        _isLoading = true;
+      });
+      for (var item in markedNotifications) {
+        var delRes =
+            await NotificationService().deleteNotification(item.id, false);
+        if (delRes.item2.isNotEmpty) {
+          _key.currentState.showSnackBar(SnackBar(
+            content: Text('خطا در حذف اعلان ' +
+                item.subject +
+                '، اطلاعات بیشتر ' +
+                delRes.item2),
+            backgroundColor: Colors.red,
+          ));
+          break;
+        }
+        if (delRes.item1) {
+          setState(() {
+            _profiles.items.remove(item);
+          });
+        }
+      }
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   Future _deleteMarkedProfiles() async {
     var markedProfiles =
         _profiles.items.where((element) => element.isMarked).toList();
@@ -426,6 +513,9 @@ class MainFormWidgetState extends State<MainForm>
             ' نمایهٔ علامتگذاری شده اطمینان دارید؟'
         : 'آیا از حذف نمایهٔ «' + markedProfiles[0].name + '» اطمینان دارید؟';
     if (await _confirm('تأییدیه', confirmation)) {
+      setState(() {
+        _isLoading = true;
+      });
       for (var item in markedProfiles) {
         var delRes = await RecitationService().deleteProfile(item.id, false);
         if (delRes.item2.isNotEmpty) {
@@ -436,6 +526,7 @@ class MainFormWidgetState extends State<MainForm>
                 delRes.item2),
             backgroundColor: Colors.red,
           ));
+          break;
         }
         if (delRes.item1) {
           setState(() {
@@ -443,6 +534,9 @@ class MainFormWidgetState extends State<MainForm>
           });
         }
       }
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -464,6 +558,9 @@ class MainFormWidgetState extends State<MainForm>
             markedRecitations[0].audioTitle +
             '» اطمینان دارید؟';
     if (await _confirm('تأییدیه', confirmation)) {
+      setState(() {
+        _isLoading = true;
+      });
       for (var item in markedRecitations) {
         var delRes = await RecitationService().deleteRecitation(item.id, false);
         if (delRes.item2.isNotEmpty) {
@@ -474,6 +571,7 @@ class MainFormWidgetState extends State<MainForm>
                 delRes.item2),
             backgroundColor: Colors.red,
           ));
+          break;
         }
         if (delRes.item1) {
           setState(() {
@@ -481,6 +579,9 @@ class MainFormWidgetState extends State<MainForm>
           });
         }
       }
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -636,7 +737,10 @@ class MainFormWidgetState extends State<MainForm>
       case GActiveFormSection.SynchronizationQueue:
         return PublishQueueSection(queue: this._queue);
       case GActiveFormSection.Notifications:
-        return NotificationsDataSection(notifications: this._notifications);
+        return NotificationsDataSection(
+            notifications: this._notifications,
+            loadingStateChanged: _loadingStateChanged,
+            snackbarNeeded: _snackbarNeeded);
       case GActiveFormSection.Uploads:
       default:
         return UploadsDataSection(uploads: _uploads);
@@ -707,6 +811,13 @@ class MainFormWidgetState extends State<MainForm>
                                 item.isMarked = true;
                               });
                             }
+                          } else if (_activeSection ==
+                              GActiveFormSection.Notifications) {
+                            for (var item in _notifications.items) {
+                              setState(() {
+                                item.isMarked = true;
+                              });
+                            }
                           } else {
                             for (var item in _narrations.items) {
                               setState(() {
@@ -726,6 +837,13 @@ class MainFormWidgetState extends State<MainForm>
                         onPressed: () {
                           if (_activeSection == GActiveFormSection.Profiles) {
                             for (var item in _profiles.items) {
+                              setState(() {
+                                item.isMarked = false;
+                              });
+                            }
+                          } else if (_activeSection ==
+                              GActiveFormSection.Notifications) {
+                            for (var item in _notifications.items) {
                               setState(() {
                                 item.isMarked = false;
                               });
@@ -756,11 +874,34 @@ class MainFormWidgetState extends State<MainForm>
                               GActiveFormSection.DraftRecitations),
                   Visibility(
                       child: IconButton(
+                        icon: Icon(Icons.mark_as_unread),
+                        tooltip: 'خواندم',
+                        onPressed: () async {
+                          await _changeMarkedNotificationsStatus(true);
+                        },
+                      ),
+                      visible:
+                          _activeSection == GActiveFormSection.Notifications),
+                  Visibility(
+                      child: IconButton(
+                        icon: Icon(Icons.mail),
+                        tooltip: 'نخوانده بماند',
+                        onPressed: () async {
+                          await _changeMarkedNotificationsStatus(false);
+                        },
+                      ),
+                      visible:
+                          _activeSection == GActiveFormSection.Notifications),
+                  Visibility(
+                      child: IconButton(
                         icon: Icon(Icons.delete),
                         tooltip: 'حذف',
                         onPressed: () async {
                           if (_activeSection == GActiveFormSection.Profiles) {
                             await _deleteMarkedProfiles();
+                          } else if (_activeSection ==
+                              GActiveFormSection.Notifications) {
+                            await _deleteMarkedNotificaions();
                           } else {
                             await _deleteMarkedRecitations();
                           }

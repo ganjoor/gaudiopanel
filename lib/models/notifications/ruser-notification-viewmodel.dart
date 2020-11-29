@@ -6,9 +6,10 @@ class NotificationStatus {
 class RUserNotificationViewModel {
   final String id;
   final String dateTime;
-  final int status;
+  int status;
   final String subject;
   final String htmlText;
+  bool isMarked = false;
 
   RUserNotificationViewModel(
       {this.id, this.dateTime, this.status, this.subject, this.htmlText});

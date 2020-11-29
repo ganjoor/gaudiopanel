@@ -7,7 +7,6 @@ class UserRecitationProfileViewModel {
   String audioSrc;
   String audioSrcUrl;
   bool isDefault;
-  bool isExpanded = false;
   bool isMarked = false;
 
   UserRecitationProfileViewModel(

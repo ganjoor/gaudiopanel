@@ -62,4 +62,89 @@ class NotificationService {
               e.toString());
     }
   }
+
+  /// switches notification status
+  ///
+  /// returns non empty string if fails
+  Future<String> switchStatus(String id, bool error401) async {
+    try {
+      LoggedOnUserModel userInfo = await _storageService.userInfo;
+      if (userInfo == null) {
+        return 'کاربر وارد سیستم نشده است.';
+      }
+      var apiRoot = GServiceAddress.Url;
+      http.Response response = await http.put(
+        '$apiRoot/api/notifications/$id',
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
+        },
+      );
+
+      if (!error401 && response.statusCode == 401) {
+        String errSessionRenewal = await AuthService().relogin();
+        if (errSessionRenewal.isNotEmpty) {
+          return errSessionRenewal;
+        }
+        return await switchStatus(id, true);
+      }
+
+      if (response.statusCode == 200) {
+        return '';
+      } else {
+        return 'کد برگشتی: ' +
+            response.statusCode.toString() +
+            ' ' +
+            response.body;
+      }
+    } catch (e) {
+      return 'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
+          e.toString();
+    }
+  }
+
+  /// delete a notification
+  ///
+  ///
+  Future<Tuple2<bool, String>> deleteNotification(
+      String id, bool error401) async {
+    try {
+      LoggedOnUserModel userInfo = await _storageService.userInfo;
+      if (userInfo == null) {
+        return Tuple2<bool, String>(false, 'کاربر وارد سیستم نشده است.');
+      }
+      var apiRoot = GServiceAddress.Url;
+      http.Response response = await http.delete(
+        '$apiRoot/api/notifications/$id',
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
+        },
+      );
+
+      if (!error401 && response.statusCode == 401) {
+        String errSessionRenewal = await AuthService().relogin();
+        if (errSessionRenewal.isNotEmpty) {
+          return Tuple2<bool, String>(false, errSessionRenewal);
+        }
+        return await deleteNotification(id, true);
+      }
+
+      if (response.statusCode == 200) {
+        return Tuple2<bool, String>(true, '');
+      } else {
+        return Tuple2<bool, String>(
+            false,
+            'کد برگشتی: ' +
+                response.statusCode.toString() +
+                ' ' +
+                response.body);
+      }
+    } catch (e) {
+      return Tuple2<bool, String>(
+          false,
+          'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
+              e.toString());
+    }
+  }
 }
