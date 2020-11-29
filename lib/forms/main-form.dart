@@ -522,12 +522,15 @@ class MainFormWidgetState extends State<MainForm>
         }
         if (delRes.item1) {
           setState(() {
-            _profiles.items.remove(item);
+            _notifications.items.remove(item);
           });
         }
       }
       setState(() {
         _isLoading = false;
+        _unreadNotificationsCount = _notifications.items
+            .where((element) => element.status == NotificationStatus.Unread)
+            .length;
       });
     }
   }
