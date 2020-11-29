@@ -147,4 +147,47 @@ class NotificationService {
               e.toString());
     }
   }
+
+  /// Get Unread Notifications Count
+  ///
+  ///returns a Tuple2, if any error occurs Items1 is -1 and Item2 contains the error message
+  ///Items1 is the actual response if the call is successful
+  Future<Tuple2<int, String>> getUnreadNotificationsCount(bool error401) async {
+    try {
+      LoggedOnUserModel userInfo = await _storageService.userInfo;
+      if (userInfo == null) {
+        return Tuple2<int, String>(-1, 'کاربر وارد سیستم نشده است.');
+      }
+      var apiRoot = GServiceAddress.Url;
+      http.Response response =
+          await http.get('$apiRoot/api/notifications/unread/count', headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
+      });
+
+      if (!error401 && response.statusCode == 401) {
+        String errSessionRenewal = await AuthService().relogin();
+        if (errSessionRenewal.isNotEmpty) {
+          return Tuple2<int, String>(-1, errSessionRenewal);
+        }
+        return await getUnreadNotificationsCount(true);
+      }
+
+      if (response.statusCode == 200) {
+        return Tuple2<int, String>(json.decode(response.body), '');
+      } else {
+        return Tuple2<int, String>(
+            -1,
+            'کد برگشتی: ' +
+                response.statusCode.toString() +
+                ' ' +
+                response.body);
+      }
+    } catch (e) {
+      return Tuple2<int, String>(
+          -1,
+          'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
+              e.toString());
+    }
+  }
 }

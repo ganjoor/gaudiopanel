@@ -55,6 +55,7 @@ class MainFormWidgetState extends State<MainForm>
   int _uploadsPageNumber = 1;
   int _pageSize = 20;
   String _searchTerm = '';
+  int _unreadNotificationsCount = 0;
 
   PaginatedItemsResponseModel<RecitationViewModel> _narrations =
       PaginatedItemsResponseModel<RecitationViewModel>(items: []);
@@ -211,6 +212,30 @@ class MainFormWidgetState extends State<MainForm>
     }
   }
 
+  Future _loadNotificationsCount() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    var retNotificationsCount =
+        await NotificationService().getUnreadNotificationsCount(false);
+    if (retNotificationsCount.item1 != -1) {
+      setState(() {
+        _unreadNotificationsCount = retNotificationsCount.item1;
+      });
+    } else {
+      _key.currentState.showSnackBar(SnackBar(
+        content: Text(
+            "خطا در دریافت تعداد اعلان‌ها: " + retNotificationsCount.item2),
+        backgroundColor: Colors.red,
+      ));
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
   Future<void> _loadData() async {
     switch (_activeSection) {
       case GActiveFormSection.DraftRecitations:
@@ -231,6 +256,7 @@ class MainFormWidgetState extends State<MainForm>
         await _loadNotificationsData();
         break;
     }
+    await _loadNotificationsCount();
   }
 
   @override
@@ -1233,8 +1259,34 @@ class MainFormWidgetState extends State<MainForm>
                     ),
                     ListTile(
                       title: Text('اعلان‌های من'),
-                      leading: Icon(Icons.notifications,
-                          color: Theme.of(context).primaryColor),
+                      leading: Stack(children: <Widget>[
+                        Icon(Icons.notifications,
+                            color: Theme.of(context).primaryColor),
+                        Visibility(
+                            child: Positioned(
+                              right: 0,
+                              child: Container(
+                                padding: EdgeInsets.all(1),
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                constraints: BoxConstraints(
+                                  minWidth: 12,
+                                  minHeight: 12,
+                                ),
+                                child: Text(
+                                  '$_unreadNotificationsCount',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                            visible: _unreadNotificationsCount > 0),
+                      ]),
                       selected:
                           _activeSection == GActiveFormSection.Notifications,
                       onTap: () async {
