@@ -157,4 +157,36 @@ class AuthService {
               e.toString());
     }
   }
+
+  /// Signup phase 1 (unverified)
+  ///
+  ///returns error message if any happens
+  Future<String> signupUnverified(
+      String email, String captchaImageId, String captchaValue) async {
+    try {
+      var apiRoot = GServiceAddress.Url;
+      final http.Response response = await http.post(
+        '$apiRoot/api/users/signup',
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'email': email,
+          'clientAppName': 'Ganjoor Recitations Flutter Panel',
+          'language': 'fa-IR',
+          'captchaImageId': captchaImageId,
+          'captchaValue': captchaValue,
+          'callbackUrl': 'https://gaudiopanel.ganjoor.net/#/signup'
+        }),
+      );
+
+      if (response.statusCode != 200) {
+        return response.body;
+      }
+    } catch (e) {
+      return 'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
+          e.toString();
+    }
+    return '';
+  }
 }

@@ -14,6 +14,8 @@ class SignUpForm extends StatefulWidget {
 
 class SignUpFormState extends State<SignUpForm>
     with AfterLayoutMixin<SignUpForm> {
+  bool _alreadyLoggedIn = false;
+  bool _emailSent = false;
   bool _isLoading = true;
   String _captchaImageId = '';
   String get _captchaImageUrl {
@@ -44,17 +46,19 @@ class SignUpFormState extends State<SignUpForm>
       setState(() {
         _isLoading = true;
       });
-      String loginError = await AuthService().login(_email.text, _captcha.text);
+      String signupError = await AuthService()
+          .signupUnverified(_email.text, _captchaImageId, _captcha.text);
       setState(() {
         _isLoading = false;
-        _signupError = loginError;
+        _signupError = signupError;
       });
 
       if (_signupError.isNotEmpty) {
         _formKey.currentState.validate();
       } else {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => MainForm()));
+        setState(() {
+          _emailSent = true;
+        });
       }
     }
   }
@@ -78,7 +82,10 @@ class SignUpFormState extends State<SignUpForm>
 
   @override
   void afterFirstLayout(BuildContext context) async {
-    await _newCaptcha();
+    _alreadyLoggedIn = await AuthService().isLoggedOn;
+    if (!_alreadyLoggedIn) {
+      await _newCaptcha();
+    }
   }
 
   @override
@@ -100,75 +107,115 @@ class SignUpFormState extends State<SignUpForm>
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            TextFormField(
-                              controller: _email,
-                              autofillHints: [AutofillHints.username],
-                              textDirection: TextDirection.ltr,
-                              validator: (value) {
-                                if (value.isEmpty) {
-                                  return 'پست الکترونیکی وارد نشده است.';
-                                }
-                                if (!RegExp(
-                                        r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
-                                    .hasMatch(value)) {
-                                  return 'پست الکترونیکی وارد شده معتبر نیست.';
-                                }
-                                if (_signupError.isNotEmpty) {
-                                  return _signupError;
-                                }
-                                return null;
-                              },
-                              onFieldSubmitted: (value) => _signup(),
-                              decoration: InputDecoration(
-                                  prefix: Icon(Icons.mail),
-                                  hintText: 'پست الکترونیکی',
-                                  labelText: 'پست الکترونیکی'),
-                            ),
+                            Visibility(
+                                child: TextFormField(
+                                  controller: _email,
+                                  autofillHints: [AutofillHints.username],
+                                  textDirection: TextDirection.ltr,
+                                  validator: (value) {
+                                    if (!_emailSent && value.isEmpty) {
+                                      return 'پست الکترونیکی وارد نشده است.';
+                                    }
+                                    if (!RegExp(
+                                            r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+                                        .hasMatch(value)) {
+                                      return 'پست الکترونیکی وارد شده معتبر نیست.';
+                                    }
+                                    if (_signupError.isNotEmpty) {
+                                      return _signupError;
+                                    }
+                                    return null;
+                                  },
+                                  onFieldSubmitted: (value) => _signup(),
+                                  decoration: InputDecoration(
+                                      prefix: Icon(Icons.mail),
+                                      hintText: 'پست الکترونیکی',
+                                      labelText: 'پست الکترونیکی'),
+                                ),
+                                visible: !_alreadyLoggedIn && !_emailSent),
+                            Visibility(
+                                child: Text(
+                                    'لطفا پست الکترونیکی خود را بررسی کنید. در صورتی که نشانی پست الکترونیکی خود را درست وارد کرده باشید نامه‌ای از گنجور دریافت کرده‌اید که حاوی یک رمز است. '),
+                                visible: !_alreadyLoggedIn && _emailSent),
+                            Visibility(
+                                child: Text(
+                                    'یا روی نشانی ارسال شده به پست الکترونیکی خود کلیک کنید یا رمز دریافتی را در کادر زیر وارد کرده روی دکمهٔ «ادامه» کلیک کنید. '),
+                                visible: !_alreadyLoggedIn && _emailSent),
                             SizedBox(width: 10),
                             Visibility(
                               child: Image.network(_captchaImageUrl),
-                              visible: _captchaImageId.isNotEmpty,
+                              visible: !_alreadyLoggedIn &&
+                                  _captchaImageId.isNotEmpty &&
+                                  !_emailSent,
                             ),
+                            Visibility(
+                                child: TextFormField(
+                                  controller: _captcha,
+                                  autofillHints: [AutofillHints.password],
+                                  textDirection: TextDirection.ltr,
+                                  validator: (value) {
+                                    if (_emailSent && value.isEmpty) {
+                                      return 'رمز دریافتی را وارد نمایید.';
+                                    }
+                                    return null;
+                                  },
+                                  onFieldSubmitted: (value) => _signup(),
+                                  decoration: InputDecoration(
+                                      prefix: Icon(Icons.lock),
+                                      hintText: 'رمز دریافتی را وارد نمایید',
+                                      labelText: 'رمز دریافتی'),
+                                ),
+                                visible: !_alreadyLoggedIn && _emailSent),
                             SizedBox(width: 10),
-                            TextFormField(
-                              controller: _captcha,
-                              autofillHints: [AutofillHints.password],
-                              textDirection: TextDirection.ltr,
-                              validator: (value) {
-                                if (value.isEmpty) {
-                                  return 'عدد تصویر امنیتی بالا را وارد کنید.';
-                                }
-                                return null;
-                              },
-                              onFieldSubmitted: (value) => _signup(),
-                              decoration: InputDecoration(
-                                  prefix: Icon(Icons.lock),
-                                  hintText: 'عدد تصویر امنیتی',
-                                  labelText: 'عدد تصویر امنیتی'),
-                            ),
+                            Visibility(
+                                child: TextFormField(
+                                  controller: _captcha,
+                                  autofillHints: [AutofillHints.password],
+                                  textDirection: TextDirection.ltr,
+                                  validator: (value) {
+                                    if (!_emailSent && value.isEmpty) {
+                                      return 'عدد تصویر امنیتی بالا را وارد کنید.';
+                                    }
+                                    return null;
+                                  },
+                                  onFieldSubmitted: (value) => _signup(),
+                                  decoration: InputDecoration(
+                                      prefix: Icon(Icons.lock),
+                                      hintText: 'عدد تصویر امنیتی',
+                                      labelText: 'عدد تصویر امنیتی'),
+                                ),
+                                visible: !_alreadyLoggedIn && !_emailSent),
                             SizedBox(
                               height: 10.0,
                             ),
-                            SizedBox(
-                                width: double.maxFinite,
-                                child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: RaisedButton.icon(
-                                      icon: Icon(Icons.launch),
-                                      label: Text('ادامه'),
-                                      color: Colors.green,
-                                      onPressed: _signup,
-                                    ))),
-                            RaisedButton.icon(
-                              icon: Icon(Icons.exit_to_app),
-                              label: Text('برگشت'),
-                              onPressed: () {
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => LoginForm()));
-                              },
-                            )
+                            Visibility(
+                                child: SizedBox(
+                                    width: double.maxFinite,
+                                    child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: RaisedButton.icon(
+                                          icon: Icon(Icons.launch),
+                                          label: Text('ادامه'),
+                                          color: Colors.green,
+                                          onPressed: _signup,
+                                        ))),
+                                visible: !_alreadyLoggedIn && !_emailSent),
+                            Visibility(
+                              child: Text('شما پیش‌تر ثبت نام کرده‌اید!'),
+                              visible: _alreadyLoggedIn,
+                            ),
+                            Visibility(
+                                child: RaisedButton.icon(
+                                  icon: Icon(Icons.exit_to_app),
+                                  label: Text('برگشت'),
+                                  onPressed: () {
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => LoginForm()));
+                                  },
+                                ),
+                                visible: !_emailSent),
                           ],
                         ),
                       ),
