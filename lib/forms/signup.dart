@@ -2,7 +2,6 @@ import 'package:after_layout/after_layout.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gaudiopanel/forms/login.dart';
-import 'package:gaudiopanel/forms/main-form.dart';
 import 'package:gaudiopanel/services/auth-service.dart';
 import 'package:gaudiopanel/services/gservice-address.dart';
 import 'package:loading_overlay/loading_overlay.dart';
@@ -28,6 +27,7 @@ class SignUpFormState extends State<SignUpForm>
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _captcha = TextEditingController();
+  final TextEditingController _secret = TextEditingController();
 
   String _signupError = '';
 
@@ -35,6 +35,7 @@ class SignUpFormState extends State<SignUpForm>
   void dispose() {
     _email.dispose();
     _captcha.dispose();
+    _secret.dispose();
     super.dispose();
   }
 
@@ -58,6 +59,32 @@ class SignUpFormState extends State<SignUpForm>
       } else {
         setState(() {
           _emailSent = true;
+        });
+      }
+    }
+  }
+
+  void _verify() async {
+    setState(() {
+      _signupError = '';
+    });
+    if (_formKey.currentState.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+      var verifyRes = await AuthService().verifyEmail(true, _secret.text);
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (verifyRes.item2.isNotEmpty) {
+        setState(() {
+          _signupError = verifyRes.item2;
+        });
+        _formKey.currentState.validate();
+      } else {
+        setState(() {
+          _email.text = verifyRes.item1;
         });
       }
     }
@@ -150,12 +177,14 @@ class SignUpFormState extends State<SignUpForm>
                             ),
                             Visibility(
                                 child: TextFormField(
-                                  controller: _captcha,
-                                  autofillHints: [AutofillHints.password],
+                                  controller: _secret,
                                   textDirection: TextDirection.ltr,
                                   validator: (value) {
                                     if (_emailSent && value.isEmpty) {
                                       return 'رمز دریافتی را وارد نمایید.';
+                                    }
+                                    if (_signupError.isNotEmpty) {
+                                      return _signupError;
                                     }
                                     return null;
                                   },
@@ -170,7 +199,6 @@ class SignUpFormState extends State<SignUpForm>
                             Visibility(
                                 child: TextFormField(
                                   controller: _captcha,
-                                  autofillHints: [AutofillHints.password],
                                   textDirection: TextDirection.ltr,
                                   validator: (value) {
                                     if (!_emailSent && value.isEmpty) {
@@ -185,6 +213,18 @@ class SignUpFormState extends State<SignUpForm>
                                       labelText: 'عدد تصویر امنیتی'),
                                 ),
                                 visible: !_alreadyLoggedIn && !_emailSent),
+                            Visibility(
+                                child: SizedBox(
+                                    width: double.maxFinite,
+                                    child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: RaisedButton.icon(
+                                          icon: Icon(Icons.launch),
+                                          label: Text('ادامه'),
+                                          color: Colors.green,
+                                          onPressed: _verify,
+                                        ))),
+                                visible: !_alreadyLoggedIn && _emailSent),
                             SizedBox(
                               height: 10.0,
                             ),

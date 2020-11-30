@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:gaudiopanel/models/auth/rverify-queue-type.dart';
 import 'package:gaudiopanel/services/gservice-address.dart';
 import 'package:gaudiopanel/services/storage-service.dart';
 import 'package:http/http.dart' as http;
@@ -188,5 +189,32 @@ class AuthService {
           e.toString();
     }
     return '';
+  }
+
+  ///sends a signup/forgotpassword secret and retrievs and email
+  ///
+  ///item2 contains the error if happens
+  Future<Tuple2<String, String>> verifyEmail(bool signup, String secret) async {
+    try {
+      var apiRoot = GServiceAddress.Url;
+      int type =
+          signup ? RVerifyQueueType.signUp : RVerifyQueueType.forgotPassword;
+      final http.Response response = await http.get(
+          '$apiRoot/api/users/verify?type=$type&secret=$secret',
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          });
+
+      if (response.statusCode == 200) {
+        return Tuple2<String, String>(json.decode(response.body), '');
+      } else {
+        return Tuple2<String, String>('', response.body);
+      }
+    } catch (e) {
+      return Tuple2<String, String>(
+          '',
+          'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
+              e.toString());
+    }
   }
 }
