@@ -5,6 +5,7 @@ import 'package:gaudiopanel/services/gservice-address.dart';
 import 'package:gaudiopanel/services/storage-service.dart';
 import 'package:http/http.dart' as http;
 import 'package:gaudiopanel/models/auth/logged-on-user-model.dart';
+import 'package:tuple/tuple.dart';
 
 class AuthService {
   final StorageService _storageService = StorageService();
@@ -126,5 +127,34 @@ class AuthService {
           e.toString();
     }
     return '';
+  }
+
+  ///Get a captcha image id
+  ///
+  /// item2 contains error message if occurs any
+  Future<Tuple2<String, String>> getACaptchaImageId() async {
+    try {
+      var apiRoot = GServiceAddress.Url;
+      http.Response response =
+          await http.get('$apiRoot/api/users/captchaimage', headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      });
+
+      if (response.statusCode == 200) {
+        return Tuple2<String, String>(json.decode(response.body), '');
+      } else {
+        return Tuple2<String, String>(
+            '',
+            'کد برگشتی: ' +
+                response.statusCode.toString() +
+                ' ' +
+                response.body);
+      }
+    } catch (e) {
+      return Tuple2<String, String>(
+          '',
+          'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
+              e.toString());
+    }
   }
 }

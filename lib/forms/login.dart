@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gaudiopanel/forms/main-form.dart';
+import 'package:gaudiopanel/forms/signup.dart';
 import 'package:gaudiopanel/services/auth-service.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -84,6 +85,7 @@ class LoginFormState extends State<LoginForm> {
                               },
                               onFieldSubmitted: (value) => _login(),
                               decoration: InputDecoration(
+                                  icon: Icon(Icons.mail),
                                   hintText: 'پست الکترونیکی',
                                   labelText: 'پست الکترونیکی'),
                             ),
@@ -100,7 +102,9 @@ class LoginFormState extends State<LoginForm> {
                               },
                               onFieldSubmitted: (value) => _login(),
                               decoration: InputDecoration(
-                                  hintText: 'گذرواژه', labelText: 'گذرواژه'),
+                                  icon: Icon(Icons.lock),
+                                  hintText: 'گذرواژه',
+                                  labelText: 'گذرواژه'),
                             ),
                             SizedBox(
                               height: 10.0,
@@ -125,14 +129,12 @@ class LoginFormState extends State<LoginForm> {
                                 RaisedButton.icon(
                                   icon: Icon(Icons.launch),
                                   label: Text('ثبت نام'),
-                                  onPressed: () async {
-                                    var url =
-                                        'https://museum.ganjoor.net/signup';
-                                    if (await canLaunch(url)) {
-                                      await launch(url);
-                                    } else {
-                                      throw 'خطا در نمایش نشانی $url';
-                                    }
+                                  onPressed: () {
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                SignUpForm()));
                                   },
                                 ),
                                 SizedBox(
