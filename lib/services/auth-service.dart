@@ -26,7 +26,7 @@ class AuthService {
         body: jsonEncode(<String, String>{
           'username': username,
           'password': password,
-          'clientAppName': 'پیشخان خوانشهای گنجور',
+          'clientAppName': 'Ganjoor Recitations Flutter Panel',
           'language': 'fa-IR'
         }),
       );
@@ -215,6 +215,38 @@ class AuthService {
           '',
           'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
               e.toString());
+    }
+  }
+
+  ///Finalize Signup
+  ///
+  ///returns the error if occurs, empty if successfull
+  Future<String> finalizeSignUp(String email, String secret, String password,
+      String firstName, String sureName) async {
+    try {
+      var apiRoot = GServiceAddress.Url;
+      final http.Response response = await http.post(
+        '$apiRoot/api/users/finalizesignup',
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'email': email,
+          'secret': secret,
+          'password': password,
+          'firstName': firstName,
+          'sureName': sureName
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return '';
+      } else {
+        return response.body;
+      }
+    } catch (e) {
+      return 'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
+          e.toString();
     }
   }
 }

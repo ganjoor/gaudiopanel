@@ -2,6 +2,7 @@ import 'package:after_layout/after_layout.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gaudiopanel/forms/login.dart';
+import 'package:gaudiopanel/forms/main-form.dart';
 import 'package:gaudiopanel/services/auth-service.dart';
 import 'package:gaudiopanel/services/gservice-address.dart';
 import 'package:loading_overlay/loading_overlay.dart';
@@ -16,6 +17,7 @@ class SignUpFormState extends State<SignUpForm>
   bool _alreadyLoggedIn = false;
   bool _emailSent = false;
   bool _emailVerified = false;
+  bool _finalized = false;
   bool _isLoading = true;
   String _captchaImageId = '';
   String get _captchaImageUrl {
@@ -109,21 +111,20 @@ class SignUpFormState extends State<SignUpForm>
       setState(() {
         _isLoading = true;
       });
-      var verifyRes = await AuthService().verifyEmail(true, _secret.text);
+      var error = await AuthService().finalizeSignUp(
+          _email.text, _secret.text, _password.text, _name.text, _family.text);
       setState(() {
         _isLoading = false;
       });
 
-      if (verifyRes.item2.isNotEmpty) {
+      if (error.isNotEmpty) {
         setState(() {
-          _signupError = verifyRes.item2;
+          _signupError = error;
         });
         _formKey.currentState.validate();
       } else {
         setState(() {
-          _emailSent = true;
-          _emailVerified = true;
-          _email.text = verifyRes.item1;
+          _finalized = true;
         });
       }
     }
@@ -144,6 +145,30 @@ class SignUpFormState extends State<SignUpForm>
     setState(() {
       _isLoading = false;
     });
+  }
+
+  void _login() async {
+    setState(() {
+      _signupError = '';
+    });
+    if (_formKey.currentState.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+      String loginError =
+          await AuthService().login(_email.text, _password.text);
+      setState(() {
+        _isLoading = false;
+        _signupError = loginError;
+      });
+
+      if (_signupError.isNotEmpty) {
+        _formKey.currentState.validate();
+      } else {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => MainForm()));
+      }
+    }
   }
 
   @override
@@ -210,7 +235,20 @@ class SignUpFormState extends State<SignUpForm>
                             Visibility(
                                 child: Text(
                                     'لطفا نام و نام خانوادگی و رمز مد نظر خود برای ورود را وارد کنید.'),
-                                visible: _emailVerified),
+                                visible: _emailVerified && !_finalized),
+                            Visibility(
+                                child: SizedBox(
+                                    width: double.maxFinite,
+                                    child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: RaisedButton.icon(
+                                          icon: Icon(Icons.login),
+                                          label: Text(
+                                              'تبریک! ثبت نام شما تکمیل شد. ورود به سیستم'),
+                                          color: Colors.green,
+                                          onPressed: _login,
+                                        ))),
+                                visible: _finalized),
                             SizedBox(width: 10),
                             Visibility(
                               child: Image.network(_captchaImageUrl),
@@ -244,7 +282,9 @@ class SignUpFormState extends State<SignUpForm>
                                 child: TextFormField(
                                   controller: _name,
                                   validator: (value) {
-                                    if (_emailVerified && value.isEmpty) {
+                                    if (_emailVerified &&
+                                        !_finalized &&
+                                        value.isEmpty) {
                                       return 'لطفا نام خود را وارد نمایید.';
                                     }
 
@@ -256,12 +296,14 @@ class SignUpFormState extends State<SignUpForm>
                                       hintText: 'نام',
                                       labelText: 'نام'),
                                 ),
-                                visible: _emailVerified),
+                                visible: _emailVerified && !_finalized),
                             Visibility(
                                 child: TextFormField(
                                   controller: _family,
                                   validator: (value) {
-                                    if (_emailVerified && value.isEmpty) {
+                                    if (_emailVerified &&
+                                        !_finalized &&
+                                        value.isEmpty) {
                                       return 'لطفا نام خانوادگی خود را وارد نمایید.';
                                     }
 
@@ -273,7 +315,10 @@ class SignUpFormState extends State<SignUpForm>
                                       hintText: 'نام خانوادگی',
                                       labelText: 'نام خانوادگی'),
                                 ),
-                                visible: _emailVerified),
+                                visible: _emailVerified && !_finalized),
+                            Visibility(
+                                child: Text(_signupError),
+                                visible: _signupError.isNotEmpty && _finalized),
                             SizedBox(width: 10),
                             Visibility(
                                 child: TextFormField(
@@ -325,7 +370,7 @@ class SignUpFormState extends State<SignUpForm>
                                       hintText: 'گذرواژه',
                                       labelText: 'گذرواژه'),
                                 ),
-                                visible: _emailVerified),
+                                visible: _emailVerified && !_finalized),
                             Visibility(
                                 child: TextFormField(
                                   controller: _confirm,
@@ -347,15 +392,15 @@ class SignUpFormState extends State<SignUpForm>
                                       hintText: 'تکرار گذرواژه',
                                       labelText: 'تکرار گذرواژه'),
                                 ),
-                                visible: _emailVerified),
+                                visible: _emailVerified && !_finalized),
                             Visibility(
                                 child: Text(
                                     'گذرواژه باید شامل ۶ حرف باشد و از ترکیبی از اعداد و حروف انگلیسی تشکیل شده باشد.'),
-                                visible: _emailVerified),
+                                visible: _emailVerified && !_finalized),
                             Visibility(
                                 child: Text(
                                     'حروف و اعداد نباید تکراری باشند و وجود حداقل یک عدد و یک حرف کوچک انگلیسی در گذرواژه الزامی است.'),
-                                visible: _emailVerified),
+                                visible: _emailVerified && !_finalized),
                             SizedBox(
                               height: 10.0,
                             ),
@@ -382,7 +427,7 @@ class SignUpFormState extends State<SignUpForm>
                                           color: Colors.green,
                                           onPressed: _finalize,
                                         ))),
-                                visible: _emailVerified),
+                                visible: _emailVerified && !_finalized),
                             Visibility(
                               child: Text('شما پیش‌تر ثبت نام کرده‌اید!'),
                               visible: _alreadyLoggedIn,
