@@ -230,7 +230,7 @@ class SignUpFormState extends State<SignUpForm>
                                 visible: _emailSent && !_emailVerified),
                             Visibility(
                                 child: Text(
-                                    'یا روی نشانی ارسال شده به پست الکترونیکی خود کلیک کنید یا رمز دریافتی را در کادر زیر وارد کرده روی دکمهٔ «ادامه» کلیک کنید. '),
+                                    'رمز دریافتی را در کادر زیر وارد کرده، روی دکمهٔ «ادامه» کلیک کنید. '),
                                 visible: _emailSent && !_emailVerified),
                             Visibility(
                                 child: Text(
