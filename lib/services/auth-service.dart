@@ -177,7 +177,7 @@ class AuthService {
           'language': 'fa-IR',
           'captchaImageId': captchaImageId,
           'captchaValue': captchaValue,
-          'callbackUrl': 'https://gaudiopanel.ganjoor.net/#/signup'
+          'callbackUrl': ''
         }),
       );
 
