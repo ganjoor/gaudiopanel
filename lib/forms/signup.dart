@@ -395,7 +395,7 @@ class SignUpFormState extends State<SignUpForm>
                                 visible: _emailVerified && !_finalized),
                             Visibility(
                                 child: Text(
-                                    'گذرواژه باید شامل ۶ حرف باشد و از ترکیبی از اعداد و حروف انگلیسی تشکیل شده باشد.'),
+                                    'گذرواژه باید دست کم شامل ۶ حرف باشد و از ترکیبی از اعداد و حروف انگلیسی تشکیل شده باشد.'),
                                 visible: _emailVerified && !_finalized),
                             Visibility(
                                 child: Text(
