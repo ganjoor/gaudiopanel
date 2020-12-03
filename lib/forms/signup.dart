@@ -67,6 +67,7 @@ class SignUpFormState extends State<SignUpForm>
 
       if (_signupError.isNotEmpty) {
         _formKey.currentState.validate();
+        await _newCaptcha();
       } else {
         setState(() {
           _emailSent = true;
@@ -231,6 +232,12 @@ class SignUpFormState extends State<SignUpForm>
                             Visibility(
                                 child: Text(
                                     'رمز دریافتی را در کادر زیر وارد کرده، روی دکمهٔ «ادامه» کلیک کنید. '),
+                                visible: _emailSent && !_emailVerified),
+                            Visibility(
+                                child: Text(
+                                  'تذکر: ممکن است نامه به پوشه اسپم منتقل شده باشد.',
+                                  style: TextStyle(color: Colors.red),
+                                ),
                                 visible: _emailSent && !_emailVerified),
                             Visibility(
                                 child: Text(
