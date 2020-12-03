@@ -231,11 +231,11 @@ class SignUpFormState extends State<SignUpForm>
                                 visible: _emailSent && !_emailVerified),
                             Visibility(
                                 child: Text(
-                                    'رمز دریافتی را در کادر زیر وارد کرده، روی دکمهٔ «ادامه» کلیک کنید. '),
+                                    'رمز دریافتی را در کادر زیر وارد کرده، روی دکمهٔ «ادامه» کلیک کنید'),
                                 visible: _emailSent && !_emailVerified),
                             Visibility(
                                 child: Text(
-                                  'تذکر: ممکن است نامه به پوشه اسپم منتقل شده باشد.',
+                                  'تذکر: ممکن است نامه به پوشه اسپم منتقل شده باشد',
                                   style: TextStyle(color: Colors.red),
                                 ),
                                 visible: _emailSent && !_emailVerified),
