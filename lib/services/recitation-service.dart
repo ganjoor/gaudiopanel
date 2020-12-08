@@ -518,32 +518,16 @@ class RecitationService {
     }
   }
 
-  Future<Tuple2<List<RecitationVerseSync>, String>> getVerses(
-      int id, bool error401) async {
+  Future<Tuple2<List<RecitationVerseSync>, String>> getVerses(int id) async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
-      if (userInfo == null) {
-        return Tuple2<List<RecitationVerseSync>, String>(
-            null, 'کاربر وارد سیستم نشده است.');
-      }
       var apiRoot = GServiceAddress.Url;
       http.Response response =
           await http.get('$apiRoot/api/audio/verses/$id', headers: {
         'Content-Type': 'application/json; charset=UTF-8',
-        HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
       });
 
-      if (!error401 && response.statusCode == 401) {
-        String errSessionRenewal = await AuthService().relogin();
-        if (errSessionRenewal.isNotEmpty) {
-          return Tuple2<List<RecitationVerseSync>, String>(
-              null, errSessionRenewal);
-        }
-        return await getVerses(id, true);
-      }
-
-      List<RecitationVerseSync> ret = [];
       if (response.statusCode == 200) {
+        List<RecitationVerseSync> ret = [];
         List<dynamic> items = json.decode(response.body);
         for (var item in items) {
           ret.add(RecitationVerseSync.fromJson(item));

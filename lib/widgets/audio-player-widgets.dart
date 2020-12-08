@@ -56,7 +56,7 @@ class ControlButtons extends StatelessWidget {
                   var service = RecitationService();
                   if (this.narration.verses == null) {
                     this.loadingStateChanged(true);
-                    var res = await service.getVerses(this.narration.id, false);
+                    var res = await service.getVerses(this.narration.id);
                     this.loadingStateChanged(false);
                     if (res.item2.isNotEmpty) {
                       this.snackbarNeeded(res.item2);
