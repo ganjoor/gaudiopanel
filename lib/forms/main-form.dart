@@ -56,6 +56,7 @@ class MainFormWidgetState extends State<MainForm>
   int _pageSize = 20;
   String _searchTerm = '';
   int _unreadNotificationsCount = 0;
+  bool _audioUpdateEnabled = true;
 
   PaginatedItemsResponseModel<RecitationViewModel> _narrations =
       PaginatedItemsResponseModel<RecitationViewModel>(items: []);
@@ -108,6 +109,7 @@ class MainFormWidgetState extends State<MainForm>
         _narrations.items.clear();
         _narrations.items.addAll(narrations.items);
         _narrations.paginationMetadata = narrations.paginationMetadata;
+        _audioUpdateEnabled = narrations.audioUploadEnabled;
         _isLoading = false;
       });
     } else {
@@ -133,6 +135,7 @@ class MainFormWidgetState extends State<MainForm>
         _uploads.items.clear();
         _uploads.items.addAll(uploads.items);
         _uploads.paginationMetadata = uploads.paginationMetadata;
+        _audioUpdateEnabled = uploads.audioUploadEnabled;
         _isLoading = false;
       });
     } else {
@@ -388,6 +391,7 @@ class MainFormWidgetState extends State<MainForm>
   }
 
   Future _newNarrations() async {
+    if (!_audioUpdateEnabled) return;
     setState(() {
       _isLoading = true;
     });
@@ -1503,6 +1507,14 @@ class MainFormWidgetState extends State<MainForm>
                     case GActiveFormSection.Uploads:
                     case GActiveFormSection.SynchronizationQueue:
                     case GActiveFormSection.Notifications:
+                      if (!_audioUpdateEnabled) {
+                        _key.currentState.showSnackBar(SnackBar(
+                          content: Text(
+                              'ارسال خوانش جدید به دلیل تغییرات فنی سایت موقتاً غیرفعال است.'),
+                          backgroundColor: Colors.red,
+                        ));
+                        return;
+                      }
                       await _newNarrations();
                       if (_activeSection == GActiveFormSection.Uploads) {
                         await _loadData();

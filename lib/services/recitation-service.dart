@@ -61,7 +61,9 @@ class RecitationService {
             items: ret,
             paginationMetadata: PaginationMetadata.fromJson(
                 json.decode(response.headers['paging-headers'])),
-            error: '');
+            error: '',
+            audioUploadEnabled:
+                json.decode(response.headers['audio-upload-enabled']));
       } else {
         return PaginatedItemsResponseModel<RecitationViewModel>(
             error: 'کد برگشتی: ' +
@@ -503,7 +505,9 @@ class RecitationService {
             items: ret,
             paginationMetadata: PaginationMetadata.fromJson(
                 json.decode(response.headers['paging-headers'])),
-            error: '');
+            error: '',
+            audioUploadEnabled:
+                json.decode(response.headers['audio-upload-enabled']));
       } else {
         return PaginatedItemsResponseModel<UploadedItemViewModel>(
             error: 'کد برگشتی: ' +
