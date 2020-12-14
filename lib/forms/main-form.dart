@@ -1357,145 +1357,153 @@ class MainFormWidgetState extends State<MainForm>
                 ),
               ),
               persistentFooterButtons: [
-                Text(currentPageText),
-                Visibility(
-                    child: IconButton(
-                      icon: Icon(Icons.first_page),
-                      tooltip: 'اولین صفحه',
-                      onPressed: () async {
-                        if (_activeSection ==
-                                GActiveFormSection.DraftRecitations ||
-                            _activeSection ==
-                                GActiveFormSection.AllMyRecitations ||
-                            _activeSection ==
-                                GActiveFormSection.AllUsersPendingRecitations) {
-                          _narrationsPageNumber = 1;
-                          await _loadData();
-                        } else if (_activeSection ==
-                            GActiveFormSection.Uploads) {
-                          _uploadsPageNumber = 1;
-                          await _loadData();
-                        }
-                      },
-                    ),
-                    visible: _activeSection != GActiveFormSection.Profiles &&
-                        _activeSection !=
-                            GActiveFormSection.SynchronizationQueue &&
-                        _activeSection != GActiveFormSection.Notifications),
-                Visibility(
-                    child: IconButton(
-                      icon: Icon(Icons.navigate_before),
-                      tooltip: 'صفحهٔ قبل',
-                      onPressed: () async {
-                        if (_activeSection ==
-                                GActiveFormSection.DraftRecitations ||
-                            _activeSection ==
-                                GActiveFormSection.AllMyRecitations ||
-                            _activeSection ==
-                                GActiveFormSection.AllUsersPendingRecitations) {
-                          _narrationsPageNumber =
-                              _narrations.paginationMetadata == null
-                                  ? 1
-                                  : _narrations.paginationMetadata.currentPage -
-                                      1;
-                          if (_narrationsPageNumber <= 0)
+                Row(children: [
+                  Text(currentPageText),
+                  Visibility(
+                      child: IconButton(
+                        icon: Icon(Icons.first_page),
+                        tooltip: 'اولین صفحه',
+                        onPressed: () async {
+                          if (_activeSection ==
+                                  GActiveFormSection.DraftRecitations ||
+                              _activeSection ==
+                                  GActiveFormSection.AllMyRecitations ||
+                              _activeSection ==
+                                  GActiveFormSection
+                                      .AllUsersPendingRecitations) {
                             _narrationsPageNumber = 1;
-                          await _loadData();
-                        } else if (_activeSection ==
-                            GActiveFormSection.Uploads) {
-                          _uploadsPageNumber =
-                              _uploads.paginationMetadata == null
-                                  ? 1
-                                  : _uploads.paginationMetadata.currentPage - 1;
-                          if (_uploadsPageNumber <= 0) _uploadsPageNumber = 1;
-                          await _loadData();
-                        }
-                      },
-                    ),
-                    visible: _activeSection != GActiveFormSection.Profiles &&
-                        _activeSection !=
-                            GActiveFormSection.SynchronizationQueue &&
-                        _activeSection != GActiveFormSection.Notifications),
-                Visibility(
-                    child: IconButton(
-                      icon: Icon(Icons.navigate_next),
-                      tooltip: 'صفحهٔ بعد',
-                      onPressed: () async {
-                        if (_activeSection ==
-                                GActiveFormSection.DraftRecitations ||
-                            _activeSection ==
-                                GActiveFormSection.AllMyRecitations ||
-                            _activeSection ==
-                                GActiveFormSection.AllUsersPendingRecitations) {
-                          _narrationsPageNumber =
-                              _narrations.paginationMetadata == null
-                                  ? 1
-                                  : _narrations.paginationMetadata.currentPage +
-                                      1;
-                          await _loadData();
-                        } else if (_activeSection ==
-                            GActiveFormSection.Uploads) {
-                          _uploadsPageNumber =
-                              _uploads.paginationMetadata == null
-                                  ? 1
-                                  : _uploads.paginationMetadata.currentPage + 1;
-                          await _loadData();
-                        }
-                      },
-                    ),
-                    visible: _activeSection != GActiveFormSection.Profiles &&
-                        _activeSection !=
-                            GActiveFormSection.SynchronizationQueue &&
-                        _activeSection != GActiveFormSection.Notifications),
-                Visibility(
-                    child: IconButton(
-                      icon: Icon(Icons.last_page),
-                      tooltip: 'صفحهٔ آخر',
-                      onPressed: () async {
-                        if (_activeSection ==
-                                GActiveFormSection.DraftRecitations ||
-                            _activeSection ==
-                                GActiveFormSection.AllMyRecitations ||
-                            _activeSection ==
-                                GActiveFormSection.AllUsersPendingRecitations) {
-                          _narrationsPageNumber =
-                              _narrations.paginationMetadata == null
-                                  ? 1
-                                  : _narrations.paginationMetadata.totalPages;
-                          await _loadData();
-                        } else if (_activeSection ==
-                            GActiveFormSection.Uploads) {
-                          _uploadsPageNumber =
-                              _uploads.paginationMetadata == null
-                                  ? 1
-                                  : _uploads.paginationMetadata.totalPages;
-                          await _loadData();
-                        }
-                      },
-                    ),
-                    visible: _activeSection != GActiveFormSection.Profiles &&
-                        _activeSection !=
-                            GActiveFormSection.SynchronizationQueue &&
-                        _activeSection != GActiveFormSection.Notifications),
-                Visibility(
-                    child: IconButton(
-                      icon: Icon(Icons.search),
-                      tooltip: 'جستجو',
-                      onPressed: () async {
-                        var res = await _getSearchParams();
-                        if (res != null) {
-                          setState(() {
-                            _pageSize = res.item1;
-                            _searchTerm = res.item2;
-                          });
-                          await _loadData();
-                        }
-                      },
-                    ),
-                    visible: _activeSection != GActiveFormSection.Uploads &&
-                        _activeSection !=
-                            GActiveFormSection.SynchronizationQueue &&
-                        _activeSection != GActiveFormSection.Notifications)
+                            await _loadData();
+                          } else if (_activeSection ==
+                              GActiveFormSection.Uploads) {
+                            _uploadsPageNumber = 1;
+                            await _loadData();
+                          }
+                        },
+                      ),
+                      visible: _activeSection != GActiveFormSection.Profiles &&
+                          _activeSection !=
+                              GActiveFormSection.SynchronizationQueue &&
+                          _activeSection != GActiveFormSection.Notifications),
+                  Visibility(
+                      child: IconButton(
+                        icon: Icon(Icons.navigate_before),
+                        tooltip: 'صفحهٔ قبل',
+                        onPressed: () async {
+                          if (_activeSection ==
+                                  GActiveFormSection.DraftRecitations ||
+                              _activeSection ==
+                                  GActiveFormSection.AllMyRecitations ||
+                              _activeSection ==
+                                  GActiveFormSection
+                                      .AllUsersPendingRecitations) {
+                            _narrationsPageNumber =
+                                _narrations.paginationMetadata == null
+                                    ? 1
+                                    : _narrations
+                                            .paginationMetadata.currentPage -
+                                        1;
+                            if (_narrationsPageNumber <= 0)
+                              _narrationsPageNumber = 1;
+                            await _loadData();
+                          } else if (_activeSection ==
+                              GActiveFormSection.Uploads) {
+                            _uploadsPageNumber = _uploads.paginationMetadata ==
+                                    null
+                                ? 1
+                                : _uploads.paginationMetadata.currentPage - 1;
+                            if (_uploadsPageNumber <= 0) _uploadsPageNumber = 1;
+                            await _loadData();
+                          }
+                        },
+                      ),
+                      visible: _activeSection != GActiveFormSection.Profiles &&
+                          _activeSection !=
+                              GActiveFormSection.SynchronizationQueue &&
+                          _activeSection != GActiveFormSection.Notifications),
+                  Visibility(
+                      child: IconButton(
+                        icon: Icon(Icons.navigate_next),
+                        tooltip: 'صفحهٔ بعد',
+                        onPressed: () async {
+                          if (_activeSection ==
+                                  GActiveFormSection.DraftRecitations ||
+                              _activeSection ==
+                                  GActiveFormSection.AllMyRecitations ||
+                              _activeSection ==
+                                  GActiveFormSection
+                                      .AllUsersPendingRecitations) {
+                            _narrationsPageNumber =
+                                _narrations.paginationMetadata == null
+                                    ? 1
+                                    : _narrations
+                                            .paginationMetadata.currentPage +
+                                        1;
+                            await _loadData();
+                          } else if (_activeSection ==
+                              GActiveFormSection.Uploads) {
+                            _uploadsPageNumber = _uploads.paginationMetadata ==
+                                    null
+                                ? 1
+                                : _uploads.paginationMetadata.currentPage + 1;
+                            await _loadData();
+                          }
+                        },
+                      ),
+                      visible: _activeSection != GActiveFormSection.Profiles &&
+                          _activeSection !=
+                              GActiveFormSection.SynchronizationQueue &&
+                          _activeSection != GActiveFormSection.Notifications),
+                  Visibility(
+                      child: IconButton(
+                        icon: Icon(Icons.last_page),
+                        tooltip: 'صفحهٔ آخر',
+                        onPressed: () async {
+                          if (_activeSection ==
+                                  GActiveFormSection.DraftRecitations ||
+                              _activeSection ==
+                                  GActiveFormSection.AllMyRecitations ||
+                              _activeSection ==
+                                  GActiveFormSection
+                                      .AllUsersPendingRecitations) {
+                            _narrationsPageNumber =
+                                _narrations.paginationMetadata == null
+                                    ? 1
+                                    : _narrations.paginationMetadata.totalPages;
+                            await _loadData();
+                          } else if (_activeSection ==
+                              GActiveFormSection.Uploads) {
+                            _uploadsPageNumber =
+                                _uploads.paginationMetadata == null
+                                    ? 1
+                                    : _uploads.paginationMetadata.totalPages;
+                            await _loadData();
+                          }
+                        },
+                      ),
+                      visible: _activeSection != GActiveFormSection.Profiles &&
+                          _activeSection !=
+                              GActiveFormSection.SynchronizationQueue &&
+                          _activeSection != GActiveFormSection.Notifications),
+                  Visibility(
+                      child: IconButton(
+                        icon: Icon(Icons.search),
+                        tooltip: 'جستجو',
+                        onPressed: () async {
+                          var res = await _getSearchParams();
+                          if (res != null) {
+                            setState(() {
+                              _pageSize = res.item1;
+                              _searchTerm = res.item2;
+                            });
+                            await _loadData();
+                          }
+                        },
+                      ),
+                      visible: _activeSection != GActiveFormSection.Uploads &&
+                          _activeSection !=
+                              GActiveFormSection.SynchronizationQueue &&
+                          _activeSection != GActiveFormSection.Notifications)
+                ])
               ],
               body: Builder(builder: (context) => Center(child: items)),
               floatingActionButton: FloatingActionButton(
