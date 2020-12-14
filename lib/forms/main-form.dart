@@ -72,19 +72,19 @@ class MainFormWidgetState extends State<MainForm>
   String get title {
     switch (_activeSection) {
       case GActiveFormSection.Uploads:
-        return 'پیشخان خوانشگران گنجور » بارگذاری‌های من';
+        return 'بارگذاری‌های من';
       case GActiveFormSection.Profiles:
-        return 'پیشخان خوانشگران گنجور » نمایه‌های من';
+        return 'نمایه‌های من';
       case GActiveFormSection.DraftRecitations:
-        return 'پیشخان خوانشگران گنجور » خوانش‌های پیش‌نویس من';
+        return 'خوانش‌های پیش‌نویس من';
       case GActiveFormSection.AllMyRecitations:
-        return 'پیشخان خوانشگران گنجور » همهٔ خوانش‌های من';
+        return 'همهٔ خوانش‌های من';
       case GActiveFormSection.AllUsersPendingRecitations:
-        return 'پیشخان خوانشگران گنجور » خوانش‌های در انتظار تأیید';
+        return 'خوانش‌های در انتظار تأیید';
       case GActiveFormSection.SynchronizationQueue:
-        return 'پیشخان خوانشگران گنجور » صف انتشار در گنجور';
+        return 'صف انتشار در گنجور';
       case GActiveFormSection.Notifications:
-        return 'پیشخان خوانشگران گنجور » اعلان‌های من';
+        return 'اعلان‌های من';
     }
     return '';
   }
