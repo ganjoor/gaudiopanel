@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:gaudiopanel/forms/login.dart';
 import 'package:gaudiopanel/forms/main-form.dart';
 import 'package:gaudiopanel/services/auth-service.dart';
+import 'package:universal_html/html.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 Future<void> main() async {
   Widget initialWidget =
@@ -19,6 +21,18 @@ class GAudioPanelApp extends StatefulWidget {
 }
 
 class GAudioPanelAppState extends State<GAudioPanelApp> {
+  @override
+  void initState() {
+    super.initState();
+    if (kIsWeb) {
+      // Remove `loading` div
+      final loader = document.getElementsByClassName('loading');
+      if (loader.isNotEmpty) {
+        loader.first.remove();
+      }
+    }
+  }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
