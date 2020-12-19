@@ -59,15 +59,16 @@ class AuthService {
     if (userInfo == null) {
       return false;
     }
-    var securableItem = userInfo.securableItem
+    var securableItems = userInfo.securableItem
         .where((element) => element.shortName == securableItemShortName)
-        .first;
-    if (securableItem != null) {
-      var operation = securableItem.operations
+        .toList();
+    if (securableItems.length > 0) {
+      var operations = securableItems[0]
+          .operations
           .where((element) => element.shortName == operationShortName)
-          .first;
-      if (operation != null) {
-        return operation.status;
+          .toList();
+      if (operations.length > 0) {
+        return operations[0].status;
       }
     }
     return false;

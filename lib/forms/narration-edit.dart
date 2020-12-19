@@ -28,7 +28,7 @@ class _NarrationEditState extends State<NarrationEdit>
   final LoadingStateChanged loadingStateChanged;
   final SnackbarNeeded snackbarNeeded;
   AudioPlayer _player;
-  bool _canModerate = false;
+  bool _canPublish = false;
 
   _NarrationEditState(
       this.narration, this.loadingStateChanged, this.snackbarNeeded);
@@ -73,9 +73,9 @@ class _NarrationEditState extends State<NarrationEdit>
 
   @override
   void afterFirstLayout(BuildContext context) async {
-    if (await AuthService().hasPermission('recitation', 'moderate')) {
+    if (await AuthService().hasPermission('recitation', 'publish')) {
       setState(() {
-        _canModerate = true;
+        _canPublish = true;
       });
     }
   }
@@ -237,7 +237,7 @@ class _NarrationEditState extends State<NarrationEdit>
                               Navigator.of(context).pop(narration);
                             },
                           ),
-                          visible: _canModerate &&
+                          visible: _canPublish &&
                               ((narration.reviewStatus ==
                                       AudioReviewStatus.draft /* Draft */) ||
                                   (narration.reviewStatus ==
@@ -261,7 +261,7 @@ class _NarrationEditState extends State<NarrationEdit>
                               Navigator.of(context).pop(narration);
                             },
                           ),
-                          visible: !_canModerate &&
+                          visible: !_canPublish &&
                               narration.reviewStatus ==
                                   AudioReviewStatus.draft /* Draft */),
                       Visibility(
@@ -282,7 +282,7 @@ class _NarrationEditState extends State<NarrationEdit>
                               Navigator.of(context).pop(narration);
                             },
                           ),
-                          visible: _canModerate &&
+                          visible: _canPublish &&
                               ((narration.reviewStatus ==
                                       AudioReviewStatus.draft /* Draft */) ||
                                   (narration.reviewStatus ==

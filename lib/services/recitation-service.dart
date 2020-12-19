@@ -775,8 +775,7 @@ class RecitationService {
       }
 
       if (response.statusCode == 200) {
-        List<RecitationPublishingTrackerViewModel> ret =
-            List<RecitationPublishingTrackerViewModel>();
+        List<RecitationPublishingTrackerViewModel> ret = [];
         List<dynamic> items = json.decode(response.body);
 
         for (var item in items) {

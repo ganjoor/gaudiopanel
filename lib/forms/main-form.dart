@@ -46,6 +46,7 @@ class MainFormWidgetState extends State<MainForm>
     with AfterLayoutMixin<MainForm> {
   final GlobalKey<ScaffoldMessengerState> _key =
       GlobalKey<ScaffoldMessengerState>();
+  bool _canPublish = false;
   bool _canModerate = false;
   bool _canReOrder = false;
   String _userFrinedlyName = '';
@@ -267,6 +268,12 @@ class MainFormWidgetState extends State<MainForm>
     var user = await StorageService().userInfo;
     if (user != null) {
       _userFrinedlyName = user.user.firstName + ' ' + user.user.sureName;
+    }
+
+    if (await AuthService().hasPermission('recitation', 'publish')) {
+      setState(() {
+        _canPublish = true;
+      });
     }
 
     if (await AuthService().hasPermission('recitation', 'moderate')) {
@@ -702,7 +709,7 @@ class MainFormWidgetState extends State<MainForm>
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('انتقال مالکیت'),
+          title: Text('انتقال مالکیت خوانش‌های تأیید شده'),
           content: SingleChildScrollView(
             child: ChownToEmail(),
           ),
@@ -1007,7 +1014,7 @@ class MainFormWidgetState extends State<MainForm>
                       ),
                       visible: _activeSection ==
                               GActiveFormSection.DraftRecitations &&
-                          !_canModerate),
+                          !_canPublish),
                   Visibility(
                       child: IconButton(
                         icon: Icon(Icons.publish),
@@ -1066,9 +1073,9 @@ class MainFormWidgetState extends State<MainForm>
                       ),
                       visible: (_activeSection ==
                                   GActiveFormSection.DraftRecitations &&
-                              _canModerate) ||
-                          _activeSection ==
-                              GActiveFormSection.AllUsersPendingRecitations),
+                              _canPublish) ||
+                          (_activeSection ==
+                              GActiveFormSection.AllUsersPendingRecitations)),
                   Visibility(
                     child: IconButton(
                       tooltip: 'انتقال مالکیت',
@@ -1077,8 +1084,7 @@ class MainFormWidgetState extends State<MainForm>
                         await _transferOwnership();
                       },
                     ),
-                    visible: _canModerate &&
-                        _activeSection == GActiveFormSection.Profiles,
+                    visible: _activeSection == GActiveFormSection.Profiles,
                   ),
                   Visibility(
                     child: IconButton(
@@ -1136,7 +1142,7 @@ class MainFormWidgetState extends State<MainForm>
                         }
                       },
                     ),
-                    visible: _canModerate &&
+                    visible: _canPublish &&
                         _activeSection ==
                             GActiveFormSection.SynchronizationQueue,
                   ),
