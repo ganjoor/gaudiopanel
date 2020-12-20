@@ -1508,7 +1508,45 @@ class MainFormWidgetState extends State<MainForm>
                       visible: _activeSection != GActiveFormSection.Uploads &&
                           _activeSection !=
                               GActiveFormSection.SynchronizationQueue &&
-                          _activeSection != GActiveFormSection.Notifications)
+                          _activeSection != GActiveFormSection.Notifications),
+                  IconButton(
+                    icon: Stack(children: <Widget>[
+                      Icon(Icons.notifications),
+                      Visibility(
+                          child: Positioned(
+                            right: 0,
+                            child: Container(
+                              padding: EdgeInsets.all(1),
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              constraints: BoxConstraints(
+                                minWidth: 12,
+                                minHeight: 12,
+                              ),
+                              child: Text(
+                                '$_unreadNotificationsCount',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                          visible: _unreadNotificationsCount > 0),
+                    ]),
+                    tooltip: 'اعلان‌های من',
+                    onPressed: () async {
+                      if (_activeSection != GActiveFormSection.Notifications) {
+                        setState(() {
+                          _activeSection = GActiveFormSection.Notifications;
+                        });
+                        await _loadData();
+                      }
+                    },
+                  ),
                 ])
               ],
               body: Builder(builder: (context) => Center(child: items)),
