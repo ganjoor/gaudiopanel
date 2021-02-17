@@ -345,6 +345,12 @@ class SignUpFormState extends State<SignUpForm>
                                 ),
                                 visible: !_alreadyLoggedIn && !_emailSent),
                             Visibility(
+                                child: Text(
+                                  'تذکر: متأسفانه در حال حاضر جیمیل ایمیلهای ارسالی ما را دریافت نمی‌کند. در صورتی که ایمیلی دریافت نکردید می‌بایست از ارائه‌دهندگان دیگر خدمات  ایمیل مثل یاهو استفاده کنید.',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                                visible: !_alreadyLoggedIn && !_emailSent),
+                            Visibility(
                                 child: SizedBox(
                                     width: double.maxFinite,
                                     child: Padding(
