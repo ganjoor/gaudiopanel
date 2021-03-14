@@ -6,17 +6,12 @@ class RejectRecitation extends StatefulWidget {
 
   const RejectRecitation({Key key, this.recitation}) : super(key: key);
   @override
-  State<StatefulWidget> createState() =>
-      _RejectRecitationState(this.recitation);
+  State<StatefulWidget> createState() => _RejectRecitationState();
 }
 
 class _RejectRecitationState extends State<RejectRecitation> {
-  final RecitationViewModel recitation;
-
   TextEditingController _recitationController = TextEditingController();
   TextEditingController _causeController = TextEditingController();
-
-  _RejectRecitationState(this.recitation);
 
   @override
   void dispose() {
@@ -27,8 +22,9 @@ class _RejectRecitationState extends State<RejectRecitation> {
 
   @override
   Widget build(BuildContext context) {
-    _recitationController.text =
-        this.recitation.audioTitle + ' به خوانش ' + this.recitation.audioArtist;
+    _recitationController.text = widget.recitation.audioTitle +
+        ' به خوانش ' +
+        widget.recitation.audioArtist;
     return FocusTraversalGroup(
         child: Form(
             autovalidateMode: AutovalidateMode.always,

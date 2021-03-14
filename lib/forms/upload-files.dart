@@ -6,15 +6,12 @@ class UploadFiles extends StatefulWidget {
 
   const UploadFiles({Key key, this.profile}) : super(key: key);
   @override
-  State<StatefulWidget> createState() => _UploadFilesState(this.profile);
+  State<StatefulWidget> createState() => _UploadFilesState();
 }
 
 class _UploadFilesState extends State<UploadFiles> {
-  final UserRecitationProfileViewModel profile;
 
   TextEditingController _profileController = TextEditingController();
-
-  _UploadFilesState(this.profile);
 
   bool _replace = true;
 
@@ -26,7 +23,7 @@ class _UploadFilesState extends State<UploadFiles> {
 
   @override
   Widget build(BuildContext context) {
-    _profileController.text = this.profile.name;
+    _profileController.text = widget.profile.name;
     return FocusTraversalGroup(
         child: Form(
             autovalidateMode: AutovalidateMode.always,

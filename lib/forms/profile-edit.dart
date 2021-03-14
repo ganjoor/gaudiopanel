@@ -7,14 +7,10 @@ class ProfileEdit extends StatefulWidget {
   const ProfileEdit({Key key, this.profile}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _ProfileEditState(this.profile);
+  State<StatefulWidget> createState() => _ProfileEditState();
 }
 
 class _ProfileEditState extends State<ProfileEdit> {
-  final UserRecitationProfileViewModel profile;
-
-  _ProfileEditState(this.profile);
-
   TextEditingController _nameController = TextEditingController();
   TextEditingController _artistNameController = TextEditingController();
   TextEditingController _artistUrlController = TextEditingController();
@@ -36,12 +32,13 @@ class _ProfileEditState extends State<ProfileEdit> {
 
   @override
   Widget build(BuildContext context) {
-    _nameController.text = this.profile.name;
-    _artistNameController.text = this.profile.artistName;
-    _artistUrlController.text = this.profile.artistUrl;
-    _audioSrcController.text = this.profile.audioSrc;
-    _audioSrcUrlController.text = this.profile.audioSrcUrl;
-    _fileSuffixWithoutDashController.text = this.profile.fileSuffixWithoutDash;
+    _nameController.text = widget.profile.name;
+    _artistNameController.text = widget.profile.artistName;
+    _artistUrlController.text = widget.profile.artistUrl;
+    _audioSrcController.text = widget.profile.audioSrc;
+    _audioSrcUrlController.text = widget.profile.audioSrcUrl;
+    _fileSuffixWithoutDashController.text =
+        widget.profile.fileSuffixWithoutDash;
     return FocusTraversalGroup(
         child: Form(
             autovalidateMode: AutovalidateMode.always,
@@ -49,7 +46,7 @@ class _ProfileEditState extends State<ProfileEdit> {
               Visibility(
                   child: Text(
                       'ویرایش نمایه‌ها روی خوانش‌های موجود تأثیر نمی‌گذارد و لازم است در صورت نیاز آنها را روی خوانش‌های موجود اعمال کنید'),
-                  visible: profile.id != null),
+                  visible: widget.profile.id != null),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
@@ -129,10 +126,10 @@ class _ProfileEditState extends State<ProfileEdit> {
                     children: [
                       Text('پیش‌فرض'),
                       Switch(
-                          value: profile.isDefault,
+                          value: widget.profile.isDefault,
                           onChanged: (value) {
                             setState(() {
-                              profile.isDefault = value;
+                              widget.profile.isDefault = value;
                             });
                           })
                     ]),
@@ -143,19 +140,21 @@ class _ProfileEditState extends State<ProfileEdit> {
                     alignment: MainAxisAlignment.end,
                     children: [
                       ElevatedButton(
-                        child: Text(
-                            profile.id == '00000000-0000-0000-0000-000000000000'
-                                ? 'ایجاد'
-                                : 'ذخیره'),
+                        child: Text(widget.profile.id ==
+                                '00000000-0000-0000-0000-000000000000'
+                            ? 'ایجاد'
+                            : 'ذخیره'),
                         onPressed: () {
-                          profile.name = _nameController.text;
-                          profile.artistName = _artistNameController.text;
-                          profile.artistUrl = _artistUrlController.text;
-                          profile.audioSrc = _audioSrcController.text;
-                          profile.audioSrcUrl = _audioSrcUrlController.text;
-                          profile.fileSuffixWithoutDash =
+                          widget.profile.name = _nameController.text;
+                          widget.profile.artistName =
+                              _artistNameController.text;
+                          widget.profile.artistUrl = _artistUrlController.text;
+                          widget.profile.audioSrc = _audioSrcController.text;
+                          widget.profile.audioSrcUrl =
+                              _audioSrcUrlController.text;
+                          widget.profile.fileSuffixWithoutDash =
                               _fileSuffixWithoutDashController.text;
-                          Navigator.of(context).pop(profile);
+                          Navigator.of(context).pop(widget.profile);
                         },
                       ),
                       TextButton(

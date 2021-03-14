@@ -6,15 +6,12 @@ class SearchParams extends StatefulWidget {
 
   const SearchParams({Key key, this.sparams}) : super(key: key);
   @override
-  State<StatefulWidget> createState() => _SearchParamsState(this.sparams);
+  State<StatefulWidget> createState() => _SearchParamsState();
 }
 
 class _SearchParamsState extends State<SearchParams> {
-  final Tuple2<int, String> sparams;
-
   TextEditingController _searchController = TextEditingController();
 
-  _SearchParamsState(this.sparams);
   int _pageSize;
 
   @override
@@ -26,8 +23,8 @@ class _SearchParamsState extends State<SearchParams> {
   @override
   void initState() {
     super.initState();
-    _searchController.text = this.sparams.item2;
-    _pageSize = this.sparams.item1;
+    _searchController.text = widget.sparams.item2;
+    _pageSize = widget.sparams.item1;
   }
 
   @override
@@ -49,7 +46,7 @@ class _SearchParamsState extends State<SearchParams> {
               Padding(
                 padding: EdgeInsets.all(20.0),
                 child: DropdownButtonFormField(
-                    value: this.sparams.item1,
+                    value: widget.sparams.item1,
                     decoration: InputDecoration(
                       labelText: 'تعداد در هر صفحه',
                     ),
