@@ -6,13 +6,11 @@ import 'package:gaudiopanel/forms/chwon-to-email.dart';
 import 'package:gaudiopanel/forms/login.dart';
 import 'package:gaudiopanel/forms/main-form-sections/notifications-data-section.dart';
 import 'package:gaudiopanel/forms/main-form-sections/profiles-data-section.dart';
-import 'package:gaudiopanel/forms/main-form-sections/publish-queue-section.dart';
 import 'package:gaudiopanel/forms/profile-edit.dart';
 import 'package:gaudiopanel/forms/search-params.dart';
 import 'package:gaudiopanel/forms/upload-files.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
 import 'package:gaudiopanel/models/notifications/ruser-notification-viewmodel.dart';
-import 'package:gaudiopanel/models/recitation/recitation-publishing-tracker-viewmodel.dart';
 import 'package:gaudiopanel/models/recitation/recitation-viewmodel.dart';
 import 'package:gaudiopanel/models/recitation/uploaded-item-viewmodel.dart';
 import 'package:gaudiopanel/models/recitation/user-recitation-profile-viewmodel.dart';
@@ -33,7 +31,6 @@ enum GActiveFormSection {
   AllUsersPendingRecitations,
   Uploads,
   Profiles,
-  SynchronizationQueue,
   Notifications
 }
 
@@ -65,9 +62,6 @@ class MainFormWidgetState extends State<MainForm>
       PaginatedItemsResponseModel<UploadedItemViewModel>(items: []);
   PaginatedItemsResponseModel<UserRecitationProfileViewModel> _profiles =
       PaginatedItemsResponseModel<UserRecitationProfileViewModel>(items: []);
-  PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel> _queue =
-      PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>(
-          items: []);
   PaginatedItemsResponseModel<RUserNotificationViewModel> _notifications =
       PaginatedItemsResponseModel<RUserNotificationViewModel>(items: []);
   String get title {
@@ -82,8 +76,6 @@ class MainFormWidgetState extends State<MainForm>
         return 'همهٔ خوانش‌های من';
       case GActiveFormSection.AllUsersPendingRecitations:
         return 'خوانش‌های در انتظار تأیید';
-      case GActiveFormSection.SynchronizationQueue:
-        return 'صف انتشار در گنجور';
       case GActiveFormSection.Notifications:
         return 'اعلان‌های من';
     }
@@ -173,28 +165,6 @@ class MainFormWidgetState extends State<MainForm>
     }
   }
 
-  Future<void> _loadSyncronizationQueueData() async {
-    setState(() {
-      _isLoading = true;
-    });
-    var publishQueue = await RecitationService().getPublishQueue(false);
-    setState(() {
-      _isLoading = false;
-    });
-    if (publishQueue.item2.isEmpty) {
-      setState(() {
-        this._queue.items.clear();
-        this._queue.items.addAll(publishQueue.item1.items);
-        this._queue.paginationMetadata = publishQueue.item1.paginationMetadata;
-      });
-    } else {
-      _key.currentState.showSnackBar(SnackBar(
-        content: Text("خطا در دریافت صف انتشار در سایت: " + publishQueue.item2),
-        backgroundColor: Colors.red,
-      ));
-    }
-  }
-
   Future<void> _loadNotificationsData() async {
     setState(() {
       _isLoading = true;
@@ -252,9 +222,6 @@ class MainFormWidgetState extends State<MainForm>
         break;
       case GActiveFormSection.Profiles:
         await _loadProfilesData();
-        break;
-      case GActiveFormSection.SynchronizationQueue:
-        await _loadSyncronizationQueueData();
         break;
       case GActiveFormSection.Notifications:
         await _loadNotificationsData();
@@ -783,8 +750,6 @@ class MainFormWidgetState extends State<MainForm>
             profiles: _profiles,
             loadingStateChanged: _loadingStateChanged,
             snackbarNeeded: _snackbarNeeded);
-      case GActiveFormSection.SynchronizationQueue:
-        return PublishQueueSection(queue: this._queue);
       case GActiveFormSection.Notifications:
         return NotificationsDataSection(
             notifications: this._notifications,
@@ -827,10 +792,6 @@ class MainFormWidgetState extends State<MainForm>
           ')';
     }
 
-    if (_activeSection == GActiveFormSection.SynchronizationQueue &&
-        _narrations != null) {
-      return this._queue.items.length.toString() + ' مورد';
-    }
     return '';
   }
 
@@ -876,9 +837,7 @@ class MainFormWidgetState extends State<MainForm>
                             }
                           }
                         }),
-                    visible: _activeSection != GActiveFormSection.Uploads &&
-                        _activeSection !=
-                            GActiveFormSection.SynchronizationQueue,
+                    visible: _activeSection != GActiveFormSection.Uploads,
                   ),
                   Visibility(
                     child: IconButton(
@@ -906,9 +865,7 @@ class MainFormWidgetState extends State<MainForm>
                             }
                           }
                         }),
-                    visible: _activeSection != GActiveFormSection.Uploads &&
-                        _activeSection !=
-                            GActiveFormSection.SynchronizationQueue,
+                    visible: _activeSection != GActiveFormSection.Uploads,
                   ),
                   Visibility(
                       child: IconButton(
@@ -957,9 +914,7 @@ class MainFormWidgetState extends State<MainForm>
                           }
                         },
                       ),
-                      visible: _activeSection != GActiveFormSection.Uploads &&
-                          _activeSection !=
-                              GActiveFormSection.SynchronizationQueue),
+                      visible: _activeSection != GActiveFormSection.Uploads),
                   Visibility(
                       child: IconButton(
                         icon: Icon(Icons.publish),
@@ -1122,30 +1077,6 @@ class MainFormWidgetState extends State<MainForm>
                     visible: _canReOrder &&
                         _activeSection == GActiveFormSection.Profiles,
                   ),
-                  Visibility(
-                    child: IconButton(
-                      icon: Icon(Icons.upload_file),
-                      tooltip: 'تلاش مجدد',
-                      onPressed: () async {
-                        setState(() {
-                          _isLoading = true;
-                        });
-                        var ret = await RecitationService().retryPublish(false);
-                        setState(() {
-                          _isLoading = false;
-                        });
-                        if (ret.isNotEmpty) {
-                          _key.currentState.showSnackBar(SnackBar(
-                            content: Text('خطا در تلاش مجدد: ' + ret),
-                            backgroundColor: Colors.red,
-                          ));
-                        }
-                      },
-                    ),
-                    visible: _canPublish &&
-                        _activeSection ==
-                            GActiveFormSection.SynchronizationQueue,
-                  ),
                 ],
               ),
               drawer: Drawer(
@@ -1262,25 +1193,6 @@ class MainFormWidgetState extends State<MainForm>
                       },
                     ),
                     ListTile(
-                      title: Text('صف انتشار در گنجور'),
-                      leading: Icon(Icons.send_to_mobile,
-                          color: Theme.of(context).primaryColor),
-                      selected: _activeSection ==
-                          GActiveFormSection.SynchronizationQueue,
-                      onTap: () async {
-                        if (_activeSection !=
-                            GActiveFormSection.SynchronizationQueue) {
-                          setState(() {
-                            _activeSection =
-                                GActiveFormSection.SynchronizationQueue;
-                          });
-                          await _loadData();
-
-                          Navigator.of(context).pop(); //close drawer
-                        }
-                      },
-                    ),
-                    ListTile(
                       title: Text('اعلان‌های من'),
                       leading: Stack(children: <Widget>[
                         Icon(Icons.notifications,
@@ -1387,8 +1299,6 @@ class MainFormWidgetState extends State<MainForm>
                         },
                       ),
                       visible: _activeSection != GActiveFormSection.Profiles &&
-                          _activeSection !=
-                              GActiveFormSection.SynchronizationQueue &&
                           _activeSection != GActiveFormSection.Notifications),
                   Visibility(
                       child: IconButton(
@@ -1423,8 +1333,6 @@ class MainFormWidgetState extends State<MainForm>
                         },
                       ),
                       visible: _activeSection != GActiveFormSection.Profiles &&
-                          _activeSection !=
-                              GActiveFormSection.SynchronizationQueue &&
                           _activeSection != GActiveFormSection.Notifications),
                   Visibility(
                       child: IconButton(
@@ -1456,8 +1364,6 @@ class MainFormWidgetState extends State<MainForm>
                         },
                       ),
                       visible: _activeSection != GActiveFormSection.Profiles &&
-                          _activeSection !=
-                              GActiveFormSection.SynchronizationQueue &&
                           _activeSection != GActiveFormSection.Notifications),
                   Visibility(
                       child: IconButton(
@@ -1487,8 +1393,6 @@ class MainFormWidgetState extends State<MainForm>
                         },
                       ),
                       visible: _activeSection != GActiveFormSection.Profiles &&
-                          _activeSection !=
-                              GActiveFormSection.SynchronizationQueue &&
                           _activeSection != GActiveFormSection.Notifications),
                   Visibility(
                       child: IconButton(
@@ -1506,8 +1410,6 @@ class MainFormWidgetState extends State<MainForm>
                         },
                       ),
                       visible: _activeSection != GActiveFormSection.Uploads &&
-                          _activeSection !=
-                              GActiveFormSection.SynchronizationQueue &&
                           _activeSection != GActiveFormSection.Notifications),
                   IconButton(
                     icon: Stack(children: <Widget>[
@@ -1557,7 +1459,6 @@ class MainFormWidgetState extends State<MainForm>
                     case GActiveFormSection.AllMyRecitations:
                     case GActiveFormSection.AllUsersPendingRecitations:
                     case GActiveFormSection.Uploads:
-                    case GActiveFormSection.SynchronizationQueue:
                     case GActiveFormSection.Notifications:
                       if (!_audioUpdateEnabled) {
                         _key.currentState.showSnackBar(SnackBar(
