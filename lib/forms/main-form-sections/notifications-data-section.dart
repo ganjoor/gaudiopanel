@@ -21,22 +21,10 @@ class NotificationsDataSection extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _NotificationsState(
-      this.notifications,
-      this.loadingStateChanged,
-      this.snackbarNeeded,
-      this.updateUnreadNotificationsCount);
+  State<StatefulWidget> createState() => _NotificationsState();
 }
 
 class _NotificationsState extends State<NotificationsDataSection> {
-  final PaginatedItemsResponseModel<RUserNotificationViewModel> notifications;
-  final LoadingStateChanged loadingStateChanged;
-  final SnackbarNeeded snackbarNeeded;
-  final UpdateUnreadNotificationsCount updateUnreadNotificationsCount;
-
-  _NotificationsState(this.notifications, this.loadingStateChanged,
-      this.snackbarNeeded, this.updateUnreadNotificationsCount);
-
   Icon getNotificationIcon(RUserNotificationViewModel notification) {
     return notification.status == NotificationStatus.Unread
         ? Icon(Icons.mail, color: Colors.yellow)
@@ -46,35 +34,36 @@ class _NotificationsState extends State<NotificationsDataSection> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-        itemCount: notifications.items.length,
+        itemCount: widget.notifications.items.length,
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
-              leading: getNotificationIcon(notifications.items[index]),
-              title: Text(notifications.items[index].subject),
+              leading: getNotificationIcon(widget.notifications.items[index]),
+              title: Text(widget.notifications.items[index].subject),
               subtitle: Html(
-                data: notifications.items[index].htmlText,
+                data: widget.notifications.items[index].htmlText,
                 onLinkTap: (url) async {
                   if (await canLaunch(url)) {
                     await launch(url);
-                    if (notifications.items[index].status ==
+                    if (widget.notifications.items[index].status ==
                         NotificationStatus.Unread) {
-                      this.loadingStateChanged(true);
-                      String error = await NotificationService()
-                          .switchStatus(notifications.items[index].id, false);
+                      widget.loadingStateChanged(true);
+                      String error = await NotificationService().switchStatus(
+                          widget.notifications.items[index].id, false);
                       if (error.isNotEmpty) {
-                        this.snackbarNeeded('خطا در تغییر وضعیت اعلان  ' +
-                            notifications.items[index].subject +
+                        widget.snackbarNeeded('خطا در تغییر وضعیت اعلان  ' +
+                            widget.notifications.items[index].subject +
                             '، اطلاعات بیشتر ' +
                             error);
                       } else
                         setState(() {
-                          notifications.items[index].status =
+                          widget.notifications.items[index].status =
                               NotificationStatus.Read;
                         });
-                      this.loadingStateChanged(false);
+                      widget.loadingStateChanged(false);
 
-                      if (this.updateUnreadNotificationsCount != null) {
-                        this.updateUnreadNotificationsCount(notifications.items
+                      if (widget.updateUnreadNotificationsCount != null) {
+                        widget.updateUnreadNotificationsCount(widget
+                            .notifications.items
                             .where((element) =>
                                 element.status == NotificationStatus.Unread)
                             .length);
@@ -86,13 +75,13 @@ class _NotificationsState extends State<NotificationsDataSection> {
                 },
               ),
               trailing: IconButton(
-                icon: notifications.items[index].isMarked
+                icon: widget.notifications.items[index].isMarked
                     ? Icon(Icons.check_box)
                     : Icon(Icons.check_box_outline_blank),
                 onPressed: () {
                   setState(() {
-                    notifications.items[index].isMarked =
-                        !notifications.items[index].isMarked;
+                    widget.notifications.items[index].isMarked =
+                        !widget.notifications.items[index].isMarked;
                   });
                 },
               ));

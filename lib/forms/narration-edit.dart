@@ -18,20 +18,13 @@ class NarrationEdit extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _NarrationEditState(
-      this.narration, this.loadingStateChanged, this.snackbarNeeded);
+  State<StatefulWidget> createState() => _NarrationEditState();
 }
 
 class _NarrationEditState extends State<NarrationEdit>
     with AfterLayoutMixin<NarrationEdit> {
-  final RecitationViewModel narration;
-  final LoadingStateChanged loadingStateChanged;
-  final SnackbarNeeded snackbarNeeded;
   AudioPlayer _player;
   bool _canPublish = false;
-
-  _NarrationEditState(
-      this.narration, this.loadingStateChanged, this.snackbarNeeded);
 
   TextEditingController _titleController = TextEditingController();
   TextEditingController _artistNameController = TextEditingController();
@@ -81,22 +74,22 @@ class _NarrationEditState extends State<NarrationEdit>
   }
 
   void _setModifiedFlag() {
-    if (narration.audioTitle != _titleController.text ||
-        narration.audioArtist != _artistNameController.text ||
-        narration.audioArtistUrl != _artistUrlController.text ||
-        narration.audioSrc != _audioSrcController.text ||
-        narration.audioSrcUrl != _audioSrcUrlController.text) {
-      narration.isModified = true;
+    if (widget.narration.audioTitle != _titleController.text ||
+        widget.narration.audioArtist != _artistNameController.text ||
+        widget.narration.audioArtistUrl != _artistUrlController.text ||
+        widget.narration.audioSrc != _audioSrcController.text ||
+        widget.narration.audioSrcUrl != _audioSrcUrlController.text) {
+      widget.narration.isModified = true;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    _titleController.text = narration.audioTitle;
-    _artistNameController.text = narration.audioArtist;
-    _artistUrlController.text = narration.audioArtistUrl;
-    _audioSrcController.text = narration.audioSrc;
-    _audioSrcUrlController.text = narration.audioSrcUrl;
+    _titleController.text = widget.narration.audioTitle;
+    _artistNameController.text = widget.narration.audioArtist;
+    _artistUrlController.text = widget.narration.audioArtistUrl;
+    _audioSrcController.text = widget.narration.audioSrc;
+    _audioSrcUrlController.text = widget.narration.audioSrcUrl;
     return FocusTraversalGroup(
         child: Form(
             autovalidateMode: AutovalidateMode.always,
@@ -111,8 +104,8 @@ class _NarrationEditState extends State<NarrationEdit>
                         prefixIcon: IconButton(
                           icon: Icon(Icons.open_in_browser),
                           onPressed: () async {
-                            var url =
-                                'https://ganjoor.net' + narration.poemFullUrl;
+                            var url = 'https://ganjoor.net' +
+                                widget.narration.poemFullUrl;
                             if (await canLaunch(url)) {
                               await launch(url);
                             } else {
@@ -186,8 +179,8 @@ class _NarrationEditState extends State<NarrationEdit>
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ControlButtons(_player, narration, this.loadingStateChanged,
-                        this.snackbarNeeded),
+                    ControlButtons(_player, widget.narration,
+                        widget.loadingStateChanged, widget.snackbarNeeded),
                     StreamBuilder<Duration>(
                       stream: _player.durationStream,
                       builder: (context, snapshot) {
@@ -210,7 +203,7 @@ class _NarrationEditState extends State<NarrationEdit>
                                       _player.seek(newPosition);
                                     },
                                   ),
-                                  Text(getVerse(narration, position))
+                                  Text(getVerse(widget.narration, position))
                                 ]);
                           },
                         );
@@ -232,72 +225,79 @@ class _NarrationEditState extends State<NarrationEdit>
                                     MaterialStateProperty.all<Color>(
                                         Colors.red)),
                             onPressed: () {
-                              narration.reviewStatus =
+                              widget.narration.reviewStatus =
                                   AudioReviewStatus.rejected; //Rejected
-                              Navigator.of(context).pop(narration);
+                              Navigator.of(context).pop(widget.narration);
                             },
                           ),
                           visible: _canPublish &&
-                              ((narration.reviewStatus ==
+                              ((widget.narration.reviewStatus ==
                                       AudioReviewStatus.draft /* Draft */) ||
-                                  (narration.reviewStatus ==
+                                  (widget.narration.reviewStatus ==
                                       AudioReviewStatus
                                           .pending /* Pending */))),
                       Visibility(
                           child: ElevatedButton(
                             child: Text('ذخیره و درخواست بررسی'),
                             onPressed: () {
-                              narration.audioTitle = _titleController.text;
-                              narration.audioArtist =
+                              widget.narration.audioTitle =
+                                  _titleController.text;
+                              widget.narration.audioArtist =
                                   _artistNameController.text;
-                              narration.audioArtistUrl =
+                              widget.narration.audioArtistUrl =
                                   _artistUrlController.text;
-                              narration.audioSrc = _audioSrcController.text;
-                              narration.audioSrcUrl =
+                              widget.narration.audioSrc =
+                                  _audioSrcController.text;
+                              widget.narration.audioSrcUrl =
                                   _audioSrcUrlController.text;
-                              narration.reviewStatus =
+                              widget.narration.reviewStatus =
                                   AudioReviewStatus.pending; //Pending
-                              narration.isModified = true;
-                              Navigator.of(context).pop(narration);
+                              widget.narration.isModified = true;
+                              Navigator.of(context).pop(widget.narration);
                             },
                           ),
                           visible: !_canPublish &&
-                              narration.reviewStatus ==
+                              widget.narration.reviewStatus ==
                                   AudioReviewStatus.draft /* Draft */),
                       Visibility(
                           child: ElevatedButton(
                             child: Text('ذخیره و انتشار'),
                             onPressed: () {
                               _setModifiedFlag();
-                              narration.audioTitle = _titleController.text;
-                              narration.audioArtist =
+                              widget.narration.audioTitle =
+                                  _titleController.text;
+                              widget.narration.audioArtist =
                                   _artistNameController.text;
-                              narration.audioArtistUrl =
+                              widget.narration.audioArtistUrl =
                                   _artistUrlController.text;
-                              narration.audioSrc = _audioSrcController.text;
-                              narration.audioSrcUrl =
+                              widget.narration.audioSrc =
+                                  _audioSrcController.text;
+                              widget.narration.audioSrcUrl =
                                   _audioSrcUrlController.text;
-                              narration.reviewStatus =
+                              widget.narration.reviewStatus =
                                   AudioReviewStatus.approved; //Approved
-                              Navigator.of(context).pop(narration);
+                              Navigator.of(context).pop(widget.narration);
                             },
                           ),
                           visible: _canPublish &&
-                              ((narration.reviewStatus ==
+                              ((widget.narration.reviewStatus ==
                                       AudioReviewStatus.draft /* Draft */) ||
-                                  (narration.reviewStatus ==
+                                  (widget.narration.reviewStatus ==
                                       AudioReviewStatus
                                           .pending /* Pending */))),
                       ElevatedButton(
                         child: Text('ذخیره'),
                         onPressed: () {
                           _setModifiedFlag();
-                          narration.audioTitle = _titleController.text;
-                          narration.audioArtist = _artistNameController.text;
-                          narration.audioArtistUrl = _artistUrlController.text;
-                          narration.audioSrc = _audioSrcController.text;
-                          narration.audioSrcUrl = _audioSrcUrlController.text;
-                          Navigator.of(context).pop(narration);
+                          widget.narration.audioTitle = _titleController.text;
+                          widget.narration.audioArtist =
+                              _artistNameController.text;
+                          widget.narration.audioArtistUrl =
+                              _artistUrlController.text;
+                          widget.narration.audioSrc = _audioSrcController.text;
+                          widget.narration.audioSrcUrl =
+                              _audioSrcUrlController.text;
+                          Navigator.of(context).pop(widget.narration);
                         },
                       ),
                       TextButton(

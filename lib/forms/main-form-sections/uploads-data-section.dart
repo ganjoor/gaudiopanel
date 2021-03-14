@@ -8,14 +8,10 @@ class UploadsDataSection extends StatefulWidget {
   const UploadsDataSection({Key key, this.uploads}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _UploadsState(this.uploads);
+  State<StatefulWidget> createState() => _UploadsState();
 }
 
 class _UploadsState extends State<UploadsDataSection> {
-  final PaginatedItemsResponseModel<UploadedItemViewModel> uploads;
-
-  _UploadsState(this.uploads);
-
   Icon getUploadIcon(UploadedItemViewModel upload) {
     return upload.processResult
         ? upload.processProgress == 100
@@ -29,14 +25,14 @@ class _UploadsState extends State<UploadsDataSection> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-        itemCount: uploads.items.length,
+        itemCount: widget.uploads.items.length,
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
-              leading: getUploadIcon(uploads.items[index]),
+              leading: getUploadIcon(widget.uploads.items[index]),
               title: Directionality(
                   textDirection: TextDirection.ltr,
-                  child: Text(uploads.items[index].fileName)),
-              subtitle: Text(uploads.items[index].processResultMsg));
+                  child: Text(widget.uploads.items[index].fileName)),
+              subtitle: Text(widget.uploads.items[index].processResultMsg));
         });
   }
 }

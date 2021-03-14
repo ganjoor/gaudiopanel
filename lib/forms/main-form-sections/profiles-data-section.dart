@@ -15,16 +15,10 @@ class ProfilesDataSection extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _ProfilesState(
-      this.profiles, this.loadingStateChanged, this.snackbarNeeded);
+  State<StatefulWidget> createState() => _ProfilesState();
 }
 
 class _ProfilesState extends State<ProfilesDataSection> {
-  final PaginatedItemsResponseModel<UserRecitationProfileViewModel> profiles;
-  final LoadingStateChanged loadingStateChanged;
-  final SnackbarNeeded snackbarNeeded;
-  _ProfilesState(this.profiles, this.loadingStateChanged, this.snackbarNeeded);
-
   Future<UserRecitationProfileViewModel> _edit(
       UserRecitationProfileViewModel profile) async {
     bool _isNew = profile == null;
@@ -59,57 +53,57 @@ class _ProfilesState extends State<ProfilesDataSection> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-        itemCount: profiles.items.length,
+        itemCount: widget.profiles.items.length,
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
-              selected: profiles.items[index].isDefault,
+              selected: widget.profiles.items[index].isDefault,
               leading: IconButton(
                 icon: Icon(Icons.edit),
                 onPressed: () async {
-                  final result = await _edit(profiles.items[index]);
+                  final result = await _edit(widget.profiles.items[index]);
                   if (result != null) {
-                    if (this.loadingStateChanged != null) {
-                      this.loadingStateChanged(true);
+                    if (widget.loadingStateChanged != null) {
+                      widget.loadingStateChanged(true);
                     }
                     var serviceResult =
                         await RecitationService().updateProfile(result, false);
-                    if (this.loadingStateChanged != null) {
-                      this.loadingStateChanged(false);
+                    if (widget.loadingStateChanged != null) {
+                      widget.loadingStateChanged(false);
                     }
                     if (serviceResult.item2 == '') {
                       setState(() {
-                        profiles.items[index] = serviceResult.item1;
-                        if (profiles.items[index].isDefault) {
-                          for (var item in profiles.items) {
+                        widget.profiles.items[index] = serviceResult.item1;
+                        if (widget.profiles.items[index].isDefault) {
+                          for (var item in widget.profiles.items) {
                             item.isDefault =
-                                item.id == profiles.items[index].id;
+                                item.id == widget.profiles.items[index].id;
                           }
                         }
                       });
                     } else {
-                      if (this.snackbarNeeded != null) {
-                        this.snackbarNeeded(
+                      if (widget.snackbarNeeded != null) {
+                        widget.snackbarNeeded(
                             'خطا در ذخیرهٔ نمایه: ' + serviceResult.item2);
                       }
                     }
                   }
                 },
               ),
-              title: Text(profiles.items[index].name),
+              title: Text(widget.profiles.items[index].name),
               subtitle: Column(children: [
-                Text(profiles.items[index].artistName),
+                Text(widget.profiles.items[index].artistName),
                 Directionality(
                     textDirection: TextDirection.ltr,
-                    child: Text(profiles.items[index].artistUrl))
+                    child: Text(widget.profiles.items[index].artistUrl))
               ]),
               trailing: IconButton(
-                icon: profiles.items[index].isMarked
+                icon: widget.profiles.items[index].isMarked
                     ? Icon(Icons.check_box)
                     : Icon(Icons.check_box_outline_blank),
                 onPressed: () {
                   setState(() {
-                    profiles.items[index].isMarked =
-                        !profiles.items[index].isMarked;
+                    widget.profiles.items[index].isMarked =
+                        !widget.profiles.items[index].isMarked;
                   });
                 },
               ));
