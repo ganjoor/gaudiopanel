@@ -113,10 +113,14 @@ class LoginFormState extends State<LoginForm> {
                                 width: double.maxFinite,
                                 child: Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: RaisedButton.icon(
+                                    child: ElevatedButton.icon(
                                       icon: Icon(Icons.login),
                                       label: Text('ورود'),
-                                      color: Colors.green,
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                Colors.green),
+                                      ),
                                       onPressed: _login,
                                     ))),
                             SizedBox(
@@ -126,7 +130,7 @@ class LoginFormState extends State<LoginForm> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                RaisedButton.icon(
+                                ElevatedButton.icon(
                                   icon: Icon(Icons.launch),
                                   label: Text('ثبت نام'),
                                   onPressed: () {
@@ -140,7 +144,7 @@ class LoginFormState extends State<LoginForm> {
                                 SizedBox(
                                   width: 10.0,
                                 ),
-                                RaisedButton.icon(
+                                ElevatedButton.icon(
                                   icon: Icon(Icons.help),
                                   label: Text('فراموشی گذرواژه'),
                                   onPressed: () async {

@@ -19,7 +19,7 @@ class AuthService {
     try {
       var apiRoot = GServiceAddress.Url;
       final http.Response response = await http.post(
-        '$apiRoot/api/users/login',
+        Uri.parse('$apiRoot/api/users/login'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -84,7 +84,7 @@ class AuthService {
       var sessionId = oldLoginInfo.sessionId;
       var apiRoot = GServiceAddress.Url;
       final http.Response response = await http.put(
-        '$apiRoot/api/users/relogin/$sessionId',
+        Uri.parse('$apiRoot/api/users/relogin/$sessionId'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -114,7 +114,8 @@ class AuthService {
       var sessionId = userInfo.sessionId;
       var apiRoot = GServiceAddress.Url;
       final http.Response response = await http.delete(
-        '$apiRoot/api/users/delsession?userId=$userId&sessionId=$sessionId',
+        Uri.parse(
+            '$apiRoot/api/users/delsession?userId=$userId&sessionId=$sessionId'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
@@ -137,8 +138,8 @@ class AuthService {
   Future<Tuple2<String, String>> getACaptchaImageId() async {
     try {
       var apiRoot = GServiceAddress.Url;
-      http.Response response =
-          await http.get('$apiRoot/api/users/captchaimage', headers: {
+      http.Response response = await http
+          .get(Uri.parse('$apiRoot/api/users/captchaimage'), headers: {
         'Content-Type': 'application/json; charset=UTF-8',
       });
 
@@ -168,7 +169,7 @@ class AuthService {
     try {
       var apiRoot = GServiceAddress.Url;
       final http.Response response = await http.post(
-        '$apiRoot/api/users/signup',
+        Uri.parse('$apiRoot/api/users/signup'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -201,7 +202,7 @@ class AuthService {
       int type =
           signup ? RVerifyQueueType.signUp : RVerifyQueueType.forgotPassword;
       final http.Response response = await http.get(
-          '$apiRoot/api/users/verify?type=$type&secret=$secret',
+          Uri.parse('$apiRoot/api/users/verify?type=$type&secret=$secret'),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
           });
@@ -227,7 +228,7 @@ class AuthService {
     try {
       var apiRoot = GServiceAddress.Url;
       final http.Response response = await http.post(
-        '$apiRoot/api/users/finalizesignup',
+        Uri.parse('$apiRoot/api/users/finalizesignup'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

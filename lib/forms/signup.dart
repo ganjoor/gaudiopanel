@@ -248,11 +248,15 @@ class SignUpFormState extends State<SignUpForm>
                                     width: double.maxFinite,
                                     child: Padding(
                                         padding: const EdgeInsets.all(8.0),
-                                        child: RaisedButton.icon(
+                                        child: ElevatedButton.icon(
                                           icon: Icon(Icons.login),
                                           label: Text(
                                               'تبریک! ثبت نام شما تکمیل شد. ورود به سیستم'),
-                                          color: Colors.green,
+                                          style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateProperty.all<
+                                                    Color>(Colors.green),
+                                          ),
                                           onPressed: _login,
                                         ))),
                                 visible: _finalized),
@@ -349,10 +353,14 @@ class SignUpFormState extends State<SignUpForm>
                                     width: double.maxFinite,
                                     child: Padding(
                                         padding: const EdgeInsets.all(8.0),
-                                        child: RaisedButton.icon(
+                                        child: ElevatedButton.icon(
                                           icon: Icon(Icons.launch),
                                           label: Text('ادامه'),
-                                          color: Colors.green,
+                                          style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateProperty.all<
+                                                    Color>(Colors.green),
+                                          ),
                                           onPressed: _verify,
                                         ))),
                                 visible: _emailSent && !_emailVerified),
@@ -416,10 +424,14 @@ class SignUpFormState extends State<SignUpForm>
                                     width: double.maxFinite,
                                     child: Padding(
                                         padding: const EdgeInsets.all(8.0),
-                                        child: RaisedButton.icon(
+                                        child: ElevatedButton.icon(
                                           icon: Icon(Icons.launch),
                                           label: Text('ادامه'),
-                                          color: Colors.green,
+                                          style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateProperty.all<
+                                                    Color>(Colors.green),
+                                          ),
                                           onPressed: _signup,
                                         ))),
                                 visible: !_alreadyLoggedIn && !_emailSent),
@@ -428,10 +440,14 @@ class SignUpFormState extends State<SignUpForm>
                                     width: double.maxFinite,
                                     child: Padding(
                                         padding: const EdgeInsets.all(8.0),
-                                        child: RaisedButton.icon(
+                                        child: ElevatedButton.icon(
                                           icon: Icon(Icons.launch),
                                           label: Text('ادامه'),
-                                          color: Colors.green,
+                                          style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateProperty.all<
+                                                    Color>(Colors.green),
+                                          ),
                                           onPressed: _finalize,
                                         ))),
                                 visible: _emailVerified && !_finalized),
@@ -440,7 +456,7 @@ class SignUpFormState extends State<SignUpForm>
                               visible: _alreadyLoggedIn,
                             ),
                             Visibility(
-                                child: RaisedButton.icon(
+                                child: ElevatedButton.icon(
                                   icon: Icon(Icons.exit_to_app),
                                   label: Text('برگشت'),
                                   onPressed: () {

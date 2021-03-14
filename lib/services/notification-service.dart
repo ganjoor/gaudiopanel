@@ -26,7 +26,7 @@ class NotificationService {
       }
       var apiRoot = GServiceAddress.Url;
       http.Response response =
-          await http.get('$apiRoot/api/notifications', headers: {
+          await http.get(Uri.parse('$apiRoot/api/notifications'), headers: {
         'Content-Type': 'application/json; charset=UTF-8',
         HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
       });
@@ -74,7 +74,7 @@ class NotificationService {
       }
       var apiRoot = GServiceAddress.Url;
       http.Response response = await http.put(
-        '$apiRoot/api/notifications/$id',
+        Uri.parse('$apiRoot/api/notifications/$id'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
@@ -115,7 +115,7 @@ class NotificationService {
       }
       var apiRoot = GServiceAddress.Url;
       http.Response response = await http.delete(
-        '$apiRoot/api/notifications/$id',
+        Uri.parse('$apiRoot/api/notifications/$id'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
@@ -159,8 +159,8 @@ class NotificationService {
         return Tuple2<int, String>(-1, 'کاربر وارد سیستم نشده است.');
       }
       var apiRoot = GServiceAddress.Url;
-      http.Response response =
-          await http.get('$apiRoot/api/notifications/unread/count', headers: {
+      http.Response response = await http
+          .get(Uri.parse('$apiRoot/api/notifications/unread/count'), headers: {
         'Content-Type': 'application/json; charset=UTF-8',
         HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
       });

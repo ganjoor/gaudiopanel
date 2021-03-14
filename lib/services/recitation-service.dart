@@ -35,7 +35,8 @@ class RecitationService {
       }
       var apiRoot = GServiceAddress.Url;
       http.Response response = await http.get(
-          '$apiRoot/api/audio?PageNumber=$pageNumber&PageSize=$pageSize&allUsers=$allUsers&status=$status&searchTerm=$searchTerm',
+          Uri.parse(
+              '$apiRoot/api/audio?PageNumber=$pageNumber&PageSize=$pageSize&allUsers=$allUsers&status=$status&searchTerm=$searchTerm'),
           headers: {
             'Content-Type': 'application/json; charset=UTF-8',
             HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
@@ -91,12 +92,13 @@ class RecitationService {
       }
       var apiRoot = GServiceAddress.Url;
       int id = narration.id;
-      http.Response response = await http.put('$apiRoot/api/audio/$id',
-          headers: {
-            'Content-Type': 'application/json; charset=UTF-8',
-            HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
-          },
-          body: jsonEncode(narration.toJson()));
+      http.Response response =
+          await http.put(Uri.parse('$apiRoot/api/audio/$id'),
+              headers: {
+                'Content-Type': 'application/json; charset=UTF-8',
+                HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
+              },
+              body: jsonEncode(narration.toJson()));
 
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
@@ -147,12 +149,13 @@ class RecitationService {
       RecitationModerateViewModel model =
           RecitationModerateViewModel(result: mres, message: message);
       var apiRoot = GServiceAddress.Url;
-      http.Response response = await http.put('$apiRoot/api/audio/moderate/$id',
-          headers: {
-            'Content-Type': 'application/json; charset=UTF-8',
-            HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
-          },
-          body: jsonEncode(model.toJson()));
+      http.Response response =
+          await http.put(Uri.parse('$apiRoot/api/audio/moderate/$id'),
+              headers: {
+                'Content-Type': 'application/json; charset=UTF-8',
+                HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
+              },
+              body: jsonEncode(model.toJson()));
 
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
@@ -194,7 +197,7 @@ class RecitationService {
       }
       var apiRoot = GServiceAddress.Url;
       http.Response response = await http.delete(
-        '$apiRoot/api/audio/$id',
+        Uri.parse('$apiRoot/api/audio/$id'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
@@ -240,11 +243,12 @@ class RecitationService {
             null, 'کاربر وارد سیستم نشده است.');
       }
       var apiRoot = GServiceAddress.Url;
-      http.Response response = await http
-          .get('$apiRoot/api/audio/profile?artistName=$artistName', headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-        HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
-      });
+      http.Response response = await http.get(
+          Uri.parse('$apiRoot/api/audio/profile?artistName=$artistName'),
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
+          });
 
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
@@ -292,7 +296,7 @@ class RecitationService {
       }
       var apiRoot = GServiceAddress.Url;
       http.Response response =
-          await http.get('$apiRoot/api/audio/profile/def', headers: {
+          await http.get(Uri.parse('$apiRoot/api/audio/profile/def'), headers: {
         'Content-Type': 'application/json; charset=UTF-8',
         HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
       });
@@ -337,12 +341,13 @@ class RecitationService {
             null, 'کاربر وارد سیستم نشده است.');
       }
       var apiRoot = GServiceAddress.Url;
-      http.Response response = await http.post('$apiRoot/api/audio/profile',
-          headers: {
-            'Content-Type': 'application/json; charset=UTF-8',
-            HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
-          },
-          body: jsonEncode(profile.toJson()));
+      http.Response response =
+          await http.post(Uri.parse('$apiRoot/api/audio/profile'),
+              headers: {
+                'Content-Type': 'application/json; charset=UTF-8',
+                HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
+              },
+              body: jsonEncode(profile.toJson()));
 
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
@@ -386,12 +391,13 @@ class RecitationService {
             null, 'کاربر وارد سیستم نشده است.');
       }
       var apiRoot = GServiceAddress.Url;
-      http.Response response = await http.put('$apiRoot/api/audio/profile',
-          headers: {
-            'Content-Type': 'application/json; charset=UTF-8',
-            HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
-          },
-          body: jsonEncode(profile.toJson()));
+      http.Response response =
+          await http.put(Uri.parse('$apiRoot/api/audio/profile'),
+              headers: {
+                'Content-Type': 'application/json; charset=UTF-8',
+                HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
+              },
+              body: jsonEncode(profile.toJson()));
 
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
@@ -434,7 +440,7 @@ class RecitationService {
       }
       var apiRoot = GServiceAddress.Url;
       http.Response response = await http.delete(
-        '$apiRoot/api/audio/profile/$id',
+        Uri.parse('$apiRoot/api/audio/profile/$id'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
@@ -480,7 +486,8 @@ class RecitationService {
       }
       var apiRoot = GServiceAddress.Url;
       http.Response response = await http.get(
-          '$apiRoot/api/audio/uploads?PageNumber=$pageNumber&PageSize=$pageSize',
+          Uri.parse(
+              '$apiRoot/api/audio/uploads?PageNumber=$pageNumber&PageSize=$pageSize'),
           headers: {
             'Content-Type': 'application/json; charset=UTF-8',
             HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
@@ -526,7 +533,7 @@ class RecitationService {
     try {
       var apiRoot = GServiceAddress.Url;
       http.Response response =
-          await http.get('$apiRoot/api/audio/verses/$id', headers: {
+          await http.get(Uri.parse('$apiRoot/api/audio/verses/$id'), headers: {
         'Content-Type': 'application/json; charset=UTF-8',
       });
 
@@ -573,7 +580,8 @@ class RecitationService {
       }
       var apiRoot = GServiceAddress.Url;
       http.Response response = await http.put(
-        '$apiRoot/api/audio/chown?targetEmailAddress=$targetEmailAddress&artistName=$artistName',
+        Uri.parse(
+            '$apiRoot/api/audio/chown?targetEmailAddress=$targetEmailAddress&artistName=$artistName'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
@@ -620,7 +628,7 @@ class RecitationService {
       }
       var apiRoot = GServiceAddress.Url;
       http.Response response = await http.put(
-        '$apiRoot/api/audio/ff',
+        Uri.parse('$apiRoot/api/audio/ff'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
@@ -669,7 +677,7 @@ class RecitationService {
       }
       var apiRoot = GServiceAddress.Url;
       http.Response response =
-          await http.get('$apiRoot/api/audio/syncqueue', headers: {
+          await http.get(Uri.parse('$apiRoot/api/audio/syncqueue'), headers: {
         'Content-Type': 'application/json; charset=UTF-8',
         HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
       });
@@ -717,8 +725,8 @@ class RecitationService {
         return 'کاربر وارد سیستم نشده است.';
       }
       var apiRoot = GServiceAddress.Url;
-      http.Response response =
-          await http.post('$apiRoot/api/audio/retrypublish', headers: {
+      http.Response response = await http
+          .post(Uri.parse('$apiRoot/api/audio/retrypublish'), headers: {
         'Content-Type': 'application/json; charset=UTF-8',
         HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
       });
@@ -758,11 +766,12 @@ class RecitationService {
             String>(null, 'کاربر وارد سیستم نشده است.');
       }
       var apiRoot = GServiceAddress.Url;
-      http.Response response = await http
-          .get('$apiRoot/api/audio/publishqueue?unfinished=true', headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-        HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
-      });
+      http.Response response = await http.get(
+          Uri.parse('$apiRoot/api/audio/publishqueue?unfinished=true'),
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
+          });
 
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
