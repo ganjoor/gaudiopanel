@@ -11,6 +11,7 @@ class ProfileEdit extends StatefulWidget {
 }
 
 class _ProfileEditState extends State<ProfileEdit> {
+  bool _additionalFields = false;
   TextEditingController _nameController = TextEditingController();
   TextEditingController _artistNameController = TextEditingController();
   TextEditingController _artistUrlController = TextEditingController();
@@ -45,7 +46,7 @@ class _ProfileEditState extends State<ProfileEdit> {
             child: Wrap(children: [
               Visibility(
                   child: Text(
-                      'ویرایش نمایه‌ها روی خوانش‌های موجود تأثیر نمی‌گذارد و لازم است در صورت نیاز آنها را روی خوانش‌های موجود اعمال کنید'),
+                      'ویرایش نمایه‌ها روی خوانش‌های موجود تأثیر نمی‌گذارد و لازم است در صورت نیاز آنها را روی خوانش‌های موجود اعمال کنید.'),
                   visible: widget.profile.id != null),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -58,7 +59,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                 ),
               ),
               Text(
-                  'نام نمایه روی خوانش‌ها تأثیر نمی‌گذارد و فقط به انتخاب آسان نمایه در هنگام بارگذاری خوانش‌های جدید کمک می‌کند'),
+                  'نام نمایه روی خوانش‌ها تأثیر نمی‌گذارد و فقط به انتخاب آسان نمایه در هنگام بارگذاری خوانش‌های جدید کمک می‌کند.'),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
@@ -80,31 +81,39 @@ class _ProfileEditState extends State<ProfileEdit> {
                         ))),
               ),
               Text(
-                  'نشانی سایت یا کانال تلگرام یا صفحهٔ اینستاگرام، نشانی‌های نامرتبط تبلیغاتی قابل پذیرش نیستند'),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                    controller: _audioSrcController,
-                    decoration: InputDecoration(
-                      labelText: 'نام منبع',
-                      hintText: 'نام منبع',
-                    )),
-              ),
-              Text(
-                  'اختیاری، اگر خوانش را با کسب اجازه از جای دیگری دریافت و همگام کرده‌اید می‌توانید نام منبع را اینجا وارد کنید'),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Directionality(
-                    textDirection: TextDirection.ltr,
+                  'نشانی سایت یا کانال تلگرام یا صفحهٔ اینستاگرام (نشانی‌های نامرتبط تبلیغاتی قابل پذیرش نیستند).'),
+              Visibility(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
-                        controller: _audioSrcUrlController,
+                        controller: _audioSrcController,
                         decoration: InputDecoration(
-                          labelText: 'نشانی وب منبع',
-                          hintText: 'نشانی وب منبع',
-                        ))),
-              ),
-              Text(
-                  'اختیاری، اگر خوانش را با کسب اجازه از جای دیگری دریافت و همگام کرده‌اید می‌توانید نشانی منبع را اینجا وارد کنید'),
+                          labelText: 'نام منبع',
+                          hintText: 'نام منبع',
+                        )),
+                  ),
+                  visible: _additionalFields),
+              Visibility(
+                  child: Text(
+                      'اختیاری، اگر خوانش را با کسب اجازه از جای دیگری دریافت و همگام کرده‌اید می‌توانید نام منبع را اینجا وارد کنید.'),
+                  visible: _additionalFields),
+              Visibility(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Directionality(
+                        textDirection: TextDirection.ltr,
+                        child: TextFormField(
+                            controller: _audioSrcUrlController,
+                            decoration: InputDecoration(
+                              labelText: 'نشانی وب منبع',
+                              hintText: 'نشانی وب منبع',
+                            ))),
+                  ),
+                  visible: _additionalFields),
+              Visibility(
+                  child: Text(
+                      'اختیاری، اگر خوانش را با کسب اجازه از جای دیگری دریافت و همگام کرده‌اید می‌توانید نشانی منبع را اینجا وارد کنید.'),
+                  visible: _additionalFields),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Directionality(
@@ -117,13 +126,21 @@ class _ProfileEditState extends State<ProfileEdit> {
                         ))),
               ),
               Text(
-                  'نام فایل خوانش شما روی سرور ترکیبی از یک عدد، یک خط میانه (دش) و این حروف خواهد بود. می‌توانید حروف ابتدایی نام و نام خانوادگیتان را به انگلیسی وارد کنید. اگر فایلی همنام فایل نهایی از پیش وجود داشته باشد اعدادی به نام فایل اضافه می‌شود. بهتر است تا حد ممکن این پسوند یکتا باشد'),
+                  'نام فایل خوانش شما روی سرور ترکیبی از یک عدد، یک خط میانه (دش) و این حروف خواهد بود. می‌توانید حروف ابتدایی نام و نام خانوادگیتان را به انگلیسی وارد کنید. اگر فایلی همنام فایل نهایی از پیش وجود داشته باشد اعدادی به نام فایل اضافه می‌شود. بهتر است تا حد ممکن این پسوند یکتا باشد.'),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      Text('اطلاعات منبع'),
+                      Switch(
+                          value: _additionalFields,
+                          onChanged: (value) {
+                            setState(() {
+                              _additionalFields = value;
+                            });
+                          }),
                       Text('پیش‌فرض'),
                       Switch(
                           value: widget.profile.isDefault,
