@@ -1275,7 +1275,7 @@ class MainFormWidgetState extends State<MainForm>
                 ),
               ),
               persistentFooterButtons: [
-                Row(children: [
+                Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                   Text(currentPageText),
                   Visibility(
                       child: IconButton(
