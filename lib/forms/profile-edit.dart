@@ -114,19 +114,22 @@ class _ProfileEditState extends State<ProfileEdit> {
                   child: Text(
                       'اختیاری، اگر خوانش را با کسب اجازه از جای دیگری دریافت و همگام کرده‌اید می‌توانید نشانی منبع را اینجا وارد کنید.'),
                   visible: _additionalFields),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: TextFormField(
-                        controller: _fileSuffixWithoutDashController,
-                        decoration: InputDecoration(
-                          labelText: 'پسوند یکتاساز فایل',
-                          hintText: 'پسوند یکتاساز فایل',
-                        ))),
-              ),
-              Text(
-                  'نام فایل خوانش شما روی سرور ترکیبی از یک عدد، یک خط میانه (دش) و این حروف خواهد بود. می‌توانید حروف ابتدایی نام و نام خانوادگیتان را به انگلیسی وارد کنید. اگر فایلی همنام فایل نهایی از پیش وجود داشته باشد اعدادی به نام فایل اضافه می‌شود. بهتر است تا حد ممکن این پسوند یکتا باشد.'),
+              Visibility(
+                  child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: TextFormField(
+                              controller: _fileSuffixWithoutDashController,
+                              decoration: InputDecoration(
+                                labelText: 'پسوند یکتاساز فایل',
+                                hintText: 'پسوند یکتاساز فایل',
+                              )))),
+                  visible: _additionalFields),
+              Visibility(
+                  child: Text(
+                      'اختیاری، نام فایل خوانش شما روی سرور ترکیبی از یک عدد، یک خط میانه (دش) و این حروف خواهد بود. می‌توانید حروف ابتدایی نام و نام خانوادگیتان را به انگلیسی وارد کنید. اگر فایلی همنام فایل نهایی از پیش وجود داشته باشد اعدادی به نام فایل اضافه می‌شود. بهتر است تا حد ممکن این پسوند یکتا باشد.'),
+                  visible: _additionalFields),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
