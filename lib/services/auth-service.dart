@@ -183,14 +183,11 @@ class AuthService {
         }),
       );
 
-      if (response.statusCode != 200) {
-        return response.body;
-      }
+      return response.body;
     } catch (e) {
       return 'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
           e.toString();
     }
-    return '';
   }
 
   ///sends a signup/forgotpassword secret and retrievs and email

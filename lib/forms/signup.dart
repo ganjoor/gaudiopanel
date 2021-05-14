@@ -58,19 +58,22 @@ class SignUpFormState extends State<SignUpForm>
       setState(() {
         _isLoading = true;
       });
-      String signupError = await AuthService()
+      String signupResult = await AuthService()
           .signupUnverified(_email.text, _captchaImageId, _captcha.text);
       setState(() {
         _isLoading = false;
-        _signupError = signupError;
+        _signupError = signupResult.replaceAll('"', '');
       });
 
-      if (_signupError.isNotEmpty) {
+      if (_signupError != 'verify' && _signupError != 'finalize') {
         _formKey.currentState.validate();
         await _newCaptcha();
       } else {
+        var res = _signupError;
         setState(() {
           _emailSent = true;
+          _emailVerified = res == "finalize";
+          _signupError = '';
         });
       }
     }
