@@ -570,7 +570,7 @@ class MainFormWidgetState extends State<MainForm>
         ? 'آیا از حذف ' +
             markedRecitations.length.toString() +
             ' خوانش علامتگذاری شده اطمینان دارید؟'
-        : 'آیا از حذف خوامش «' +
+        : 'آیا از حذف خوانش «' +
             markedRecitations[0].audioTitle +
             '» اطمینان دارید؟';
     if (await _confirm('تأییدیه', confirmation)) {
