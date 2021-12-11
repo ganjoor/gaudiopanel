@@ -41,7 +41,7 @@ class _NotificationsState extends State<NotificationsDataSection> {
               title: Text(widget.notifications.items[index].subject),
               subtitle: Html(
                 data: widget.notifications.items[index].htmlText,
-                onLinkTap: (url) async {
+                onLinkTap: (url, context, map, element) async {
                   if (await canLaunch(url)) {
                     await launch(url);
                     if (widget.notifications.items[index].status ==
