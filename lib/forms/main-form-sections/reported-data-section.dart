@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gaudiopanel/callbacks/g-ui-callbacks.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
 import 'package:gaudiopanel/models/recitation/recitation_error_report_viewmodel.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ReportedDataSection extends StatefulWidget {
   final PaginatedItemsResponseModel<RecitationErrorReportViewModel>
@@ -28,11 +29,23 @@ class _ProfilesState extends State<ReportedDataSection> {
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
               leading: IconButton(
-                icon: Icon(Icons.edit),
-                onPressed: () {},
+                icon: Icon(Icons.open_in_browser),
+                onPressed: () async {
+                  var url = 'http://ava.ganjoor.net/#/' +
+                      widget.reportedRecitations.items[index].recitationId
+                          .toString();
+                  if (await canLaunch(url)) {
+                    await launch(url);
+                  } else {
+                    throw 'خطا در نمایش نشانی $url';
+                  }
+                },
               ),
               title: Text(widget
-                  .reportedRecitations.items[index].recitation.audioTitle),
+                      .reportedRecitations.items[index].recitation.audioTitle +
+                  ' به خوانش ' +
+                  widget
+                      .reportedRecitations.items[index].recitation.audioArtist),
               subtitle: Column(children: [
                 Text(widget.reportedRecitations.items[index].reasonText),
                 Text(widget
