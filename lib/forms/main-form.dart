@@ -12,6 +12,7 @@ import 'package:gaudiopanel/forms/upload-files.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
 import 'package:gaudiopanel/models/notifications/ruser-notification-viewmodel.dart';
 import 'package:gaudiopanel/models/recitation/recitation-viewmodel.dart';
+import 'package:gaudiopanel/models/recitation/recitation_error_report_viewmodel.dart';
 import 'package:gaudiopanel/models/recitation/uploaded-item-viewmodel.dart';
 import 'package:gaudiopanel/models/recitation/user-recitation-profile-viewmodel.dart';
 import 'package:gaudiopanel/services/auth-service.dart';
@@ -25,13 +26,16 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'main-form-sections/reported-data-section.dart';
+
 enum GActiveFormSection {
   DraftRecitations,
   AllMyRecitations,
   AllUsersPendingRecitations,
   Uploads,
   Profiles,
-  Notifications
+  Notifications,
+  ReportedRecitations,
 }
 
 class MainForm extends StatefulWidget {
@@ -64,6 +68,8 @@ class MainFormWidgetState extends State<MainForm>
       PaginatedItemsResponseModel<UserRecitationProfileViewModel>(items: []);
   PaginatedItemsResponseModel<RUserNotificationViewModel> _notifications =
       PaginatedItemsResponseModel<RUserNotificationViewModel>(items: []);
+  PaginatedItemsResponseModel<RecitationErrorReportViewModel> _reporteds =
+      PaginatedItemsResponseModel<RecitationErrorReportViewModel>(items: []);
   String get title {
     switch (_activeSection) {
       case GActiveFormSection.Uploads:
@@ -78,6 +84,8 @@ class MainFormWidgetState extends State<MainForm>
         return 'خوانش‌های در انتظار تأیید';
       case GActiveFormSection.Notifications:
         return 'اعلان‌های من';
+      case GActiveFormSection.ReportedRecitations:
+        return 'خوانش‌های گزارش شده';
     }
     return '';
   }
@@ -111,6 +119,30 @@ class MainFormWidgetState extends State<MainForm>
       });
       _key.currentState.showSnackBar(SnackBar(
         content: Text("خطا در دریافت خوانش‌ها: " + narrations.error),
+        backgroundColor: Colors.red,
+      ));
+    }
+  }
+
+  Future<void> _loadReportedRecitationsData() async {
+    setState(() {
+      _isLoading = true;
+    });
+    var reportedOnes = await RecitationService()
+        .getReportedRecitations(_narrationsPageNumber, _pageSize, false);
+    if (reportedOnes.error.isEmpty) {
+      setState(() {
+        _reporteds.items.clear();
+        _reporteds.items.addAll(reportedOnes.items);
+        _narrations.paginationMetadata = reportedOnes.paginationMetadata;
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+      _key.currentState.showSnackBar(SnackBar(
+        content: Text("خطا در دریافت اطلاعات: " + reportedOnes.error),
         backgroundColor: Colors.red,
       ));
     }
@@ -225,6 +257,9 @@ class MainFormWidgetState extends State<MainForm>
         break;
       case GActiveFormSection.Notifications:
         await _loadNotificationsData();
+        break;
+      case GActiveFormSection.ReportedRecitations:
+        await _loadReportedRecitationsData();
         break;
     }
     await _loadNotificationsCount();
@@ -745,6 +780,11 @@ class MainFormWidgetState extends State<MainForm>
                   ? 1
                   : -1,
         );
+      case GActiveFormSection.ReportedRecitations:
+        return ReportedDataSection(
+            reportedRecitations: _reporteds,
+            loadingStateChanged: _loadingStateChanged,
+            snackbarNeeded: _snackbarNeeded);
       case GActiveFormSection.Profiles:
         return ProfilesDataSection(
             profiles: _profiles,
@@ -1177,6 +1217,29 @@ class MainFormWidgetState extends State<MainForm>
                           },
                         ),
                         visible: _canModerate),
+                    Visibility(
+                        child: ListTile(
+                          title: Text('خوانش‌های گزارش شده'),
+                          leading: Icon(Icons.flag,
+                              color: Theme.of(context).primaryColor),
+                          selected: _activeSection ==
+                              GActiveFormSection.ReportedRecitations,
+                          onTap: () async {
+                            if (_activeSection !=
+                                GActiveFormSection.ReportedRecitations) {
+                              setState(() {
+                                _narrationsPageNumber = 1;
+                                _reporteds.items.clear();
+                                _activeSection =
+                                    GActiveFormSection.ReportedRecitations;
+                              });
+                              await _loadData();
+
+                              Navigator.of(context).pop(); //close drawer
+                            }
+                          },
+                        ),
+                        visible: _canModerate),
                     ListTile(
                       title: Text('نمایه‌های من'),
                       leading: Icon(Icons.people,
@@ -1460,6 +1523,7 @@ class MainFormWidgetState extends State<MainForm>
                     case GActiveFormSection.AllUsersPendingRecitations:
                     case GActiveFormSection.Uploads:
                     case GActiveFormSection.Notifications:
+                    case GActiveFormSection.ReportedRecitations:
                       if (!_audioUpdateEnabled) {
                         _key.currentState.showSnackBar(SnackBar(
                           content: Text(

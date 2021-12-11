@@ -6,6 +6,7 @@ import 'package:gaudiopanel/models/common/pagination-metadata.dart';
 import 'package:gaudiopanel/models/recitation/recitation-verse-sync.dart';
 import 'package:gaudiopanel/models/recitation/recitation-viewmodel.dart';
 import 'package:gaudiopanel/models/common/paginated-items-response-model.dart';
+import 'package:gaudiopanel/models/recitation/recitation_error_report_viewmodel.dart';
 import 'package:gaudiopanel/models/recitation/uploaded-item-viewmodel.dart';
 import 'package:gaudiopanel/models/recitation/user-recitation-profile-viewmodel.dart';
 import 'package:gaudiopanel/services/auth-service.dart';
@@ -749,6 +750,59 @@ class RecitationService {
     } catch (e) {
       return 'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
           e.toString();
+    }
+  }
+
+  Future<PaginatedItemsResponseModel<RecitationErrorReportViewModel>>
+      getReportedRecitations(
+          int pageNumber, int pageSize, bool error401) async {
+    try {
+      LoggedOnUserModel userInfo = await _storageService.userInfo;
+      if (userInfo == null) {
+        return PaginatedItemsResponseModel<RecitationErrorReportViewModel>(
+            error: 'کاربر وارد سیستم نشده است.');
+      }
+      var apiRoot = GServiceAddress.Url;
+      http.Response response = await http.get(
+          Uri.parse(
+              '$apiRoot/api/audio/errors/report?PageNumber=$pageNumber&PageSize=$pageSize'),
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
+          });
+
+      if (!error401 && response.statusCode == 401) {
+        String errSessionRenewal = await AuthService().relogin();
+        if (errSessionRenewal.isNotEmpty) {
+          return PaginatedItemsResponseModel<RecitationErrorReportViewModel>(
+              error: errSessionRenewal);
+        }
+        return await getReportedRecitations(pageNumber, pageSize, true);
+      }
+
+      List<RecitationErrorReportViewModel> ret = [];
+      if (response.statusCode == 200) {
+        List<dynamic> items = json.decode(response.body);
+        for (var item in items) {
+          ret.add(RecitationErrorReportViewModel.fromJson(item));
+        }
+        return PaginatedItemsResponseModel<RecitationErrorReportViewModel>(
+          items: ret,
+          paginationMetadata: PaginationMetadata.fromJson(
+              json.decode(response.headers['paging-headers'])),
+          error: '',
+        );
+      } else {
+        return PaginatedItemsResponseModel<RecitationErrorReportViewModel>(
+            error: 'کد برگشتی: ' +
+                response.statusCode.toString() +
+                ' ' +
+                response.body);
+      }
+    } catch (e) {
+      return PaginatedItemsResponseModel<RecitationErrorReportViewModel>(
+          error: 'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
+              e.toString());
     }
   }
 }
