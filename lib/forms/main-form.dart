@@ -776,6 +776,7 @@ class MainFormWidgetState extends State<MainForm>
       case GActiveFormSection.DraftRecitations:
       case GActiveFormSection.AllMyRecitations:
       case GActiveFormSection.AllUsersPendingRecitations:
+      case GActiveFormSection.RejectedRecitaions:
         return RecitationsDataSection(
           narrations: _narrations,
           loadingStateChanged: _loadingStateChanged,

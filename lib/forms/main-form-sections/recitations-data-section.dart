@@ -247,7 +247,9 @@ class _RecitationsState extends State<RecitationsDataSection> {
                     child: Text(_getReviewMsg(
                         widget.narrations.items[index].reviewMsg)),
                     visible: widget.narrations.items[index].reviewStatus ==
-                        AudioReviewStatus.rejected)
+                            AudioReviewStatus.rejected ||
+                        widget.narrations.items[index].reviewStatus ==
+                            AudioReviewStatus.reported)
               ]),
               trailing: IconButton(
                 icon: widget.narrations.items[index].isMarked

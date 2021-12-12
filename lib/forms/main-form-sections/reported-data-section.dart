@@ -167,7 +167,16 @@ class _ProfilesState extends State<ReportedDataSection> {
                   style: ButtonStyle(
                       backgroundColor:
                           MaterialStateProperty.all<Color>(Colors.red)),
-                  onPressed: () {},
+                  onPressed: () async {
+                    var res = await RecitationService().approveReport(
+                        widget.reportedRecitations.items[index].id, false);
+                    if (res.item1) {
+                      widget.reportedRecitations.items.removeAt(index);
+                      setState(() {});
+                    } else {
+                      widget.snackbarNeeded(res.item2);
+                    }
+                  },
                 )
               ]),
               trailing: IconButton(
