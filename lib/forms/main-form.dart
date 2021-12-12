@@ -1,6 +1,5 @@
 import 'package:after_layout/after_layout.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gaudiopanel/forms/chwon-to-email.dart';
 import 'package:gaudiopanel/forms/login.dart';
@@ -36,6 +35,7 @@ enum GActiveFormSection {
   Profiles,
   Notifications,
   ReportedRecitations,
+  RejectedRecitaions,
 }
 
 class MainForm extends StatefulWidget {
@@ -86,6 +86,9 @@ class MainFormWidgetState extends State<MainForm>
         return 'اعلان‌های من';
       case GActiveFormSection.ReportedRecitations:
         return 'خوانش‌های گزارش شده';
+      case GActiveFormSection.RejectedRecitaions:
+        return 'خوانش‌های برگشت‌خورده';
+        break;
     }
     return '';
   }
@@ -102,7 +105,9 @@ class MainFormWidgetState extends State<MainForm>
             ? -1
             : _activeSection == GActiveFormSection.AllUsersPendingRecitations
                 ? 1
-                : 0,
+                : _activeSection == GActiveFormSection.RejectedRecitaions
+                    ? 4
+                    : 0,
         _searchTerm,
         false);
     if (narrations.error.isEmpty) {
@@ -247,6 +252,7 @@ class MainFormWidgetState extends State<MainForm>
       case GActiveFormSection.DraftRecitations:
       case GActiveFormSection.AllMyRecitations:
       case GActiveFormSection.AllUsersPendingRecitations:
+      case GActiveFormSection.RejectedRecitaions:
         await _loadNarrationsData();
         break;
       case GActiveFormSection.Uploads:
@@ -1300,6 +1306,27 @@ class MainFormWidgetState extends State<MainForm>
                       },
                     ),
                     ListTile(
+                      title: Text('خوانش‌های برگشت‌خورده'),
+                      leading: Icon(Icons.music_note,
+                          color: Theme.of(context).primaryColor),
+                      selected: _activeSection ==
+                          GActiveFormSection.RejectedRecitaions,
+                      onTap: () async {
+                        if (_activeSection !=
+                            GActiveFormSection.RejectedRecitaions) {
+                          setState(() {
+                            _narrationsPageNumber = 1;
+                            _narrations.items.clear();
+                            _activeSection =
+                                GActiveFormSection.RejectedRecitaions;
+                          });
+                          await _loadData();
+
+                          Navigator.of(context).pop(); //close drawer
+                        }
+                      },
+                    ),
+                    ListTile(
                       title: Text('مشخصات کاربری'),
                       leading: Icon(Icons.person,
                           color: Theme.of(context).primaryColor),
@@ -1524,6 +1551,7 @@ class MainFormWidgetState extends State<MainForm>
                     case GActiveFormSection.Uploads:
                     case GActiveFormSection.Notifications:
                     case GActiveFormSection.ReportedRecitations:
+                    case GActiveFormSection.RejectedRecitaions:
                       if (!_audioUpdateEnabled) {
                         _key.currentState.showSnackBar(SnackBar(
                           content: Text(
