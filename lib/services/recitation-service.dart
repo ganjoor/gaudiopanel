@@ -843,4 +843,47 @@ class RecitationService {
               e.toString());
     }
   }
+
+  Future<Tuple2<bool, String>> saveRictationMistake(
+      RecitationErrorReportViewModel report, bool error401) async {
+    try {
+      LoggedOnUserModel userInfo = await _storageService.userInfo;
+      if (userInfo == null) {
+        return Tuple2<bool, String>(false, 'کاربر وارد سیستم نشده است.');
+      }
+
+      var apiRoot = GServiceAddress.Url;
+      http.Response response =
+          await http.put(Uri.parse('$apiRoot/api/audio/errors/report/save'),
+              headers: {
+                'Content-Type': 'application/json; charset=UTF-8',
+                HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
+              },
+              body: jsonEncode(report.toJson()));
+
+      if (!error401 && response.statusCode == 401) {
+        String errSessionRenewal = await AuthService().relogin();
+        if (errSessionRenewal.isNotEmpty) {
+          return Tuple2<bool, String>(false, errSessionRenewal);
+        }
+        return await saveRictationMistake(report, true);
+      }
+
+      if (response.statusCode == 200) {
+        return Tuple2<bool, String>(true, '');
+      } else {
+        return Tuple2<bool, String>(
+            false,
+            'کد برگشتی: ' +
+                response.statusCode.toString() +
+                ' ' +
+                response.body);
+      }
+    } catch (e) {
+      return Tuple2<bool, String>(
+          false,
+          'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
+              e.toString());
+    }
+  }
 }

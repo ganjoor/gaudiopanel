@@ -58,7 +58,6 @@ class _ProfilesState extends State<ReportedDataSection> {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Theme.of(context).backgroundColor,
           title: Text(
             title,
             style: Theme.of(context).textTheme.headline2,
@@ -70,6 +69,9 @@ class _ProfilesState extends State<ReportedDataSection> {
                   controller: controller,
                   obscureText: false,
                   readOnly: false,
+                  keyboardType: TextInputType.multiline,
+                  minLines: 4,
+                  maxLines: 10,
                   onFieldSubmitted: (String value) => {
                     if (controller.text.trim().isEmpty)
                       {
@@ -78,13 +80,6 @@ class _ProfilesState extends State<ReportedDataSection> {
                     else
                       {Navigator.of(context).pop(controller.text.trim())}
                   },
-                  decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                      hintText: field,
-                      labelText: field,
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(32.0))),
                 ),
               ],
             ),
@@ -103,7 +98,7 @@ class _ProfilesState extends State<ReportedDataSection> {
             TextButton(
               child: Text('انصراف'),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop('');
               },
             )
           ],
@@ -146,10 +141,11 @@ class _ProfilesState extends State<ReportedDataSection> {
                   child: Text('گزارش درست نیست'),
                   style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.blue)),
+                          MaterialStateProperty.all<Color>(Colors.blueGrey)),
                   onPressed: () async {
                     String rejectionNote = await _input('دلیل عدم پذیرش',
                         'دلیل', 'عدم تطابق با معیارهای حذف خوانش');
+                    if (rejectionNote.isEmpty) return;
                     var res = await RecitationService().rejectReport(
                         widget.reportedRecitations.items[index].id,
                         rejectionNote,
@@ -163,13 +159,34 @@ class _ProfilesState extends State<ReportedDataSection> {
                   },
                 ),
                 ElevatedButton(
-                  child: Text('خوانش اشکال دارد'),
+                  child: Text('خوانش اشکال دارد و باید حذف شود'),
                   style: ButtonStyle(
                       backgroundColor:
                           MaterialStateProperty.all<Color>(Colors.red)),
                   onPressed: () async {
                     var res = await RecitationService().approveReport(
                         widget.reportedRecitations.items[index].id, false);
+                    if (res.item1) {
+                      widget.reportedRecitations.items.removeAt(index);
+                      setState(() {});
+                    } else {
+                      widget.snackbarNeeded(res.item2);
+                    }
+                  },
+                ),
+                ElevatedButton(
+                  child: Text('در فهرست اشکالات خوانش ثبت شود'),
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.purple)),
+                  onPressed: () async {
+                    String mistake = await _input('اشکال', 'اشکال',
+                        widget.reportedRecitations.items[index].reasonText);
+                    if (mistake.isEmpty) return;
+                    widget.reportedRecitations.items[index].reasonText =
+                        mistake;
+                    var res = await RecitationService().saveRictationMistake(
+                        widget.reportedRecitations.items[index], false);
                     if (res.item1) {
                       widget.reportedRecitations.items.removeAt(index);
                       setState(() {});
