@@ -27,6 +27,7 @@ class AudioReviewStatus {
   static const int approved = 2;
   static const int rejected = 3;
   static const int reported = 4;
+  static const int mistakes = 5;
 
   static String valueToString(int value) {
     switch (value) {
@@ -40,6 +41,8 @@ class AudioReviewStatus {
         return 'رد شده';
       case reported:
         return 'برگشت خورده';
+      case mistakes:
+        return 'دارای خطا';
       default:
         return 'همه';
     }

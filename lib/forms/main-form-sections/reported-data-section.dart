@@ -135,6 +135,9 @@ class _ProfilesState extends State<ReportedDataSection> {
                 Text(widget.reportedRecitations.items[index].reasonText == null
                     ? ''
                     : widget.reportedRecitations.items[index].reasonText),
+                Text('خط متناظر: ' +
+                    (widget.reportedRecitations.items[index].coupletIndex + 1)
+                        .toString()),
                 Text(widget
                     .reportedRecitations.items[index].recitation.audioArtist),
                 ElevatedButton(
@@ -182,7 +185,23 @@ class _ProfilesState extends State<ReportedDataSection> {
                   onPressed: () async {
                     String mistake = await _input('اشکال', 'اشکال',
                         widget.reportedRecitations.items[index].reasonText);
+
                     if (mistake.isEmpty) return;
+                    if (widget.reportedRecitations.items[index].coupletIndex !=
+                        -1) {
+                      String coupletIndex = await _input(
+                          'اندیس خط',
+                          'اندیس خط',
+                          widget.reportedRecitations.items[index].coupletIndex
+                              .toString());
+                      if (coupletIndex.isEmpty) {
+                        widget.reportedRecitations.items[index].coupletIndex =
+                            -1;
+                      } else {
+                        widget.reportedRecitations.items[index].coupletIndex =
+                            int.parse(coupletIndex);
+                      }
+                    }
                     widget.reportedRecitations.items[index].reasonText =
                         mistake;
                     var res = await RecitationService().saveRictationMistake(

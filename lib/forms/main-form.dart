@@ -36,6 +36,7 @@ enum GActiveFormSection {
   Notifications,
   ReportedRecitations,
   RejectedRecitaions,
+  RecitationsWithMistakes,
 }
 
 class MainForm extends StatefulWidget {
@@ -88,6 +89,9 @@ class MainFormWidgetState extends State<MainForm>
       case GActiveFormSection.RejectedRecitaions:
         return 'خوانش‌های برگشت‌خورده';
         break;
+      case GActiveFormSection.RecitationsWithMistakes:
+        return 'خوانش‌های دارای اشکال';
+        break;
     }
     return '';
   }
@@ -100,7 +104,8 @@ class MainFormWidgetState extends State<MainForm>
         _narrationsPageNumber,
         _pageSize,
         _activeSection == GActiveFormSection.AllUsersPendingRecitations,
-        _activeSection == GActiveFormSection.AllMyRecitations
+        _activeSection == GActiveFormSection.AllMyRecitations ||
+                _activeSection == GActiveFormSection.RecitationsWithMistakes
             ? -1
             : _activeSection == GActiveFormSection.AllUsersPendingRecitations
                 ? 1
@@ -108,6 +113,7 @@ class MainFormWidgetState extends State<MainForm>
                     ? 4
                     : 0,
         _searchTerm,
+        _activeSection == GActiveFormSection.RecitationsWithMistakes,
         false);
     if (narrations.error.isEmpty) {
       setState(() {
@@ -252,6 +258,7 @@ class MainFormWidgetState extends State<MainForm>
       case GActiveFormSection.AllMyRecitations:
       case GActiveFormSection.AllUsersPendingRecitations:
       case GActiveFormSection.RejectedRecitaions:
+      case GActiveFormSection.RecitationsWithMistakes:
         await _loadNarrationsData();
         break;
       case GActiveFormSection.Uploads:
@@ -771,6 +778,7 @@ class MainFormWidgetState extends State<MainForm>
       case GActiveFormSection.AllMyRecitations:
       case GActiveFormSection.AllUsersPendingRecitations:
       case GActiveFormSection.RejectedRecitaions:
+      case GActiveFormSection.RecitationsWithMistakes:
         return RecitationsDataSection(
           narrations: _narrations,
           loadingStateChanged: _loadingStateChanged,
@@ -1265,6 +1273,27 @@ class MainFormWidgetState extends State<MainForm>
                       },
                     ),
                     ListTile(
+                      title: Text('خوانش‌های دارای اشکال'),
+                      leading: Icon(Icons.music_note,
+                          color: Theme.of(context).primaryColor),
+                      selected: _activeSection ==
+                          GActiveFormSection.RecitationsWithMistakes,
+                      onTap: () async {
+                        if (_activeSection !=
+                            GActiveFormSection.RecitationsWithMistakes) {
+                          setState(() {
+                            _narrationsPageNumber = 1;
+                            _narrations.items.clear();
+                            _activeSection =
+                                GActiveFormSection.RecitationsWithMistakes;
+                          });
+                          await _loadData();
+
+                          Navigator.of(context).pop(); //close drawer
+                        }
+                      },
+                    ),
+                    ListTile(
                       title: Text('خوانش‌های برگشت‌خورده'),
                       leading: Icon(Icons.music_note,
                           color: Theme.of(context).primaryColor),
@@ -1511,6 +1540,7 @@ class MainFormWidgetState extends State<MainForm>
                     case GActiveFormSection.Notifications:
                     case GActiveFormSection.ReportedRecitations:
                     case GActiveFormSection.RejectedRecitaions:
+                    case GActiveFormSection.RecitationsWithMistakes:
                       if (!_audioUpdateEnabled) {
                         _key.currentState.showSnackBar(SnackBar(
                           content: Text(

@@ -26,6 +26,7 @@ class RecitationService {
       bool allUsers,
       int status,
       String searchTerm,
+      bool mistakes,
       bool error401) async {
     try {
       LoggedOnUserModel userInfo = await _storageService.userInfo;
@@ -36,7 +37,7 @@ class RecitationService {
       var apiRoot = GServiceAddress.Url;
       http.Response response = await http.get(
           Uri.parse(
-              '$apiRoot/api/audio?PageNumber=$pageNumber&PageSize=$pageSize&allUsers=$allUsers&status=$status&searchTerm=$searchTerm'),
+              '$apiRoot/api/audio?PageNumber=$pageNumber&PageSize=$pageSize&allUsers=$allUsers&status=$status&mistakes=$mistakes&searchTerm=$searchTerm'),
           headers: {
             'Content-Type': 'application/json; charset=UTF-8',
             HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
@@ -49,7 +50,7 @@ class RecitationService {
               error: errSessionRenewal);
         }
         return await getRecitations(
-            pageNumber, pageSize, allUsers, status, searchTerm, true);
+            pageNumber, pageSize, allUsers, status, searchTerm, mistakes, true);
       }
 
       List<RecitationViewModel> ret = [];

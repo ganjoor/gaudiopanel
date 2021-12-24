@@ -6,7 +6,7 @@ class RecitationErrorReportViewModel {
   String reasonText;
   final RecitationViewModel recitation;
   final int numberOfLinesAffected;
-  final int coupletIndex;
+  int coupletIndex;
   final String dateTime;
   bool isMarked = false;
 
