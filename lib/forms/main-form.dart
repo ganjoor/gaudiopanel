@@ -787,7 +787,9 @@ class MainFormWidgetState extends State<MainForm>
               ? 0
               : _activeSection == GActiveFormSection.AllUsersPendingRecitations
                   ? 1
-                  : -1,
+                  : _activeSection == GActiveFormSection.RecitationsWithMistakes
+                      ? 5
+                      : -1,
         );
       case GActiveFormSection.ReportedRecitations:
         return ReportedDataSection(

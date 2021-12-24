@@ -250,8 +250,7 @@ class _RecitationsState extends State<RecitationsDataSection> {
                             AudioReviewStatus.rejected ||
                         widget.narrations.items[index].reviewStatus ==
                             AudioReviewStatus.reported ||
-                        widget.narrations.items[index].reviewStatus ==
-                            AudioReviewStatus.mistakes)
+                        widget.status == AudioReviewStatus.mistakes)
               ]),
               trailing: IconButton(
                 icon: widget.narrations.items[index].isMarked
