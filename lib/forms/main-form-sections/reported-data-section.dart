@@ -167,6 +167,9 @@ class _ProfilesState extends State<ReportedDataSection> {
                       backgroundColor:
                           MaterialStateProperty.all<Color>(Colors.red)),
                   onPressed: () async {
+                    if (widget.loadingStateChanged != null) {
+                      widget.loadingStateChanged(true);
+                    }
                     var res = await RecitationService().approveReport(
                         widget.reportedRecitations.items[index].id, false);
                     if (res.item1) {
@@ -174,6 +177,9 @@ class _ProfilesState extends State<ReportedDataSection> {
                       setState(() {});
                     } else {
                       widget.snackbarNeeded(res.item2);
+                    }
+                    if (widget.loadingStateChanged != null) {
+                      widget.loadingStateChanged(false);
                     }
                   },
                 ),
@@ -204,6 +210,9 @@ class _ProfilesState extends State<ReportedDataSection> {
                     }
                     widget.reportedRecitations.items[index].reasonText =
                         mistake;
+                    if (widget.loadingStateChanged != null) {
+                      widget.loadingStateChanged(true);
+                    }
                     var res = await RecitationService().saveRictationMistake(
                         widget.reportedRecitations.items[index], false);
                     if (res.item1) {
@@ -211,6 +220,9 @@ class _ProfilesState extends State<ReportedDataSection> {
                       setState(() {});
                     } else {
                       widget.snackbarNeeded(res.item2);
+                    }
+                    if (widget.loadingStateChanged != null) {
+                      widget.loadingStateChanged(false);
                     }
                   },
                 )

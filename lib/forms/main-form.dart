@@ -965,7 +965,9 @@ class MainFormWidgetState extends State<MainForm>
                           }
                         },
                       ),
-                      visible: _activeSection != GActiveFormSection.Uploads),
+                      visible: _activeSection != GActiveFormSection.Uploads &&
+                          _activeSection !=
+                              GActiveFormSection.ReportedRecitations),
                   Visibility(
                       child: IconButton(
                         icon: Icon(Icons.publish),
