@@ -1517,11 +1517,11 @@ class MainFormWidgetState extends State<MainForm>
                       ),
                       visible: _activeSection != GActiveFormSection.Uploads &&
                           _activeSection != GActiveFormSection.Notifications &&
-                          _activeSection ==
+                          _activeSection !=
                               GActiveFormSection.RecitationsWithMistakes &&
-                          _activeSection ==
+                          _activeSection !=
                               GActiveFormSection.RejectedRecitaions &&
-                          _activeSection ==
+                          _activeSection !=
                               GActiveFormSection.ReportedRecitations),
                   IconButton(
                     icon: Stack(children: <Widget>[
