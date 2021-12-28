@@ -1370,7 +1370,13 @@ class MainFormWidgetState extends State<MainForm>
                                   GActiveFormSection.AllMyRecitations ||
                               _activeSection ==
                                   GActiveFormSection
-                                      .AllUsersPendingRecitations) {
+                                      .AllUsersPendingRecitations ||
+                              _activeSection ==
+                                  GActiveFormSection.RecitationsWithMistakes ||
+                              _activeSection ==
+                                  GActiveFormSection.RejectedRecitaions ||
+                              _activeSection ==
+                                  GActiveFormSection.ReportedRecitations) {
                             _narrationsPageNumber = 1;
                             await _loadData();
                           } else if (_activeSection ==
@@ -1393,7 +1399,13 @@ class MainFormWidgetState extends State<MainForm>
                                   GActiveFormSection.AllMyRecitations ||
                               _activeSection ==
                                   GActiveFormSection
-                                      .AllUsersPendingRecitations) {
+                                      .AllUsersPendingRecitations ||
+                              _activeSection ==
+                                  GActiveFormSection.RecitationsWithMistakes ||
+                              _activeSection ==
+                                  GActiveFormSection.RejectedRecitaions ||
+                              _activeSection ==
+                                  GActiveFormSection.ReportedRecitations) {
                             _narrationsPageNumber =
                                 _narrations.paginationMetadata == null
                                     ? 1
@@ -1427,7 +1439,13 @@ class MainFormWidgetState extends State<MainForm>
                                   GActiveFormSection.AllMyRecitations ||
                               _activeSection ==
                                   GActiveFormSection
-                                      .AllUsersPendingRecitations) {
+                                      .AllUsersPendingRecitations ||
+                              _activeSection ==
+                                  GActiveFormSection.RecitationsWithMistakes ||
+                              _activeSection ==
+                                  GActiveFormSection.RejectedRecitaions ||
+                              _activeSection ==
+                                  GActiveFormSection.ReportedRecitations) {
                             _narrationsPageNumber =
                                 _narrations.paginationMetadata == null
                                     ? 1
@@ -1458,7 +1476,13 @@ class MainFormWidgetState extends State<MainForm>
                                   GActiveFormSection.AllMyRecitations ||
                               _activeSection ==
                                   GActiveFormSection
-                                      .AllUsersPendingRecitations) {
+                                      .AllUsersPendingRecitations ||
+                              _activeSection ==
+                                  GActiveFormSection.RecitationsWithMistakes ||
+                              _activeSection ==
+                                  GActiveFormSection.RejectedRecitaions ||
+                              _activeSection ==
+                                  GActiveFormSection.ReportedRecitations) {
                             _narrationsPageNumber =
                                 _narrations.paginationMetadata == null
                                     ? 1
@@ -1492,7 +1516,13 @@ class MainFormWidgetState extends State<MainForm>
                         },
                       ),
                       visible: _activeSection != GActiveFormSection.Uploads &&
-                          _activeSection != GActiveFormSection.Notifications),
+                          _activeSection != GActiveFormSection.Notifications &&
+                          _activeSection ==
+                              GActiveFormSection.RecitationsWithMistakes &&
+                          _activeSection ==
+                              GActiveFormSection.RejectedRecitaions &&
+                          _activeSection ==
+                              GActiveFormSection.ReportedRecitations),
                   IconButton(
                     icon: Stack(children: <Widget>[
                       Icon(Icons.notifications),
