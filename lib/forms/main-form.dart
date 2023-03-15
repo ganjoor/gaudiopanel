@@ -25,6 +25,7 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../models/recitation/recitation-publishing-tracker-viewmodel.dart';
 import 'main-form-sections/reported-data-section.dart';
 
 enum GActiveFormSection {
@@ -33,6 +34,7 @@ enum GActiveFormSection {
   AllUsersPendingRecitations,
   Uploads,
   Profiles,
+  SynchronizationQueue,
   Notifications,
   ReportedRecitations,
   RejectedRecitaions,
@@ -66,6 +68,9 @@ class MainFormWidgetState extends State<MainForm>
       PaginatedItemsResponseModel<UploadedItemViewModel>(items: []);
   PaginatedItemsResponseModel<UserRecitationProfileViewModel> _profiles =
       PaginatedItemsResponseModel<UserRecitationProfileViewModel>(items: []);
+  PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel> _queue =
+      PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>(
+          items: []);
   PaginatedItemsResponseModel<RUserNotificationViewModel> _notifications =
       PaginatedItemsResponseModel<RUserNotificationViewModel>(items: []);
   PaginatedItemsResponseModel<RecitationErrorReportViewModel> _reporteds =
@@ -92,6 +97,8 @@ class MainFormWidgetState extends State<MainForm>
       case GActiveFormSection.RecitationsWithMistakes:
         return 'خوانش‌های دارای اشکال';
         break;
+      case GActiveFormSection.SynchronizationQueue:
+        return 'صف انتشار در گنجور';
     }
     return '';
   }
@@ -207,6 +214,28 @@ class MainFormWidgetState extends State<MainForm>
     }
   }
 
+  Future<void> _loadSyncronizationQueueData() async {
+    setState(() {
+      _isLoading = true;
+    });
+    var publishQueue = await RecitationService().getPublishQueue(false);
+    setState(() {
+      _isLoading = false;
+    });
+    if (publishQueue.item2.isEmpty) {
+      setState(() {
+        this._queue.items.clear();
+        this._queue.items.addAll(publishQueue.item1.items);
+        this._queue.paginationMetadata = publishQueue.item1.paginationMetadata;
+      });
+    } else {
+      _key.currentState.showSnackBar(SnackBar(
+        content: Text("خطا در دریافت صف انتشار در سایت: " + publishQueue.item2),
+        backgroundColor: Colors.red,
+      ));
+    }
+  }
+
   Future<void> _loadNotificationsData() async {
     setState(() {
       _isLoading = true;
@@ -269,6 +298,9 @@ class MainFormWidgetState extends State<MainForm>
         break;
       case GActiveFormSection.Notifications:
         await _loadNotificationsData();
+        break;
+      case GActiveFormSection.SynchronizationQueue:
+        await _loadSyncronizationQueueData();
         break;
       case GActiveFormSection.ReportedRecitations:
         await _loadReportedRecitationsData();
@@ -1277,6 +1309,25 @@ class MainFormWidgetState extends State<MainForm>
                       },
                     ),
                     ListTile(
+                      title: Text('صف انتشار در گنجور'),
+                      leading: Icon(Icons.send_to_mobile,
+                          color: Theme.of(context).primaryColor),
+                      selected: _activeSection ==
+                          GActiveFormSection.SynchronizationQueue,
+                      onTap: () async {
+                        if (_activeSection !=
+                            GActiveFormSection.SynchronizationQueue) {
+                          setState(() {
+                            _activeSection =
+                                GActiveFormSection.SynchronizationQueue;
+                          });
+                          await _loadData();
+
+                          Navigator.of(context).pop(); //close drawer
+                        }
+                      },
+                    ),
+                    ListTile(
                       title: Text('خوانش‌های دارای اشکال'),
                       leading: Icon(Icons.music_note,
                           color: Theme.of(context).primaryColor),
@@ -1575,6 +1626,7 @@ class MainFormWidgetState extends State<MainForm>
                     case GActiveFormSection.ReportedRecitations:
                     case GActiveFormSection.RejectedRecitaions:
                     case GActiveFormSection.RecitationsWithMistakes:
+                    case GActiveFormSection.SynchronizationQueue:
                       if (!_audioUpdateEnabled) {
                         _key.currentState.showSnackBar(SnackBar(
                           content: Text(

@@ -15,6 +15,8 @@ import 'package:gaudiopanel/services/storage-service.dart';
 import 'package:http/http.dart' as http;
 import 'package:tuple/tuple.dart';
 
+import '../models/recitation/recitation-publishing-tracker-viewmodel.dart';
+
 class RecitationService {
   final StorageService _storageService = StorageService();
 
@@ -883,6 +885,71 @@ class RecitationService {
     } catch (e) {
       return Tuple2<bool, String>(
           false,
+          'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
+              e.toString());
+    }
+  }
+
+  /// get publish queue
+  ///
+  Future<
+      Tuple2<PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>,
+          String>> getPublishQueue(bool error401) async {
+    try {
+      LoggedOnUserModel userInfo = await _storageService.userInfo;
+      if (userInfo == null) {
+        return Tuple2<
+            PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>,
+            String>(null, 'کاربر وارد سیستم نشده است.');
+      }
+      var apiRoot = GServiceAddress.Url;
+      http.Response response = await http.get(
+          Uri.parse('$apiRoot/api/audio/publishqueue?unfinished=true'),
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            HttpHeaders.authorizationHeader: 'bearer ' + userInfo.token
+          });
+
+      if (!error401 && response.statusCode == 401) {
+        String errSessionRenewal = await AuthService().relogin();
+        if (errSessionRenewal.isNotEmpty) {
+          return Tuple2<
+              PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>,
+              String>(null, errSessionRenewal);
+        }
+        return await getPublishQueue(true);
+      }
+
+      if (response.statusCode == 200) {
+        List<RecitationPublishingTrackerViewModel> ret = [];
+        List<dynamic> items = json.decode(response.body);
+
+        for (var item in items) {
+          ret.add(RecitationPublishingTrackerViewModel.fromJson(item));
+        }
+        return Tuple2<
+                PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>,
+                String>(
+            PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>(
+                items: ret,
+                paginationMetadata: PaginationMetadata.fromJson(
+                    json.decode(response.headers['paging-headers']))),
+            '');
+      } else {
+        return Tuple2<
+                PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>,
+                String>(
+            null,
+            'کد برگشتی: ' +
+                response.statusCode.toString() +
+                ' ' +
+                response.body);
+      }
+    } catch (e) {
+      return Tuple2<
+              PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>,
+              String>(
+          null,
           'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: ' +
               e.toString());
     }
