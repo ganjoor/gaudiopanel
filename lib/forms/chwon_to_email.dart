@@ -7,7 +7,7 @@ class ChownToEmail extends StatefulWidget {
 }
 
 class _ChownToEmailState extends State<ChownToEmail> {
-  TextEditingController _emailController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
   _ChownToEmailState();
 
@@ -29,7 +29,7 @@ class _ChownToEmailState extends State<ChownToEmail> {
                     textDirection: TextDirection.ltr,
                     child: TextFormField(
                       controller: _emailController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'پست الکترونیکی',
                         hintText: 'پست الکترونیکی',
                       ),
@@ -41,13 +41,13 @@ class _ChownToEmailState extends State<ChownToEmail> {
                     alignment: MainAxisAlignment.end,
                     children: [
                       ElevatedButton(
-                        child: Text('تأیید'),
+                        child: const Text('تأیید'),
                         onPressed: () {
                           Navigator.of(context).pop(_emailController.text);
                         },
                       ),
                       TextButton(
-                        child: Text('انصراف'),
+                        child: const Text('انصراف'),
                         onPressed: () {
                           Navigator.of(context).pop(null);
                         },

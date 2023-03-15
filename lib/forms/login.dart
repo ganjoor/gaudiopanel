@@ -6,6 +6,8 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LoginForm extends StatefulWidget {
+  const LoginForm({Key key}) : super(key: key);
+
   @override
   LoginFormState createState() => LoginFormState();
 }
@@ -44,6 +46,7 @@ class LoginFormState extends State<LoginForm> {
       if (_loginError.isNotEmpty) {
         _formKey.currentState.validate();
       } else {
+        if (!mounted) return;
         await Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => MainForm()));
       }
