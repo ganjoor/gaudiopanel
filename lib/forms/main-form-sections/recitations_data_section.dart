@@ -23,7 +23,7 @@ class RecitationsDataSection extends StatefulWidget {
   final int status;
 
   @override
-  _RecitationsState createState() => _RecitationsState();
+  State<RecitationsDataSection> createState() => _RecitationsState();
 }
 
 class _RecitationsState extends State<RecitationsDataSection> {
