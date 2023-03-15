@@ -139,7 +139,7 @@ class MainFormWidgetState extends State<MainForm>
         _isLoading = false;
       });
       _key.currentState.showSnackBar(SnackBar(
-        content: Text("خطا در دریافت خوانش‌ها: ${narrations.error}"),
+        content: Text('خطا در دریافت خوانش‌ها: ${narrations.error}'),
         backgroundColor: Colors.red,
       ));
     }
@@ -163,7 +163,7 @@ class MainFormWidgetState extends State<MainForm>
         _isLoading = false;
       });
       _key.currentState.showSnackBar(SnackBar(
-        content: Text("خطا در دریافت اطلاعات: ${reportedOnes.error}"),
+        content: Text('خطا در دریافت اطلاعات: ${reportedOnes.error}'),
         backgroundColor: Colors.red,
       ));
     }
@@ -189,7 +189,7 @@ class MainFormWidgetState extends State<MainForm>
         _isLoading = false;
       });
       _key.currentState.showSnackBar(SnackBar(
-        content: Text("خطا در دریافت بارگذاری‌ها: ${uploads.error}"),
+        content: Text('خطا در دریافت بارگذاری‌ها: ${uploads.error}'),
         backgroundColor: Colors.red,
       ));
     }
@@ -212,7 +212,7 @@ class MainFormWidgetState extends State<MainForm>
         _isLoading = false;
       });
       _key.currentState.showSnackBar(SnackBar(
-        content: Text("خطا در دریافت نمایه‌ها: ${profiles.item2}"),
+        content: Text('خطا در دریافت نمایه‌ها: ${profiles.item2}'),
         backgroundColor: Colors.red,
       ));
     }
@@ -234,7 +234,7 @@ class MainFormWidgetState extends State<MainForm>
       });
     } else {
       _key.currentState.showSnackBar(SnackBar(
-        content: Text("خطا در دریافت صف انتشار در سایت: ${publishQueue.item2}"),
+        content: Text('خطا در دریافت صف انتشار در سایت: ${publishQueue.item2}'),
         backgroundColor: Colors.red,
       ));
     }
@@ -255,7 +255,7 @@ class MainFormWidgetState extends State<MainForm>
       });
     } else {
       _key.currentState.showSnackBar(SnackBar(
-        content: Text("خطا در دریافت اعلان‌ها: ${notificationsList.item2}"),
+        content: Text('خطا در دریافت اعلان‌ها: ${notificationsList.item2}'),
         backgroundColor: Colors.red,
       ));
     }
@@ -275,7 +275,7 @@ class MainFormWidgetState extends State<MainForm>
     } else {
       _key.currentState.showSnackBar(SnackBar(
         content: Text(
-            "خطا در دریافت تعداد اعلان‌ها: ${retNotificationsCount.item2}"),
+            'خطا در دریافت تعداد اعلان‌ها: ${retNotificationsCount.item2}'),
         backgroundColor: Colors.red,
       ));
     }
@@ -486,7 +486,7 @@ class MainFormWidgetState extends State<MainForm>
 
       if (err.isNotEmpty) {
         _key.currentState.showSnackBar(SnackBar(
-          content: Text("خطا در ارسال خوانش‌های جدید: $err"),
+          content: Text('خطا در ارسال خوانش‌های جدید: $err'),
           backgroundColor: Colors.red,
         ));
       }

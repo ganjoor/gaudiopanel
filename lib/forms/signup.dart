@@ -73,7 +73,7 @@ class SignUpFormState extends State<SignUpForm>
         var res = _signupError;
         setState(() {
           _emailSent = true;
-          _emailVerified = res == "finalize";
+          _emailVerified = res == 'finalize';
           _signupError = '';
         });
       }

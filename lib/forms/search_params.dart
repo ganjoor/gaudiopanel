@@ -53,14 +53,14 @@ class _SearchParamsState extends State<SearchParams> {
                     items: const [
                       DropdownMenuItem(
                         value: 20,
-                        child: Text("20"),
+                        child: Text('20'),
                       ),
                       DropdownMenuItem(
                         value: 50,
-                        child: Text("50"),
+                        child: Text('50'),
                       ),
-                      DropdownMenuItem(value: 100, child: Text("100")),
-                      DropdownMenuItem(value: -1, child: Text("همه"))
+                      DropdownMenuItem(value: 100, child: Text('100')),
+                      DropdownMenuItem(value: -1, child: Text('همه'))
                     ],
                     onChanged: (value) {
                       setState(() {

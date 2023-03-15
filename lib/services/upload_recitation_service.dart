@@ -17,7 +17,7 @@ class UploadRecitationService {
 
       var baseUrl = GServiceAddress.url;
       var request = http.MultipartRequest(
-          "POST", Uri.parse('$baseUrl/api/audio?replace=$replace'));
+          'POST', Uri.parse('$baseUrl/api/audio?replace=$replace'));
       for (var file in files) {
         request.files.add(http.MultipartFile.fromBytes(file.name, file.bytes,
             filename: file.name));

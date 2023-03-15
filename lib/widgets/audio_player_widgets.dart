@@ -27,7 +27,7 @@ class ControlButtons extends StatelessWidget {
           onPressed: () {
             _showSliderDialog(
               context: context,
-              title: "Adjust volume",
+              title: 'Adjust volume',
               divisions: 10,
               min: 0.0,
               max: 1.0,
@@ -88,12 +88,12 @@ class ControlButtons extends StatelessWidget {
         StreamBuilder<double>(
           stream: player.speedStream,
           builder: (context, snapshot) => IconButton(
-            icon: Text("${snapshot.data?.toStringAsFixed(1)}x",
+            icon: Text('${snapshot.data?.toStringAsFixed(1)}x',
                 style: const TextStyle(fontWeight: FontWeight.bold)),
             onPressed: () {
               _showSliderDialog(
                 context: context,
-                title: "Adjust speed",
+                title: 'Adjust speed',
                 divisions: 10,
                 min: 0.5,
                 max: 1.5,
@@ -158,7 +158,7 @@ class _SeekBarState extends State<SeekBar> {
           bottom: 0.0,
           child: Text(
               RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
-                      .firstMatch("$_remaining")
+                      .firstMatch('$_remaining')
                       ?.group(1) ??
                   '$_remaining',
               style: Theme.of(context).textTheme.caption),
