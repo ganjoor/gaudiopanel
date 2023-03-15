@@ -52,6 +52,7 @@ class MainFormWidgetState extends State<MainForm>
       GlobalKey<ScaffoldMessengerState>();
   bool _canPublish = false;
   bool _canModerate = false;
+  bool _canReOrder = false;
   String _userFrinedlyName = '';
   bool _isLoading = false;
   GActiveFormSection _activeSection = GActiveFormSection.DraftRecitations;
@@ -316,16 +317,16 @@ class MainFormWidgetState extends State<MainForm>
       _userFrinedlyName = user.user.firstName + ' ' + user.user.sureName;
     }
 
+    if (await AuthService().hasPermission('recitation', 'reorder')) {
+      _canReOrder = true;
+    }
+
     if (await AuthService().hasPermission('recitation', 'publish')) {
-      setState(() {
-        _canPublish = true;
-      });
+      _canPublish = true;
     }
 
     if (await AuthService().hasPermission('recitation', 'moderate')) {
-      setState(() {
-        _canModerate = true;
-      });
+      _canModerate = true;
     }
 
     await _loadData();
@@ -1125,6 +1126,42 @@ class MainFormWidgetState extends State<MainForm>
                       },
                     ),
                     visible: _activeSection == GActiveFormSection.Profiles,
+                  ),
+                  Visibility(
+                    child: IconButton(
+                        icon: Icon(Icons.people),
+                        tooltip: 'انتقال خوانش‌های فریدون فرح‌اندوز',
+                        onPressed: () async {
+                          if (await _confirm('انتقال به بالا',
+                              'از انتقال خوانشهای فریدون فرح‌اندوز به بالا اطمینان دارید؟')) {
+                            setState(() {
+                              _isLoading = true;
+                            });
+
+                            var ret = await RecitationService()
+                                .makeFFRecitationsFirst(false);
+
+                            setState(() {
+                              _isLoading = false;
+                            });
+
+                            if (ret.item2.isNotEmpty) {
+                              _key.currentState.showSnackBar(SnackBar(
+                                content: Text(ret.item2),
+                                backgroundColor: Colors.red,
+                              ));
+                            } else {
+                              _key.currentState.showSnackBar(SnackBar(
+                                content: Text(
+                                    'تعداد خوانش‌های تحت تأثیر قرار گرفته: ' +
+                                        ret.item1.toString()),
+                                backgroundColor: Colors.green,
+                              ));
+                            }
+                          }
+                        }),
+                    visible: _canReOrder &&
+                        _activeSection == GActiveFormSection.Profiles,
                   ),
                 ],
               ),
