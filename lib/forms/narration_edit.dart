@@ -224,7 +224,6 @@ class _NarrationEditState extends State<NarrationEdit>
                                   (widget.narration.reviewStatus ==
                                       AudioReviewStatus.pending /* Pending */)),
                           child: ElevatedButton(
-                            child: Text('رد خوانش'),
                             style: ButtonStyle(
                                 backgroundColor:
                                     MaterialStateProperty.all<Color>(
@@ -234,13 +233,14 @@ class _NarrationEditState extends State<NarrationEdit>
                                   AudioReviewStatus.rejected; //Rejected
                               Navigator.of(context).pop(widget.narration);
                             },
+                            child: const Text('رد خوانش'),
                           )),
                       Visibility(
                           visible: !_canPublish &&
                               widget.narration.reviewStatus ==
                                   AudioReviewStatus.draft,
                           child: ElevatedButton(
-                            child: Text('ذخیره و درخواست بررسی'),
+                            child: const Text('ذخیره و درخواست بررسی'),
                             onPressed: () {
                               widget.narration.audioTitle =
                                   _titleController.text;
@@ -265,7 +265,7 @@ class _NarrationEditState extends State<NarrationEdit>
                                   (widget.narration.reviewStatus ==
                                       AudioReviewStatus.pending /* Pending */)),
                           child: ElevatedButton(
-                            child: Text('ذخیره و انتشار'),
+                            child: const Text('ذخیره و انتشار'),
                             onPressed: () {
                               _setModifiedFlag();
                               widget.narration.audioTitle =

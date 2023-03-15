@@ -1,6 +1,6 @@
 class NotificationStatus {
-  static const int Unread = 0;
-  static const int Read = 1;
+  static const int unread = 0;
+  static const int read = 1;
 }
 
 class RUserNotificationViewModel {

@@ -1,7 +1,7 @@
 import 'package:gaudiopanel/models/auth/public_rapp_user.dart';
 import 'package:gaudiopanel/models/recitation/recitation_verse_sync.dart';
 
-enum RecitationModerationResult { MetadataNeedsFixation, Approve, Reject }
+enum RecitationModerationResult { metadataNeedsFixation, approve, reject }
 
 class RecitationModerateViewModel {
   /// MetadataNeedsFixation = 0

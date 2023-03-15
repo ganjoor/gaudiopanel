@@ -120,7 +120,7 @@ class _RecitationsState extends State<RecitationsDataSection> {
           }
           var serviceResult = await RecitationService().moderateRecitation(
               result.id,
-              RecitationModerationResult.Reject,
+              RecitationModerationResult.reject,
               rejectResult,
               false);
           if (widget.loadingStateChanged != null) {
@@ -189,7 +189,7 @@ class _RecitationsState extends State<RecitationsDataSection> {
             widget.loadingStateChanged(true);
           }
           var serviceResult = await RecitationService().moderateRecitation(
-              result.id, RecitationModerationResult.Approve, '', false);
+              result.id, RecitationModerationResult.approve, '', false);
           if (widget.loadingStateChanged != null) {
             widget.loadingStateChanged(false);
           }

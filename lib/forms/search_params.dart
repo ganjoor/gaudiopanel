@@ -10,7 +10,7 @@ class SearchParams extends StatefulWidget {
 }
 
 class _SearchParamsState extends State<SearchParams> {
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   int _pageSize;
 
@@ -37,30 +37,30 @@ class _SearchParamsState extends State<SearchParams> {
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   controller: _searchController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'متن جستجو',
                     hintText: 'متن جستجو',
                   ),
                 ),
               ),
               Padding(
-                padding: EdgeInsets.all(20.0),
+                padding: const EdgeInsets.all(20.0),
                 child: DropdownButtonFormField(
                     value: widget.sparams.item1,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'تعداد در هر صفحه',
                     ),
-                    items: [
+                    items: const [
                       DropdownMenuItem(
-                        child: Text("20"),
                         value: 20,
+                        child: Text("20"),
                       ),
                       DropdownMenuItem(
-                        child: Text("50"),
                         value: 50,
+                        child: Text("50"),
                       ),
-                      DropdownMenuItem(child: Text("100"), value: 100),
-                      DropdownMenuItem(child: Text("همه"), value: -1)
+                      DropdownMenuItem(value: 100, child: Text("100")),
+                      DropdownMenuItem(value: -1, child: Text("همه"))
                     ],
                     onChanged: (value) {
                       setState(() {
@@ -74,14 +74,14 @@ class _SearchParamsState extends State<SearchParams> {
                     alignment: MainAxisAlignment.end,
                     children: [
                       ElevatedButton(
-                        child: Text('تأیید'),
+                        child: const Text('تأیید'),
                         onPressed: () {
                           Navigator.of(context).pop(Tuple2<int, String>(
                               _pageSize, _searchController.text));
                         },
                       ),
                       TextButton(
-                        child: Text('انصراف'),
+                        child: const Text('انصراف'),
                         onPressed: () {
                           Navigator.of(context).pop(null);
                         },

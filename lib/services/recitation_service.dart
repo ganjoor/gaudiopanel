@@ -36,7 +36,7 @@ class RecitationService {
         return PaginatedItemsResponseModel<RecitationViewModel>(
             error: 'کاربر وارد سیستم نشده است.');
       }
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       http.Response response = await http.get(
           Uri.parse(
               '$apiRoot/api/audio?PageNumber=$pageNumber&PageSize=$pageSize&allUsers=$allUsers&status=$status&mistakes=$mistakes&searchTerm=$searchTerm'),
@@ -90,7 +90,7 @@ class RecitationService {
         return const Tuple2<RecitationViewModel, String>(
             null, 'کاربر وارد سیستم نشده است.');
       }
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       int id = narration.id;
       http.Response response =
           await http.put(Uri.parse('$apiRoot/api/audio/$id'),
@@ -135,14 +135,14 @@ class RecitationService {
             null, 'کاربر وارد سیستم نشده است.');
       }
 
-      int mres = res == RecitationModerationResult.MetadataNeedsFixation
+      int mres = res == RecitationModerationResult.metadataNeedsFixation
           ? 0
-          : res == RecitationModerationResult.Approve
+          : res == RecitationModerationResult.approve
               ? 1
               : 2;
       RecitationModerateViewModel model =
           RecitationModerateViewModel(result: mres, message: message);
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       http.Response response =
           await http.put(Uri.parse('$apiRoot/api/audio/moderate/$id'),
               headers: {
@@ -183,7 +183,7 @@ class RecitationService {
       if (userInfo == null) {
         return const Tuple2<bool, String>(false, 'کاربر وارد سیستم نشده است.');
       }
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       http.Response response = await http.delete(
         Uri.parse('$apiRoot/api/audio/$id'),
         headers: {
@@ -224,7 +224,7 @@ class RecitationService {
         return const Tuple2<List<UserRecitationProfileViewModel>, String>(
             null, 'کاربر وارد سیستم نشده است.');
       }
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       http.Response response = await http.get(
           Uri.parse('$apiRoot/api/audio/profile?artistName=$artistName'),
           headers: {
@@ -270,7 +270,7 @@ class RecitationService {
         return const Tuple2<UserRecitationProfileViewModel, String>(
             null, 'کاربر وارد سیستم نشده است.');
       }
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       http.Response response =
           await http.get(Uri.parse('$apiRoot/api/audio/profile/def'), headers: {
         'Content-Type': 'application/json; charset=UTF-8',
@@ -310,7 +310,7 @@ class RecitationService {
         return const Tuple2<UserRecitationProfileViewModel, String>(
             null, 'کاربر وارد سیستم نشده است.');
       }
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       http.Response response =
           await http.post(Uri.parse('$apiRoot/api/audio/profile'),
               headers: {
@@ -354,7 +354,7 @@ class RecitationService {
         return const Tuple2<UserRecitationProfileViewModel, String>(
             null, 'کاربر وارد سیستم نشده است.');
       }
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       http.Response response =
           await http.put(Uri.parse('$apiRoot/api/audio/profile'),
               headers: {
@@ -396,7 +396,7 @@ class RecitationService {
       if (userInfo == null) {
         return const Tuple2<bool, String>(false, 'کاربر وارد سیستم نشده است.');
       }
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       http.Response response = await http.delete(
         Uri.parse('$apiRoot/api/audio/profile/$id'),
         headers: {
@@ -436,7 +436,7 @@ class RecitationService {
         return PaginatedItemsResponseModel<UploadedItemViewModel>(
             error: 'کاربر وارد سیستم نشده است.');
       }
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       http.Response response = await http.get(
           Uri.parse(
               '$apiRoot/api/audio/uploads?PageNumber=$pageNumber&PageSize=$pageSize'),
@@ -480,7 +480,7 @@ class RecitationService {
 
   Future<Tuple2<List<RecitationVerseSync>, String>> getVerses(int id) async {
     try {
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       http.Response response =
           await http.get(Uri.parse('$apiRoot/api/audio/verses/$id'), headers: {
         'Content-Type': 'application/json; charset=UTF-8',
@@ -507,7 +507,7 @@ class RecitationService {
   ///
   /// for the player
   String getAudioFileUrl(int id) {
-    var apiRoot = GServiceAddress.Url;
+    var apiRoot = GServiceAddress.url;
     return '$apiRoot/api/audio/file/$id.mp3';
   }
 
@@ -521,7 +521,7 @@ class RecitationService {
       if (userInfo == null) {
         return const Tuple2<int, String>(0, 'کاربر وارد سیستم نشده است.');
       }
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       http.Response response = await http.put(
         Uri.parse(
             '$apiRoot/api/audio/chown?targetEmailAddress=$targetEmailAddress&artistName=$artistName'),
@@ -566,7 +566,7 @@ class RecitationService {
         return const Tuple2<List<RecitationViewModel>, String>(
             null, 'کاربر وارد سیستم نشده است.');
       }
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       http.Response response =
           await http.get(Uri.parse('$apiRoot/api/audio/syncqueue'), headers: {
         'Content-Type': 'application/json; charset=UTF-8',
@@ -609,7 +609,7 @@ class RecitationService {
       if (userInfo == null) {
         return 'کاربر وارد سیستم نشده است.';
       }
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       http.Response response = await http
           .post(Uri.parse('$apiRoot/api/audio/retrypublish'), headers: {
         'Content-Type': 'application/json; charset=UTF-8',
@@ -643,7 +643,7 @@ class RecitationService {
         return PaginatedItemsResponseModel<RecitationErrorReportViewModel>(
             error: 'کاربر وارد سیستم نشده است.');
       }
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       http.Response response = await http.get(
           Uri.parse(
               '$apiRoot/api/audio/errors/report?PageNumber=$pageNumber&PageSize=$pageSize'),
@@ -691,7 +691,7 @@ class RecitationService {
       if (userInfo == null) {
         return const Tuple2<bool, String>(false, 'کاربر وارد سیستم نشده است.');
       }
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       http.Response response = await http.delete(
         Uri.parse(
             '$apiRoot/api/audio/errors/report/$id?rejectionNote=$rejectionNote'),
@@ -727,7 +727,7 @@ class RecitationService {
       if (userInfo == null) {
         return const Tuple2<bool, String>(false, 'کاربر وارد سیستم نشده است.');
       }
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       http.Response response = await http.delete(
         Uri.parse('$apiRoot/api/audio/errors/report/accept/$id'),
         headers: {
@@ -764,7 +764,7 @@ class RecitationService {
         return const Tuple2<bool, String>(false, 'کاربر وارد سیستم نشده است.');
       }
 
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       http.Response response =
           await http.put(Uri.parse('$apiRoot/api/audio/errors/report/save'),
               headers: {
@@ -805,7 +805,7 @@ class RecitationService {
             PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>,
             String>(null, 'کاربر وارد سیستم نشده است.');
       }
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       http.Response response = await http.get(
           Uri.parse('$apiRoot/api/audio/publishqueue?unfinished=true'),
           headers: {
@@ -860,7 +860,7 @@ class RecitationService {
       if (userInfo == null) {
         return const Tuple2<int, String>(0, 'کاربر وارد سیستم نشده است.');
       }
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       http.Response response = await http.put(
         Uri.parse('$apiRoot/api/audio/ff'),
         headers: {

@@ -152,7 +152,7 @@ class _ProfilesState extends State<ReportedDataSection> {
                       widget.snackbarNeeded(res.item2);
                     }
                   },
-                  child: Text('گزارش درست نیست'),
+                  child: const Text('گزارش درست نیست'),
                 ),
                 ElevatedButton(
                   style: ButtonStyle(
@@ -174,7 +174,7 @@ class _ProfilesState extends State<ReportedDataSection> {
                       widget.loadingStateChanged(false);
                     }
                   },
-                  child: Text('خوانش اشکال دارد و باید حذف شود'),
+                  child: const Text('خوانش اشکال دارد و باید حذف شود'),
                 ),
                 ElevatedButton(
                   style: ButtonStyle(
@@ -217,7 +217,7 @@ class _ProfilesState extends State<ReportedDataSection> {
                       widget.loadingStateChanged(false);
                     }
                   },
-                  child: Text('در فهرست اشکالات خوانش ثبت شود'),
+                  child: const Text('در فهرست اشکالات خوانش ثبت شود'),
                 )
               ]),
               trailing: IconButton(

@@ -140,7 +140,7 @@ class LoginFormState extends State<LoginForm> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                SignUpForm()));
+                                                const SignUpForm()));
                                   },
                                 ),
                                 const SizedBox(

@@ -15,7 +15,7 @@ class UploadRecitationService {
     try {
       LoggedOnUserModel userInfo = await StorageService().userInfo;
 
-      var baseUrl = GServiceAddress.Url;
+      var baseUrl = GServiceAddress.url;
       var request = http.MultipartRequest(
           "POST", Uri.parse('$baseUrl/api/audio?replace=$replace'));
       for (var file in files) {

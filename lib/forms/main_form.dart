@@ -511,10 +511,10 @@ class MainFormWidgetState extends State<MainForm>
       _isLoading = true;
     });
     for (var item in markedNotifications) {
-      if (read && item.status == NotificationStatus.Read) {
+      if (read && item.status == NotificationStatus.read) {
         continue;
       }
-      if (!read && item.status == NotificationStatus.Unread) {
+      if (!read && item.status == NotificationStatus.unread) {
         continue;
       }
       String error = await NotificationService().switchStatus(item.id, false);
@@ -528,13 +528,13 @@ class MainFormWidgetState extends State<MainForm>
       }
       setState(() {
         item.status =
-            read ? NotificationStatus.Read : NotificationStatus.Unread;
+            read ? NotificationStatus.read : NotificationStatus.unread;
       });
     }
     setState(() {
       _isLoading = false;
       _unreadNotificationsCount = _notifications.items
-          .where((element) => element.status == NotificationStatus.Unread)
+          .where((element) => element.status == NotificationStatus.unread)
           .length;
     });
   }
@@ -576,7 +576,7 @@ class MainFormWidgetState extends State<MainForm>
       setState(() {
         _isLoading = false;
         _unreadNotificationsCount = _notifications.items
-            .where((element) => element.status == NotificationStatus.Unread)
+            .where((element) => element.status == NotificationStatus.unread)
             .length;
       });
     }
@@ -1046,7 +1046,7 @@ class MainFormWidgetState extends State<MainForm>
                               var updateRes = await RecitationService()
                                   .moderateRecitation(
                                       item.id,
-                                      RecitationModerationResult.Approve,
+                                      RecitationModerationResult.approve,
                                       '',
                                       false);
                               if (updateRes.item2.isNotEmpty) {

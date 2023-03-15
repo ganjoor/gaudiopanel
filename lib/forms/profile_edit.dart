@@ -46,7 +46,7 @@ class _ProfileEditState extends State<ProfileEdit> {
             child: Wrap(children: [
               Visibility(
                   visible: widget.profile.id != null,
-                  child: Text(
+                  child: const Text(
                       'ویرایش نمایه‌ها روی خوانش‌های موجود تأثیر نمی‌گذارد و لازم است در صورت نیاز آنها را روی خوانش‌های موجود اعمال کنید.')),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -88,14 +88,14 @@ class _ProfileEditState extends State<ProfileEdit> {
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
                         controller: _audioSrcController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'نام منبع',
                           hintText: 'نام منبع',
                         )),
                   )),
               Visibility(
                   visible: _additionalFields,
-                  child: Text(
+                  child: const Text(
                       'اختیاری، اگر خوانش را با کسب اجازه از جای دیگری دریافت و همگام کرده‌اید می‌توانید نام منبع را اینجا وارد کنید.')),
               Visibility(
                   visible: _additionalFields,
@@ -105,14 +105,14 @@ class _ProfileEditState extends State<ProfileEdit> {
                         textDirection: TextDirection.ltr,
                         child: TextFormField(
                             controller: _audioSrcUrlController,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: 'نشانی وب منبع',
                               hintText: 'نشانی وب منبع',
                             ))),
                   )),
               Visibility(
                   visible: _additionalFields,
-                  child: Text(
+                  child: const Text(
                       'اختیاری، اگر خوانش را با کسب اجازه از جای دیگری دریافت و همگام کرده‌اید می‌توانید نشانی منبع را اینجا وارد کنید.')),
               Visibility(
                   visible: _additionalFields,
@@ -122,13 +122,13 @@ class _ProfileEditState extends State<ProfileEdit> {
                           textDirection: TextDirection.ltr,
                           child: TextFormField(
                               controller: _fileSuffixWithoutDashController,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'پسوند یکتاساز فایل',
                                 hintText: 'پسوند یکتاساز فایل',
                               ))))),
               Visibility(
                   visible: _additionalFields,
-                  child: Text(
+                  child: const Text(
                       'اختیاری، نام فایل خوانش شما روی سرور ترکیبی از یک عدد، یک خط میانه (دش) و این حروف خواهد بود. می‌توانید حروف ابتدایی نام و نام خانوادگیتان را به انگلیسی وارد کنید. اگر فایلی همنام فایل نهایی از پیش وجود داشته باشد اعدادی به نام فایل اضافه می‌شود. بهتر است تا حد ممکن این پسوند یکتا باشد.')),
               Padding(
                 padding: const EdgeInsets.all(8.0),

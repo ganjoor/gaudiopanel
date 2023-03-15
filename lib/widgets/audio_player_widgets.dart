@@ -13,7 +13,9 @@ class ControlButtons extends StatelessWidget {
   final SnackbarNeeded snackbarNeeded;
 
   const ControlButtons(this.player, this.narration, this.loadingStateChanged,
-      this.snackbarNeeded);
+      this.snackbarNeeded,
+      {Key key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -113,14 +115,15 @@ class SeekBar extends StatefulWidget {
   final ValueChanged<Duration> onChangeEnd;
 
   const SeekBar({
+    Key key,
     @required this.duration,
     @required this.position,
     this.onChanged,
     this.onChangeEnd,
-  });
+  }) : super(key: key);
 
   @override
-  _SeekBarState createState() => _SeekBarState();
+  State<SeekBar> createState() => _SeekBarState();
 }
 
 class _SeekBarState extends State<SeekBar> {

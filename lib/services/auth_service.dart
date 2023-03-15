@@ -17,7 +17,7 @@ class AuthService {
   /// result is written in local storage
   Future<String> login(String username, String password) async {
     try {
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       final http.Response response = await http.post(
         Uri.parse('$apiRoot/api/users/login'),
         headers: <String, String>{
@@ -81,7 +81,7 @@ class AuthService {
     try {
       LoggedOnUserModel oldLoginInfo = await _storageService.userInfo;
       var sessionId = oldLoginInfo.sessionId;
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       final http.Response response = await http.put(
         Uri.parse('$apiRoot/api/users/relogin/$sessionId'),
         headers: <String, String>{
@@ -110,7 +110,7 @@ class AuthService {
       await _storageService.delUserInfo();
       var userId = userInfo.user.id;
       var sessionId = userInfo.sessionId;
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       final http.Response response = await http.delete(
         Uri.parse(
             '$apiRoot/api/users/delsession?userId=$userId&sessionId=$sessionId'),
@@ -134,7 +134,7 @@ class AuthService {
   /// item2 contains error message if occurs any
   Future<Tuple2<String, String>> getACaptchaImageId() async {
     try {
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       http.Response response = await http
           .get(Uri.parse('$apiRoot/api/users/captchaimage'), headers: {
         'Content-Type': 'application/json; charset=UTF-8',
@@ -158,7 +158,7 @@ class AuthService {
   Future<String> signupUnverified(
       String email, String captchaImageId, String captchaValue) async {
     try {
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       final http.Response response = await http.post(
         Uri.parse('$apiRoot/api/users/signup'),
         headers: <String, String>{
@@ -185,7 +185,7 @@ class AuthService {
   ///item2 contains the error if happens
   Future<Tuple2<String, String>> verifyEmail(bool signup, String secret) async {
     try {
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       int type =
           signup ? RVerifyQueueType.signUp : RVerifyQueueType.forgotPassword;
       final http.Response response = await http.get(
@@ -211,7 +211,7 @@ class AuthService {
   Future<String> finalizeSignUp(String email, String secret, String password,
       String firstName, String sureName) async {
     try {
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       final http.Response response = await http.post(
         Uri.parse('$apiRoot/api/users/finalizesignup'),
         headers: <String, String>{

@@ -35,7 +35,7 @@ class PublicRAppUser {
   }
 
   toJson() {
-    Map<String, dynamic> m = new Map();
+    Map<String, dynamic> m = {};
     m['id'] = id;
     m['username'] = username;
     m['email'] = email;

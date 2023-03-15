@@ -26,7 +26,7 @@ class NotificationsDataSection extends StatefulWidget {
 
 class _NotificationsState extends State<NotificationsDataSection> {
   Icon getNotificationIcon(RUserNotificationViewModel notification) {
-    return notification.status == NotificationStatus.Unread
+    return notification.status == NotificationStatus.unread
         ? const Icon(Icons.mail, color: Colors.yellow)
         : const Icon(Icons.mark_as_unread);
   }
@@ -45,7 +45,7 @@ class _NotificationsState extends State<NotificationsDataSection> {
                   if (await canLaunch(url)) {
                     await launch(url);
                     if (widget.notifications.items[index].status ==
-                        NotificationStatus.Unread) {
+                        NotificationStatus.unread) {
                       widget.loadingStateChanged(true);
                       String error = await NotificationService().switchStatus(
                           widget.notifications.items[index].id, false);
@@ -55,7 +55,7 @@ class _NotificationsState extends State<NotificationsDataSection> {
                       } else {
                         setState(() {
                           widget.notifications.items[index].status =
-                              NotificationStatus.Read;
+                              NotificationStatus.read;
                         });
                       }
                       widget.loadingStateChanged(false);
@@ -64,7 +64,7 @@ class _NotificationsState extends State<NotificationsDataSection> {
                         widget.updateUnreadNotificationsCount(widget
                             .notifications.items
                             .where((element) =>
-                                element.status == NotificationStatus.Unread)
+                                element.status == NotificationStatus.unread)
                             .length);
                       }
                     }

@@ -7,6 +7,8 @@ import 'package:gaudiopanel/services/gservice_address.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 
 class SignUpForm extends StatefulWidget {
+  const SignUpForm({Key key}) : super(key: key);
+
   @override
   SignUpFormState createState() => SignUpFormState();
 }
@@ -23,7 +25,7 @@ class SignUpFormState extends State<SignUpForm>
     if (_captchaImageId.isEmpty) {
       return '';
     }
-    return '${GServiceAddress.Url}/api/rimages/$_captchaImageId.jpg';
+    return '${GServiceAddress.url}/api/rimages/$_captchaImageId.jpg';
   }
 
   final _formKey = GlobalKey<FormState>();
@@ -168,8 +170,9 @@ class SignUpFormState extends State<SignUpForm>
       if (_signupError.isNotEmpty) {
         _formKey.currentState.validate();
       } else {
+        if (!mounted) return;
         await Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => MainForm()));
+            context, MaterialPageRoute(builder: (context) => const MainForm()));
       }
     }
   }
@@ -205,7 +208,7 @@ class SignUpFormState extends State<SignUpForm>
                                 visible: !_alreadyLoggedIn && !_emailSent,
                                 child: TextFormField(
                                   controller: _email,
-                                  autofillHints: [AutofillHints.username],
+                                  autofillHints: const [AutofillHints.username],
                                   textDirection: TextDirection.ltr,
                                   validator: (value) {
                                     if (!_emailSent && value.isEmpty) {
@@ -222,28 +225,28 @@ class SignUpFormState extends State<SignUpForm>
                                     return null;
                                   },
                                   onFieldSubmitted: (value) => _signup(),
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                       prefix: Icon(Icons.mail),
                                       hintText: 'پست الکترونیکی',
                                       labelText: 'پست الکترونیکی'),
                                 )),
                             Visibility(
                                 visible: _emailSent && !_emailVerified,
-                                child: Text(
+                                child: const Text(
                                     'لطفا پست الکترونیکی خود را بررسی کنید. در صورتی که نشانی پست الکترونیکی خود را درست وارد کرده باشید نامه‌ای از گنجور دریافت کرده‌اید که حاوی یک رمز است. ')),
                             Visibility(
                                 visible: _emailSent && !_emailVerified,
-                                child: Text(
+                                child: const Text(
                                     'رمز دریافتی را در کادر زیر وارد کرده، روی دکمهٔ «ادامه» کلیک کنید')),
                             Visibility(
                                 visible: _emailSent && !_emailVerified,
-                                child: Text(
+                                child: const Text(
                                   'تذکر: ممکن است نامه به پوشه اسپم منتقل شده باشد',
                                   style: TextStyle(color: Colors.red),
                                 )),
                             Visibility(
                                 visible: _emailVerified && !_finalized,
-                                child: Text(
+                                child: const Text(
                                     'لطفا نام و نام خانوادگی و رمز مد نظر خود برای ورود را وارد کنید.')),
                             Visibility(
                                 visible: _finalized,
@@ -252,8 +255,8 @@ class SignUpFormState extends State<SignUpForm>
                                     child: Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: ElevatedButton.icon(
-                                          icon: Icon(Icons.login),
-                                          label: Text(
+                                          icon: const Icon(Icons.login),
+                                          label: const Text(
                                               'تبریک! ثبت نام شما تکمیل شد. ورود به سیستم'),
                                           style: ButtonStyle(
                                             backgroundColor:
@@ -286,7 +289,7 @@ class SignUpFormState extends State<SignUpForm>
                                     return null;
                                   },
                                   onFieldSubmitted: (value) => _verify(),
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                       prefix: Icon(Icons.lock),
                                       hintText: 'رمز دریافتی را وارد نمایید',
                                       labelText: 'رمز دریافتی'),
@@ -305,7 +308,7 @@ class SignUpFormState extends State<SignUpForm>
                                     return null;
                                   },
                                   onFieldSubmitted: (value) => _finalize(),
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                       prefix: Icon(Icons.person),
                                       hintText: 'نام',
                                       labelText: 'نام'),
@@ -324,7 +327,7 @@ class SignUpFormState extends State<SignUpForm>
                                     return null;
                                   },
                                   onFieldSubmitted: (value) => _finalize(),
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                       prefix: Icon(Icons.person),
                                       hintText: 'نام خانوادگی',
                                       labelText: 'نام خانوادگی'),
@@ -345,7 +348,7 @@ class SignUpFormState extends State<SignUpForm>
                                     return null;
                                   },
                                   onFieldSubmitted: (value) => _signup(),
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                       prefix: Icon(Icons.lock),
                                       hintText: 'عدد تصویر امنیتی',
                                       labelText: 'عدد تصویر امنیتی'),
@@ -357,8 +360,8 @@ class SignUpFormState extends State<SignUpForm>
                                     child: Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: ElevatedButton.icon(
-                                          icon: Icon(Icons.launch),
-                                          label: Text('ادامه'),
+                                          icon: const Icon(Icons.launch),
+                                          label: const Text('ادامه'),
                                           style: ButtonStyle(
                                             backgroundColor:
                                                 MaterialStateProperty.all<
@@ -371,7 +374,7 @@ class SignUpFormState extends State<SignUpForm>
                                 child: TextFormField(
                                   controller: _password,
                                   obscureText: true,
-                                  autofillHints: [AutofillHints.password],
+                                  autofillHints: const [AutofillHints.password],
                                   textDirection: TextDirection.ltr,
                                   validator: (value) {
                                     if (value.isEmpty) {
@@ -383,7 +386,7 @@ class SignUpFormState extends State<SignUpForm>
                                     return null;
                                   },
                                   onFieldSubmitted: (value) => _finalize(),
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                       icon: Icon(Icons.lock),
                                       hintText: 'گذرواژه',
                                       labelText: 'گذرواژه'),
@@ -393,7 +396,7 @@ class SignUpFormState extends State<SignUpForm>
                                 child: TextFormField(
                                   controller: _confirm,
                                   obscureText: true,
-                                  autofillHints: [AutofillHints.password],
+                                  autofillHints: const [AutofillHints.password],
                                   textDirection: TextDirection.ltr,
                                   validator: (value) {
                                     if (value.isEmpty) {
@@ -405,18 +408,18 @@ class SignUpFormState extends State<SignUpForm>
                                     return null;
                                   },
                                   onFieldSubmitted: (value) => _finalize(),
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                       icon: Icon(Icons.lock),
                                       hintText: 'تکرار گذرواژه',
                                       labelText: 'تکرار گذرواژه'),
                                 )),
                             Visibility(
                                 visible: _emailVerified && !_finalized,
-                                child: Text(
+                                child: const Text(
                                     'گذرواژه باید دست کم شامل ۶ حرف باشد و از ترکیبی از اعداد و حروف انگلیسی تشکیل شده باشد.')),
                             Visibility(
                                 visible: _emailVerified && !_finalized,
-                                child: Text(
+                                child: const Text(
                                     'حروف و اعداد نباید تکراری باشند و وجود حداقل یک عدد و یک حرف کوچک انگلیسی در گذرواژه الزامی است.')),
                             const SizedBox(
                               height: 10.0,
@@ -428,8 +431,8 @@ class SignUpFormState extends State<SignUpForm>
                                     child: Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: ElevatedButton.icon(
-                                          icon: Icon(Icons.launch),
-                                          label: Text('ادامه'),
+                                          icon: const Icon(Icons.launch),
+                                          label: const Text('ادامه'),
                                           style: ButtonStyle(
                                             backgroundColor:
                                                 MaterialStateProperty.all<
@@ -444,8 +447,8 @@ class SignUpFormState extends State<SignUpForm>
                                     child: Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: ElevatedButton.icon(
-                                          icon: Icon(Icons.launch),
-                                          label: Text('ادامه'),
+                                          icon: const Icon(Icons.launch),
+                                          label: const Text('ادامه'),
                                           style: ButtonStyle(
                                             backgroundColor:
                                                 MaterialStateProperty.all<
@@ -455,18 +458,19 @@ class SignUpFormState extends State<SignUpForm>
                                         )))),
                             Visibility(
                               visible: _alreadyLoggedIn,
-                              child: Text('شما پیش‌تر ثبت نام کرده‌اید!'),
+                              child: const Text('شما پیش‌تر ثبت نام کرده‌اید!'),
                             ),
                             Visibility(
                                 visible: !_emailSent,
                                 child: ElevatedButton.icon(
-                                  icon: Icon(Icons.exit_to_app),
-                                  label: Text('برگشت'),
+                                  icon: const Icon(Icons.exit_to_app),
+                                  label: const Text('برگشت'),
                                   onPressed: () {
                                     Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => LoginForm()));
+                                            builder: (context) =>
+                                                const LoginForm()));
                                   },
                                 )),
                           ],

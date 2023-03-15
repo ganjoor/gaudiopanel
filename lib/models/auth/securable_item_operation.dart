@@ -16,7 +16,7 @@ class SecurableItemOperation {
   }
 
   toJson() {
-    Map<String, dynamic> m = new Map();
+    Map<String, dynamic> m = {};
     m['shortName'] = shortName;
     m['description'] = description;
     m['status'] = status;

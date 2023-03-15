@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 
 Future<void> main() async {
   Widget initialWidget =
-      (await AuthService().isLoggedOn) ? MainForm() : LoginForm();
+      (await AuthService().isLoggedOn) ? const MainForm() : const LoginForm();
   runApp(GAudioPanelApp(initialWidget: initialWidget));
 }
 

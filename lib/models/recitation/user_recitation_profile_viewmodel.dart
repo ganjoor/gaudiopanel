@@ -36,7 +36,7 @@ class UserRecitationProfileViewModel {
   }
 
   toJson() {
-    Map<String, dynamic> m = new Map();
+    Map<String, dynamic> m = {};
     m['id'] = id;
     m['name'] = name;
     m['fileSuffixWithoutDash'] = fileSuffixWithoutDash;

@@ -1,3 +1,3 @@
 class GServiceAddress {
-  static const String Url = 'https://api.ganjoor.net';
+  static const String url = 'https://api.ganjoor.net';
 }

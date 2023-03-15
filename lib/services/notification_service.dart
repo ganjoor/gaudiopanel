@@ -24,7 +24,7 @@ class NotificationService {
         return const Tuple2<List<RUserNotificationViewModel>, String>(
             null, 'کاربر وارد سیستم نشده است.');
       }
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       http.Response response =
           await http.get(Uri.parse('$apiRoot/api/notifications'), headers: {
         'Content-Type': 'application/json; charset=UTF-8',
@@ -66,7 +66,7 @@ class NotificationService {
       if (userInfo == null) {
         return 'کاربر وارد سیستم نشده است.';
       }
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       http.Response response = await http.put(
         Uri.parse('$apiRoot/api/notifications/$id'),
         headers: {
@@ -103,7 +103,7 @@ class NotificationService {
       if (userInfo == null) {
         return const Tuple2<bool, String>(false, 'کاربر وارد سیستم نشده است.');
       }
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       http.Response response = await http.delete(
         Uri.parse('$apiRoot/api/notifications/$id'),
         headers: {
@@ -142,7 +142,7 @@ class NotificationService {
       if (userInfo == null) {
         return const Tuple2<int, String>(-1, 'کاربر وارد سیستم نشده است.');
       }
-      var apiRoot = GServiceAddress.Url;
+      var apiRoot = GServiceAddress.url;
       http.Response response = await http
           .get(Uri.parse('$apiRoot/api/notifications/unread/count'), headers: {
         'Content-Type': 'application/json; charset=UTF-8',
