@@ -26,6 +26,7 @@ import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../models/recitation/recitation_publishing_tracker_viewmodel.dart';
+import 'main-form-sections/publish_queue_section.dart';
 import 'main-form-sections/reported_data_section.dart';
 
 enum GActiveFormSection {
@@ -820,6 +821,8 @@ class MainFormWidgetState extends State<MainForm>
             loadingStateChanged: _loadingStateChanged,
             snackbarNeeded: _snackbarNeeded,
             updateUnreadNotificationsCount: _updateUnreadNotificationsCount);
+      case GActiveFormSection.synchronizationQueue:
+        return PublishQueueSection(queue: _queue);
       case GActiveFormSection.uploads:
       default:
         return UploadsDataSection(uploads: _uploads);
