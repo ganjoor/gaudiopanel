@@ -48,7 +48,7 @@ class LoginFormState extends State<LoginForm> {
       } else {
         if (!mounted) return;
         await Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => MainForm()));
+            context, MaterialPageRoute(builder: (context) => const MainForm()));
       }
     }
   }
