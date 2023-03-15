@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gaudiopanel/forms/login.dart';
-import 'package:gaudiopanel/forms/main-form.dart';
-import 'package:gaudiopanel/services/auth-service.dart';
+import 'package:gaudiopanel/forms/main_form.dart';
+import 'package:gaudiopanel/services/auth_service.dart';
 import 'package:universal_html/html.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 

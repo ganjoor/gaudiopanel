@@ -1,4 +1,4 @@
-import 'package:gaudiopanel/models/recitation/recitation-viewmodel.dart';
+import 'package:gaudiopanel/models/recitation/recitation_viewmodel.dart';
 
 class RecitationErrorReportViewModel {
   final int id;
@@ -33,7 +33,7 @@ class RecitationErrorReportViewModel {
         dateTime: json['dateTime']);
   }
   toJson() {
-    Map<String, dynamic> m = new Map();
+    Map<String, dynamic> m = {};
     m['id'] = id;
     m['recitationId'] = recitationId;
     m['reasonText'] = reasonText;

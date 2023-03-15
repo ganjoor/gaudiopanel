@@ -1,9 +1,9 @@
 import 'package:after_layout/after_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:gaudiopanel/forms/login.dart';
-import 'package:gaudiopanel/forms/main-form.dart';
-import 'package:gaudiopanel/services/auth-service.dart';
-import 'package:gaudiopanel/services/gservice-address.dart';
+import 'package:gaudiopanel/forms/main_form.dart';
+import 'package:gaudiopanel/services/auth_service.dart';
+import 'package:gaudiopanel/services/gservice_address.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 
 class SignUpForm extends StatefulWidget {
@@ -23,7 +23,7 @@ class SignUpFormState extends State<SignUpForm>
     if (_captchaImageId.isEmpty) {
       return '';
     }
-    return GServiceAddress.Url + '/api/rimages/' + _captchaImageId + '.jpg';
+    return '${GServiceAddress.Url}/api/rimages/$_captchaImageId.jpg';
   }
 
   final _formKey = GlobalKey<FormState>();
@@ -139,7 +139,7 @@ class SignUpFormState extends State<SignUpForm>
     });
     var resCaptcha = await AuthService().getACaptchaImageId();
     if (resCaptcha.item2.isNotEmpty) {
-      _signupError = resCaptcha.item2 + ' لطفا صفحه را رفرش کنید.';
+      _signupError = '${resCaptcha.item2} لطفا صفحه را رفرش کنید.';
     } else {
       setState(() {
         _captchaImageId = resCaptcha.item1;
@@ -168,7 +168,7 @@ class SignUpFormState extends State<SignUpForm>
       if (_signupError.isNotEmpty) {
         _formKey.currentState.validate();
       } else {
-        Navigator.pushReplacement(
+        await Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => MainForm()));
       }
     }
@@ -191,7 +191,7 @@ class SignUpFormState extends State<SignUpForm>
               key: _formKey,
               child: Scaffold(
                 appBar: AppBar(
-                  title: Text('پیشخان خوانشگران گنجور » ثبت نام'),
+                  title: const Text('پیشخان خوانشگران گنجور » ثبت نام'),
                 ),
                 body: Builder(
                   builder: (context) => Center(
@@ -202,6 +202,7 @@ class SignUpFormState extends State<SignUpForm>
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Visibility(
+                                visible: !_alreadyLoggedIn && !_emailSent,
                                 child: TextFormField(
                                   controller: _email,
                                   autofillHints: [AutofillHints.username],
@@ -225,27 +226,27 @@ class SignUpFormState extends State<SignUpForm>
                                       prefix: Icon(Icons.mail),
                                       hintText: 'پست الکترونیکی',
                                       labelText: 'پست الکترونیکی'),
-                                ),
-                                visible: !_alreadyLoggedIn && !_emailSent),
+                                )),
                             Visibility(
+                                visible: _emailSent && !_emailVerified,
                                 child: Text(
-                                    'لطفا پست الکترونیکی خود را بررسی کنید. در صورتی که نشانی پست الکترونیکی خود را درست وارد کرده باشید نامه‌ای از گنجور دریافت کرده‌اید که حاوی یک رمز است. '),
-                                visible: _emailSent && !_emailVerified),
+                                    'لطفا پست الکترونیکی خود را بررسی کنید. در صورتی که نشانی پست الکترونیکی خود را درست وارد کرده باشید نامه‌ای از گنجور دریافت کرده‌اید که حاوی یک رمز است. ')),
                             Visibility(
+                                visible: _emailSent && !_emailVerified,
                                 child: Text(
-                                    'رمز دریافتی را در کادر زیر وارد کرده، روی دکمهٔ «ادامه» کلیک کنید'),
-                                visible: _emailSent && !_emailVerified),
+                                    'رمز دریافتی را در کادر زیر وارد کرده، روی دکمهٔ «ادامه» کلیک کنید')),
                             Visibility(
+                                visible: _emailSent && !_emailVerified,
                                 child: Text(
                                   'تذکر: ممکن است نامه به پوشه اسپم منتقل شده باشد',
                                   style: TextStyle(color: Colors.red),
-                                ),
-                                visible: _emailSent && !_emailVerified),
+                                )),
                             Visibility(
+                                visible: _emailVerified && !_finalized,
                                 child: Text(
-                                    'لطفا نام و نام خانوادگی و رمز مد نظر خود برای ورود را وارد کنید.'),
-                                visible: _emailVerified && !_finalized),
+                                    'لطفا نام و نام خانوادگی و رمز مد نظر خود برای ورود را وارد کنید.')),
                             Visibility(
+                                visible: _finalized,
                                 child: SizedBox(
                                     width: double.maxFinite,
                                     child: Padding(
@@ -260,16 +261,18 @@ class SignUpFormState extends State<SignUpForm>
                                                     Color>(Colors.green),
                                           ),
                                           onPressed: _login,
-                                        ))),
-                                visible: _finalized),
-                            SizedBox(width: 10),
+                                        )))),
+                            const SizedBox(width: 10),
                             Visibility(
-                              child: Image.network(_captchaImageUrl),
                               visible: !_alreadyLoggedIn &&
                                   _captchaImageId.isNotEmpty &&
                                   !_emailSent,
+                              child: Image.network(_captchaImageUrl),
                             ),
                             Visibility(
+                                visible: !_alreadyLoggedIn &&
+                                    _emailSent &&
+                                    !_emailVerified,
                                 child: TextFormField(
                                   controller: _secret,
                                   textDirection: TextDirection.ltr,
@@ -287,11 +290,9 @@ class SignUpFormState extends State<SignUpForm>
                                       prefix: Icon(Icons.lock),
                                       hintText: 'رمز دریافتی را وارد نمایید',
                                       labelText: 'رمز دریافتی'),
-                                ),
-                                visible: !_alreadyLoggedIn &&
-                                    _emailSent &&
-                                    !_emailVerified),
+                                )),
                             Visibility(
+                                visible: _emailVerified && !_finalized,
                                 child: TextFormField(
                                   controller: _name,
                                   validator: (value) {
@@ -308,9 +309,9 @@ class SignUpFormState extends State<SignUpForm>
                                       prefix: Icon(Icons.person),
                                       hintText: 'نام',
                                       labelText: 'نام'),
-                                ),
-                                visible: _emailVerified && !_finalized),
+                                )),
                             Visibility(
+                                visible: _emailVerified && !_finalized,
                                 child: TextFormField(
                                   controller: _family,
                                   validator: (value) {
@@ -327,13 +328,13 @@ class SignUpFormState extends State<SignUpForm>
                                       prefix: Icon(Icons.person),
                                       hintText: 'نام خانوادگی',
                                       labelText: 'نام خانوادگی'),
-                                ),
-                                visible: _emailVerified && !_finalized),
+                                )),
                             Visibility(
-                                child: Text(_signupError),
-                                visible: _signupError.isNotEmpty && _finalized),
-                            SizedBox(width: 10),
+                                visible: _signupError.isNotEmpty && _finalized,
+                                child: Text(_signupError)),
+                            const SizedBox(width: 10),
                             Visibility(
+                                visible: !_alreadyLoggedIn && !_emailSent,
                                 child: TextFormField(
                                   controller: _captcha,
                                   textDirection: TextDirection.ltr,
@@ -348,9 +349,9 @@ class SignUpFormState extends State<SignUpForm>
                                       prefix: Icon(Icons.lock),
                                       hintText: 'عدد تصویر امنیتی',
                                       labelText: 'عدد تصویر امنیتی'),
-                                ),
-                                visible: !_alreadyLoggedIn && !_emailSent),
+                                )),
                             Visibility(
+                                visible: _emailSent && !_emailVerified,
                                 child: SizedBox(
                                     width: double.maxFinite,
                                     child: Padding(
@@ -364,9 +365,9 @@ class SignUpFormState extends State<SignUpForm>
                                                     Color>(Colors.green),
                                           ),
                                           onPressed: _verify,
-                                        ))),
-                                visible: _emailSent && !_emailVerified),
+                                        )))),
                             Visibility(
+                                visible: _emailVerified && !_finalized,
                                 child: TextFormField(
                                   controller: _password,
                                   obscureText: true,
@@ -386,9 +387,9 @@ class SignUpFormState extends State<SignUpForm>
                                       icon: Icon(Icons.lock),
                                       hintText: 'گذرواژه',
                                       labelText: 'گذرواژه'),
-                                ),
-                                visible: _emailVerified && !_finalized),
+                                )),
                             Visibility(
+                                visible: _emailVerified && !_finalized,
                                 child: TextFormField(
                                   controller: _confirm,
                                   obscureText: true,
@@ -408,20 +409,20 @@ class SignUpFormState extends State<SignUpForm>
                                       icon: Icon(Icons.lock),
                                       hintText: 'تکرار گذرواژه',
                                       labelText: 'تکرار گذرواژه'),
-                                ),
-                                visible: _emailVerified && !_finalized),
+                                )),
                             Visibility(
+                                visible: _emailVerified && !_finalized,
                                 child: Text(
-                                    'گذرواژه باید دست کم شامل ۶ حرف باشد و از ترکیبی از اعداد و حروف انگلیسی تشکیل شده باشد.'),
-                                visible: _emailVerified && !_finalized),
+                                    'گذرواژه باید دست کم شامل ۶ حرف باشد و از ترکیبی از اعداد و حروف انگلیسی تشکیل شده باشد.')),
                             Visibility(
+                                visible: _emailVerified && !_finalized,
                                 child: Text(
-                                    'حروف و اعداد نباید تکراری باشند و وجود حداقل یک عدد و یک حرف کوچک انگلیسی در گذرواژه الزامی است.'),
-                                visible: _emailVerified && !_finalized),
-                            SizedBox(
+                                    'حروف و اعداد نباید تکراری باشند و وجود حداقل یک عدد و یک حرف کوچک انگلیسی در گذرواژه الزامی است.')),
+                            const SizedBox(
                               height: 10.0,
                             ),
                             Visibility(
+                                visible: !_alreadyLoggedIn && !_emailSent,
                                 child: SizedBox(
                                     width: double.maxFinite,
                                     child: Padding(
@@ -435,9 +436,9 @@ class SignUpFormState extends State<SignUpForm>
                                                     Color>(Colors.green),
                                           ),
                                           onPressed: _signup,
-                                        ))),
-                                visible: !_alreadyLoggedIn && !_emailSent),
+                                        )))),
                             Visibility(
+                                visible: _emailVerified && !_finalized,
                                 child: SizedBox(
                                     width: double.maxFinite,
                                     child: Padding(
@@ -451,13 +452,13 @@ class SignUpFormState extends State<SignUpForm>
                                                     Color>(Colors.green),
                                           ),
                                           onPressed: _finalize,
-                                        ))),
-                                visible: _emailVerified && !_finalized),
+                                        )))),
                             Visibility(
-                              child: Text('شما پیش‌تر ثبت نام کرده‌اید!'),
                               visible: _alreadyLoggedIn,
+                              child: Text('شما پیش‌تر ثبت نام کرده‌اید!'),
                             ),
                             Visibility(
+                                visible: !_emailSent,
                                 child: ElevatedButton.icon(
                                   icon: Icon(Icons.exit_to_app),
                                   label: Text('برگشت'),
@@ -467,8 +468,7 @@ class SignUpFormState extends State<SignUpForm>
                                         MaterialPageRoute(
                                             builder: (context) => LoginForm()));
                                   },
-                                ),
-                                visible: !_emailSent),
+                                )),
                           ],
                         ),
                       ),

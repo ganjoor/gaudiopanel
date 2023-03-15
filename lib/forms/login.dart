@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:gaudiopanel/forms/main-form.dart';
+import 'package:gaudiopanel/forms/main_form.dart';
 import 'package:gaudiopanel/forms/signup.dart';
-import 'package:gaudiopanel/services/auth-service.dart';
+import 'package:gaudiopanel/services/auth_service.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -44,7 +44,7 @@ class LoginFormState extends State<LoginForm> {
       if (_loginError.isNotEmpty) {
         _formKey.currentState.validate();
       } else {
-        Navigator.pushReplacement(
+        await Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => MainForm()));
       }
     }
@@ -59,7 +59,7 @@ class LoginFormState extends State<LoginForm> {
               key: _formKey,
               child: Scaffold(
                 appBar: AppBar(
-                  title: Text('پیشخان خوانشگران گنجور » ورود'),
+                  title: const Text('پیشخان خوانشگران گنجور » ورود'),
                 ),
                 body: Builder(
                   builder: (context) => Center(
@@ -71,7 +71,7 @@ class LoginFormState extends State<LoginForm> {
                           children: [
                             TextFormField(
                               controller: _email,
-                              autofillHints: [AutofillHints.username],
+                              autofillHints: const [AutofillHints.username],
                               textDirection: TextDirection.ltr,
                               validator: (value) {
                                 if (value.isEmpty) {
@@ -83,7 +83,7 @@ class LoginFormState extends State<LoginForm> {
                                 return null;
                               },
                               onFieldSubmitted: (value) => _login(),
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                   icon: Icon(Icons.mail),
                                   hintText: 'پست الکترونیکی',
                                   labelText: 'پست الکترونیکی'),
@@ -91,7 +91,7 @@ class LoginFormState extends State<LoginForm> {
                             TextFormField(
                               controller: _password,
                               obscureText: true,
-                              autofillHints: [AutofillHints.password],
+                              autofillHints: const [AutofillHints.password],
                               textDirection: TextDirection.ltr,
                               validator: (value) {
                                 if (value.isEmpty) {
@@ -100,12 +100,12 @@ class LoginFormState extends State<LoginForm> {
                                 return null;
                               },
                               onFieldSubmitted: (value) => _login(),
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                   icon: Icon(Icons.lock),
                                   hintText: 'گذرواژه',
                                   labelText: 'گذرواژه'),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 10.0,
                             ),
                             SizedBox(
@@ -113,8 +113,8 @@ class LoginFormState extends State<LoginForm> {
                                 child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: ElevatedButton.icon(
-                                      icon: Icon(Icons.login),
-                                      label: Text('ورود'),
+                                      icon: const Icon(Icons.login),
+                                      label: const Text('ورود'),
                                       style: ButtonStyle(
                                         backgroundColor:
                                             MaterialStateProperty.all<Color>(
@@ -122,7 +122,7 @@ class LoginFormState extends State<LoginForm> {
                                       ),
                                       onPressed: _login,
                                     ))),
-                            SizedBox(
+                            const SizedBox(
                               height: 10.0,
                             ),
                             Row(
@@ -130,8 +130,8 @@ class LoginFormState extends State<LoginForm> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 ElevatedButton.icon(
-                                  icon: Icon(Icons.launch),
-                                  label: Text('ثبت نام'),
+                                  icon: const Icon(Icons.launch),
+                                  label: const Text('ثبت نام'),
                                   onPressed: () {
                                     Navigator.pushReplacement(
                                         context,
@@ -140,12 +140,12 @@ class LoginFormState extends State<LoginForm> {
                                                 SignUpForm()));
                                   },
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10.0,
                                 ),
                                 ElevatedButton.icon(
-                                  icon: Icon(Icons.help),
-                                  label: Text('فراموشی گذرواژه'),
+                                  icon: const Icon(Icons.help),
+                                  label: const Text('فراموشی گذرواژه'),
                                   onPressed: () async {
                                     var url =
                                         'https://museum.ganjoor.net/forgot-password';
