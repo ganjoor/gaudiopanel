@@ -1082,6 +1082,30 @@ class MainFormWidgetState extends State<MainForm>
                     ),
                   ),
                   Visibility(
+                    visible: _canPublish &&
+                        _activeSection ==
+                            GActiveFormSection.synchronizationQueue,
+                    child: IconButton(
+                      icon: const Icon(Icons.upload_file),
+                      tooltip: 'تلاش مجدد',
+                      onPressed: () async {
+                        setState(() {
+                          _isLoading = true;
+                        });
+                        var ret = await RecitationService().retryPublish(false);
+                        setState(() {
+                          _isLoading = false;
+                        });
+                        if (ret.isNotEmpty) {
+                          _key.currentState.showSnackBar(SnackBar(
+                            content: Text('خطا در تلاش مجدد: $ret'),
+                            backgroundColor: Colors.red,
+                          ));
+                        }
+                      },
+                    ),
+                  ),
+                  Visibility(
                     visible: _canReOrder &&
                         _activeSection == GActiveFormSection.profiles,
                     child: IconButton(
