@@ -806,6 +806,7 @@ class MainFormWidgetState extends State<MainForm>
   }
 
   String get currentPageText {
+    if (_narrations.paginationMetadata == null) return '';
     if ((_activeSection == GActiveFormSection.draftRecitations ||
         _activeSection == GActiveFormSection.allMyRecitations ||
         _activeSection == GActiveFormSection.allUsersPendingRecitations)) {
