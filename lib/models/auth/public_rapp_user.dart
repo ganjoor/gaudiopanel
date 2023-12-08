@@ -6,7 +6,7 @@ class PublicRAppUser {
   final String firstName;
   final String sureName;
   final int status;
-  final String rImageId;
+  final String? rImageId;
 
   PublicRAppUser(
       {required this.id,

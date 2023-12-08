@@ -220,7 +220,7 @@ class _RecitationsState extends State<RecitationsDataSection> {
                             AudioReviewStatus.reported ||
                         widget.status == AudioReviewStatus.mistakes,
                     child: Text(_getReviewMsg(
-                        widget.narrations.items![index].reviewMsg)))
+                        widget.narrations.items![index].reviewMsg ?? '')))
               ]),
               trailing: IconButton(
                 icon: widget.narrations.items![index].isMarked

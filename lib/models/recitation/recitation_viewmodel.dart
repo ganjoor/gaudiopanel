@@ -70,7 +70,7 @@ class RecitationViewModel {
   final int audioSyncStatus;
   int reviewStatus;
   List<RecitationVerseSync>? verses;
-  final String reviewMsg;
+  final String? reviewMsg;
 
   RecitationViewModel(
       {required this.id,
