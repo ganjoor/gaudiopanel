@@ -64,7 +64,7 @@ class GAudioPanelAppState extends State<GAudioPanelApp> {
                   data: MediaQuery.of(context).copyWith(
                     textScaler: const TextScaler.linear(1.0),
                   ),
-                  child: child!,
+                  child: child ?? const Text('بارگذاری'),
                 );
               },
             ),
