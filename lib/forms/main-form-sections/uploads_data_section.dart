@@ -24,15 +24,18 @@ class _UploadsState extends State<UploadsDataSection> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-        itemCount: widget.uploads.items!.length,
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-              leading: getUploadIcon(widget.uploads.items![index]),
-              title: Directionality(
-                  textDirection: TextDirection.ltr,
-                  child: Text(widget.uploads.items![index].fileName)),
-              subtitle: Text(widget.uploads.items![index].processResultMsg));
-        });
+    return widget.uploads.items == null
+        ? const Text('بارگذاری')
+        : ListView.builder(
+            itemCount: widget.uploads.items!.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ListTile(
+                  leading: getUploadIcon(widget.uploads.items![index]),
+                  title: Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: Text(widget.uploads.items![index].fileName)),
+                  subtitle:
+                      Text(widget.uploads.items![index].processResultMsg));
+            });
   }
 }
