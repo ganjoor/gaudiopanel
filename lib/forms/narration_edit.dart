@@ -45,7 +45,9 @@ class _NarrationEditState extends State<NarrationEdit>
 
   @override
   void dispose() {
-    _player!.dispose();
+    if (_player != null) {
+      _player!.dispose();
+    }
     _titleController.dispose();
     _artistNameController.dispose();
     _artistUrlController.dispose();
@@ -55,6 +57,7 @@ class _NarrationEditState extends State<NarrationEdit>
   }
 
   String getVerse(RecitationViewModel narration, Duration position) {
+    if (narration.verses == null) return '';
     var verse = narration.verses!.lastWhere(
         (element) => element.audioStartMilliseconds <= position.inMilliseconds);
     return verse.verseText;
@@ -178,11 +181,11 @@ class _NarrationEditState extends State<NarrationEdit>
                     ControlButtons(_player!, widget.narration,
                         widget.loadingStateChanged, widget.snackbarNeeded),
                     StreamBuilder<Duration?>(
-                      stream: _player!.durationStream,
+                      stream: _player?.durationStream,
                       builder: (context, snapshot) {
                         final duration = snapshot.data ?? Duration.zero;
                         return StreamBuilder<Duration>(
-                          stream: _player!.positionStream,
+                          stream: _player?.positionStream,
                           builder: (context, snapshot) {
                             var position = snapshot.data ?? Duration.zero;
                             if (position > duration) {
@@ -196,6 +199,7 @@ class _NarrationEditState extends State<NarrationEdit>
                                     duration: duration,
                                     position: position,
                                     onChangeEnd: (newPosition) {
+                                      if (_player == null) return;
                                       _player!.seek(newPosition);
                                     },
                                   ),

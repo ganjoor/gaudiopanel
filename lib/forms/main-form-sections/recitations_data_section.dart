@@ -103,7 +103,8 @@ class _RecitationsState extends State<RecitationsDataSection> {
 
   Future _doEdit(int index) async {
     final result = await _edit(widget.narrations.items![index]);
-    bool reject = result!.reviewStatus == AudioReviewStatus.rejected &&
+    if (result == null) return;
+    bool reject = result.reviewStatus == AudioReviewStatus.rejected &&
         ((widget.narrations.items![index].reviewStatus == 0) ||
             (widget.narrations.items![index].reviewStatus == 1));
 
