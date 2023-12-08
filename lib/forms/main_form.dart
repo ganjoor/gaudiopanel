@@ -1650,11 +1650,12 @@ class MainFormWidgetState extends State<MainForm>
                       break;
                     case GActiveFormSection.profiles:
                       var result = await _newProfile();
+                      if (result == null) return;
                       setState(() {
                         _isLoading = true;
                       });
                       var serviceResult =
-                          await RecitationService().addProfile(result!, false);
+                          await RecitationService().addProfile(result, false);
                       setState(() {
                         _isLoading = false;
                       });

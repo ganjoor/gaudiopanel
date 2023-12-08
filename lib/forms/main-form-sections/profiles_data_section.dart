@@ -61,9 +61,10 @@ class _ProfilesState extends State<ProfilesDataSection> {
                 icon: const Icon(Icons.edit),
                 onPressed: () async {
                   final result = await _edit(widget.profiles.items![index]);
+                  if (result == null) return;
                   widget.loadingStateChanged(true);
                   var serviceResult =
-                      await RecitationService().updateProfile(result!, false);
+                      await RecitationService().updateProfile(result, false);
                   widget.loadingStateChanged(false);
                   if (serviceResult.item2 == '') {
                     setState(() {
