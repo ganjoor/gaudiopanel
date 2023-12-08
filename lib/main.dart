@@ -55,7 +55,7 @@ class GAudioPanelAppState extends State<GAudioPanelApp> {
             visualDensity: VisualDensity.adaptivePlatformDensity,
             fontFamily: 'Samim'),
         home: widget.initialWidget,
-        builder: (BuildContext context, Widget child) {
+        builder: (BuildContext context, Widget? child) {
           return Directionality(
             textDirection: TextDirection.rtl,
             child: Builder(
@@ -64,7 +64,7 @@ class GAudioPanelAppState extends State<GAudioPanelApp> {
                   data: MediaQuery.of(context).copyWith(
                     textScaler: const TextScaler.linear(1.0),
                   ),
-                  child: child,
+                  child: child!,
                 );
               },
             ),
