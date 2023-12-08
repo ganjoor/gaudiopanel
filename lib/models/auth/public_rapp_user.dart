@@ -2,7 +2,7 @@ class PublicRAppUser {
   final String id;
   final String username;
   final String email;
-  final String phoneNumber;
+  final String? phoneNumber;
   final String firstName;
   final String sureName;
   final int status;
