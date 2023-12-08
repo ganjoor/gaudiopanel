@@ -41,7 +41,10 @@ class _NotificationsState extends State<NotificationsDataSection> {
               subtitle: Html(
                 data: widget.notifications.items![index].htmlText,
                 onLinkTap: (url, map, element) async {
-                  if (await canLaunchUrl(Uri.parse(url!))) {
+                  if (url!.startsWith('/')) {
+                    url = 'https://ganjoor.net$url';
+                  }
+                  if (await canLaunchUrl(Uri.parse(url))) {
                     await launchUrl(Uri.parse(url));
                     if (widget.notifications.items![index].status ==
                         NotificationStatus.unread) {
