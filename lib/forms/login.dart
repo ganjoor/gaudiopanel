@@ -88,7 +88,7 @@ class LoginFormState extends State<LoginForm> {
                                 }
                                 return null;
                               },
-                              onFieldSubmitted: (value) => _login(),
+                              onFieldSubmitted: (_) => _login(),
                               decoration: const InputDecoration(
                                   icon: Icon(Icons.mail),
                                   hintText: 'پست الکترونیکی',
@@ -105,7 +105,7 @@ class LoginFormState extends State<LoginForm> {
                                 }
                                 return null;
                               },
-                              onFieldSubmitted: (value) => _login(),
+                              onFieldSubmitted: (_) => _login(),
                               decoration: const InputDecoration(
                                   icon: Icon(Icons.lock),
                                   hintText: 'گذرواژه',
