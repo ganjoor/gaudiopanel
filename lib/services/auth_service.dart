@@ -32,7 +32,7 @@ class AuthService {
       );
 
       if (response.statusCode == 200) {
-        LoggedOnUserModel loginResponse =
+        LoggedOnUserModel? loginResponse =
             LoggedOnUserModel.fromJson(json.decode(response.body));
         await _storageService.setUserInfo(loginResponse);
       } else {
@@ -87,7 +87,7 @@ class AuthService {
       );
 
       if (response.statusCode == 200) {
-        LoggedOnUserModel loginResponse =
+        LoggedOnUserModel? loginResponse =
             LoggedOnUserModel.fromJson(json.decode(response.body));
         await _storageService.setUserInfo(loginResponse);
       } else {

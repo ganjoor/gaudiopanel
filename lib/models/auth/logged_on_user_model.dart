@@ -13,14 +13,16 @@ class LoggedOnUserModel {
       required this.user,
       required this.securableItem});
 
-  factory LoggedOnUserModel.fromJson(Map<String, dynamic> json) {
-    return LoggedOnUserModel(
-        sessionId: json['sessionId'],
-        token: json['token'],
-        user: PublicRAppUser.fromJson(json['user']),
-        securableItem: (json['securableItem'] as List)
-            .map((i) => SecurableItem.fromJson(i))
-            .toList());
+  static LoggedOnUserModel? fromJson(Map<String, dynamic>? json) {
+    return json == null
+        ? null
+        : LoggedOnUserModel(
+            sessionId: json['sessionId'],
+            token: json['token'],
+            user: PublicRAppUser.fromJson(json['user']),
+            securableItem: (json['securableItem'] as List)
+                .map((i) => SecurableItem.fromJson(i))
+                .toList());
   }
 
   toJson() {
