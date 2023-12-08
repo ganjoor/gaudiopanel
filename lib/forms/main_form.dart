@@ -456,6 +456,7 @@ class MainFormWidgetState extends State<MainForm>
       return;
     }
     var replace = await _getNewRecitationParams(profileResult.item1!);
+    if (replace == null) return;
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       allowMultiple: true,
       type: FileType.custom,
@@ -467,7 +468,7 @@ class MainFormWidgetState extends State<MainForm>
       });
 
       String err = await UploadRecitationService()
-          .uploadFiles(result.files, replace!, false);
+          .uploadFiles(result.files, replace, false);
 
       if (err.isNotEmpty) {
         _key.currentState!.showSnackBar(SnackBar(
