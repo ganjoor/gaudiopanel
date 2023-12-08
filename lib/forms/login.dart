@@ -155,8 +155,8 @@ class LoginFormState extends State<LoginForm> {
                                   onPressed: () async {
                                     var url =
                                         'https://museum.ganjoor.net/forgot-password';
-                                    if (await canLaunch(url)) {
-                                      await launch(url);
+                                    if (await canLaunchUrl(Uri.parse(url))) {
+                                      await launchUrl(Uri.parse(url));
                                     } else {
                                       throw 'خطا در نمایش نشانی $url';
                                     }

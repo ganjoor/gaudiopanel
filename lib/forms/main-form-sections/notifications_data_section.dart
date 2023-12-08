@@ -42,8 +42,8 @@ class _NotificationsState extends State<NotificationsDataSection> {
               subtitle: Html(
                 data: widget.notifications.items![index].htmlText,
                 onLinkTap: (url, context, map, element) async {
-                  if (await canLaunch(url!)) {
-                    await launch(url);
+                  if (await canLaunchUrl(Uri.parse(url!))) {
+                    await launchUrl(Uri.parse(url));
                     if (widget.notifications.items![index].status ==
                         NotificationStatus.unread) {
                       widget.loadingStateChanged(true);

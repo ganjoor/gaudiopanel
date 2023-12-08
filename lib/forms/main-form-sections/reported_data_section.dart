@@ -118,8 +118,8 @@ class _ProfilesState extends State<ReportedDataSection> {
                 onPressed: () async {
                   var url =
                       'http://ava.ganjoor.net/#/${widget.reportedRecitations.items![index].recitationId}';
-                  if (await canLaunch(url)) {
-                    await launch(url);
+                  if (await canLaunchUrl(Uri.parse(url))) {
+                    await launchUrl(Uri.parse(url));
                   } else {
                     throw 'خطا در نمایش نشانی $url';
                   }

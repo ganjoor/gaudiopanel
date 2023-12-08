@@ -1378,8 +1378,8 @@ class MainFormWidgetState extends State<MainForm>
                           color: Theme.of(context).primaryColor),
                       onTap: () async {
                         var url = 'https://museum.ganjoor.net/profile';
-                        if (await canLaunch(url)) {
-                          await launch(url);
+                        if (await canLaunchUrl(Uri.parse(url))) {
+                          await launchUrl(Uri.parse(url));
                         } else {
                           throw 'خطا در نمایش نشانی $url';
                         }

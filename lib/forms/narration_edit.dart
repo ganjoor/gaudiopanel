@@ -103,8 +103,8 @@ class _NarrationEditState extends State<NarrationEdit>
                           onPressed: () async {
                             var url =
                                 'https://ganjoor.net${widget.narration.poemFullUrl}';
-                            if (await canLaunch(url)) {
-                              await launch(url);
+                            if (await canLaunchUrl(Uri.parse(url))) {
+                              await launchUrl(Uri.parse(url));
                             } else {
                               throw 'خطا در نمایش نشانی $url';
                             }
@@ -133,8 +133,8 @@ class _NarrationEditState extends State<NarrationEdit>
                               icon: const Icon(Icons.open_in_browser),
                               onPressed: () async {
                                 var url = _artistUrlController.text;
-                                if (await canLaunch(url)) {
-                                  await launch(url);
+                                if (await canLaunchUrl(Uri.parse(url))) {
+                                  await launchUrl(Uri.parse(url));
                                 } else {
                                   throw 'خطا در نمایش نشانی $url';
                                 }
@@ -163,8 +163,8 @@ class _NarrationEditState extends State<NarrationEdit>
                               icon: const Icon(Icons.open_in_browser),
                               onPressed: () async {
                                 var url = _audioSrcUrlController.text;
-                                if (await canLaunch(url)) {
-                                  await launch(url);
+                                if (await canLaunchUrl(Uri.parse(url))) {
+                                  await launchUrl(Uri.parse(url));
                                 } else {
                                   throw 'خطا در نمایش نشانی $url';
                                 }
