@@ -10,12 +10,11 @@ import 'package:just_audio/just_audio.dart';
 
 class RecitationsDataSection extends StatefulWidget {
   const RecitationsDataSection(
-      {Key? key,
+      {super.key,
       required this.narrations,
       required this.loadingStateChanged,
       required this.snackbarNeeded,
-      required this.status})
-      : super(key: key);
+      required this.status});
 
   final PaginatedItemsResponseModel<RecitationViewModel> narrations;
   final LoadingStateChanged loadingStateChanged;

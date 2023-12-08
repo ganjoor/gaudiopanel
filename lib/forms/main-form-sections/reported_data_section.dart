@@ -12,11 +12,10 @@ class ReportedDataSection extends StatefulWidget {
   final SnackbarNeeded snackbarNeeded;
 
   const ReportedDataSection(
-      {Key? key,
+      {super.key,
       required this.reportedRecitations,
       required this.loadingStateChanged,
-      required this.snackbarNeeded})
-      : super(key: key);
+      required this.snackbarNeeded});
 
   @override
   State<StatefulWidget> createState() => _ProfilesState();

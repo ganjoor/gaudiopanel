@@ -13,12 +13,11 @@ class NotificationsDataSection extends StatefulWidget {
   final UpdateUnreadNotificationsCount updateUnreadNotificationsCount;
 
   const NotificationsDataSection(
-      {Key? key,
+      {super.key,
       required this.notifications,
       required this.loadingStateChanged,
       required this.snackbarNeeded,
-      required this.updateUnreadNotificationsCount})
-      : super(key: key);
+      required this.updateUnreadNotificationsCount});
 
   @override
   State<StatefulWidget> createState() => _NotificationsState();

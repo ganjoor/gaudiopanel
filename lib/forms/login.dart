@@ -6,7 +6,7 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LoginForm extends StatefulWidget {
-  const LoginForm({Key? key}) : super(key: key);
+  const LoginForm({super.key});
 
   @override
   LoginFormState createState() => LoginFormState();

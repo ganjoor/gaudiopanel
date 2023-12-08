@@ -4,7 +4,7 @@ import 'package:gaudiopanel/models/recitation/user_recitation_profile_viewmodel.
 class ProfileEdit extends StatefulWidget {
   final UserRecitationProfileViewModel profile;
 
-  const ProfileEdit({Key? key, required this.profile}) : super(key: key);
+  const ProfileEdit({super.key, required this.profile});
 
   @override
   State<StatefulWidget> createState() => _ProfileEditState();

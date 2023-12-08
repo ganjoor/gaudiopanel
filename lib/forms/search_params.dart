@@ -4,7 +4,7 @@ import 'package:tuple/tuple.dart';
 class SearchParams extends StatefulWidget {
   final Tuple2<int, String> sparams;
 
-  const SearchParams({Key? key, required this.sparams}) : super(key: key);
+  const SearchParams({super.key, required this.sparams});
   @override
   State<StatefulWidget> createState() => _SearchParamsState();
 }

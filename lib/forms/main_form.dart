@@ -43,7 +43,7 @@ enum GActiveFormSection {
 }
 
 class MainForm extends StatefulWidget {
-  const MainForm({Key? key}) : super(key: key);
+  const MainForm({super.key});
 
   @override
   MainFormWidgetState createState() => MainFormWidgetState();

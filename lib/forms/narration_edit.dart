@@ -14,11 +14,10 @@ class NarrationEdit extends StatefulWidget {
   final SnackbarNeeded snackbarNeeded;
 
   const NarrationEdit(
-      {Key? key,
+      {super.key,
       required this.narration,
       required this.loadingStateChanged,
-      required this.snackbarNeeded})
-      : super(key: key);
+      required this.snackbarNeeded});
 
   @override
   State<StatefulWidget> createState() => _NarrationEditState();

@@ -11,11 +11,10 @@ class ProfilesDataSection extends StatefulWidget {
   final SnackbarNeeded snackbarNeeded;
 
   const ProfilesDataSection(
-      {Key? key,
+      {super.key,
       required this.profiles,
       required this.loadingStateChanged,
-      required this.snackbarNeeded})
-      : super(key: key);
+      required this.snackbarNeeded});
 
   @override
   State<StatefulWidget> createState() => _ProfilesState();

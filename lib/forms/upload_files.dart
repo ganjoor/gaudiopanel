@@ -4,7 +4,7 @@ import 'package:gaudiopanel/models/recitation/user_recitation_profile_viewmodel.
 class UploadFiles extends StatefulWidget {
   final UserRecitationProfileViewModel profile;
 
-  const UploadFiles({Key? key, required this.profile}) : super(key: key);
+  const UploadFiles({super.key, required this.profile});
   @override
   State<StatefulWidget> createState() => _UploadFilesState();
 }

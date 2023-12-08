@@ -5,7 +5,7 @@ import 'package:gaudiopanel/models/recitation/recitation_publishing_tracker_view
 class PublishQueueSection extends StatefulWidget {
   final PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel> queue;
 
-  const PublishQueueSection({Key? key, required this.queue}) : super(key: key);
+  const PublishQueueSection({super.key, required this.queue});
 
   @override
   State<StatefulWidget> createState() => _PublishQueueSectionState();

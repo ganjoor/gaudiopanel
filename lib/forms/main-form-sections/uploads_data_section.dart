@@ -5,7 +5,7 @@ import 'package:gaudiopanel/models/recitation/uploaded_item_viewmodel.dart';
 class UploadsDataSection extends StatefulWidget {
   final PaginatedItemsResponseModel<UploadedItemViewModel> uploads;
 
-  const UploadsDataSection({Key? key, required this.uploads}) : super(key: key);
+  const UploadsDataSection({super.key, required this.uploads});
 
   @override
   State<StatefulWidget> createState() => _UploadsState();

@@ -14,7 +14,7 @@ Future<void> main() async {
 class GAudioPanelApp extends StatefulWidget {
   final Widget? initialWidget;
 
-  const GAudioPanelApp({Key? key, this.initialWidget}) : super(key: key);
+  const GAudioPanelApp({super.key, this.initialWidget});
 
   @override
   State<StatefulWidget> createState() => GAudioPanelAppState();

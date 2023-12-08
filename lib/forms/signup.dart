@@ -7,7 +7,7 @@ import 'package:gaudiopanel/services/gservice_address.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 
 class SignUpForm extends StatefulWidget {
-  const SignUpForm({Key? key}) : super(key: key);
+  const SignUpForm({super.key});
 
   @override
   SignUpFormState createState() => SignUpFormState();
