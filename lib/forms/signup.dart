@@ -55,7 +55,7 @@ class SignUpFormState extends State<SignUpForm>
     setState(() {
       _signupError = '';
     });
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState != null && _formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
@@ -84,7 +84,7 @@ class SignUpFormState extends State<SignUpForm>
     setState(() {
       _signupError = '';
     });
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState != null && _formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
@@ -112,7 +112,7 @@ class SignUpFormState extends State<SignUpForm>
     setState(() {
       _signupError = '';
     });
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState != null && _formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
@@ -156,7 +156,7 @@ class SignUpFormState extends State<SignUpForm>
     setState(() {
       _signupError = '';
     });
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState != null && _formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });

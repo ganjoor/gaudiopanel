@@ -32,7 +32,7 @@ class LoginFormState extends State<LoginForm> {
     setState(() {
       _loginError = '';
     });
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState != null && _formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
