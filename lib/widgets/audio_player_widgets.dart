@@ -14,7 +14,7 @@ class ControlButtons extends StatelessWidget {
 
   const ControlButtons(this.player, this.narration, this.loadingStateChanged,
       this.snackbarNeeded,
-      {Key key})
+      {Key? key})
       : super(key: key);
 
   @override
@@ -56,16 +56,6 @@ class ControlButtons extends StatelessWidget {
                 iconSize: 64.0,
                 onPressed: () async {
                   var service = RecitationService();
-                  if (narration.verses == null) {
-                    loadingStateChanged(true);
-                    var res = await service.getVerses(narration.id);
-                    loadingStateChanged(false);
-                    if (res.item2.isNotEmpty) {
-                      snackbarNeeded(res.item2);
-                    } else {
-                      narration.verses = res.item1;
-                    }
-                  }
                   await player.setUrl(service.getAudioFileUrl(narration.id));
                   await player.play();
                 },
@@ -111,13 +101,13 @@ class ControlButtons extends StatelessWidget {
 class SeekBar extends StatefulWidget {
   final Duration duration;
   final Duration position;
-  final ValueChanged<Duration> onChanged;
-  final ValueChanged<Duration> onChangeEnd;
+  final ValueChanged<Duration>? onChanged;
+  final ValueChanged<Duration>? onChangeEnd;
 
   const SeekBar({
-    Key key,
-    @required this.duration,
-    @required this.position,
+    Key? key,
+    required this.duration,
+    required this.position,
     this.onChanged,
     this.onChangeEnd,
   }) : super(key: key);
@@ -127,7 +117,7 @@ class SeekBar extends StatefulWidget {
 }
 
 class _SeekBarState extends State<SeekBar> {
-  double _dragValue;
+  double? _dragValue;
 
   @override
   Widget build(BuildContext context) {
@@ -142,14 +132,10 @@ class _SeekBarState extends State<SeekBar> {
             setState(() {
               _dragValue = value;
             });
-            if (widget.onChanged != null) {
-              widget.onChanged(Duration(milliseconds: value.round()));
-            }
+            widget.onChanged!(Duration(milliseconds: value.round()));
           },
           onChangeEnd: (value) {
-            if (widget.onChangeEnd != null) {
-              widget.onChangeEnd(Duration(milliseconds: value.round()));
-            }
+            widget.onChangeEnd!(Duration(milliseconds: value.round()));
             _dragValue = null;
           },
         ),
@@ -161,7 +147,7 @@ class _SeekBarState extends State<SeekBar> {
                       .firstMatch('$_remaining')
                       ?.group(1) ??
                   '$_remaining',
-              style: Theme.of(context).textTheme.caption),
+              style: Theme.of(context).textTheme.bodySmall),
         ),
       ],
     );
@@ -171,14 +157,14 @@ class _SeekBarState extends State<SeekBar> {
 }
 
 _showSliderDialog({
-  BuildContext context,
-  String title,
-  int divisions,
-  double min,
-  double max,
+  required BuildContext context,
+  required String title,
+  required int divisions,
+  required double min,
+  required double max,
   String valueSuffix = '',
-  Stream<double> stream,
-  ValueChanged<double> onChanged,
+  required Stream<double>? stream,
+  required ValueChanged<double>? onChanged,
 }) {
   showDialog(
     context: context,

@@ -3,12 +3,12 @@ class SecurableItemOperation {
   final String description;
   final bool status;
 
-  SecurableItemOperation({this.shortName, this.description, this.status});
+  SecurableItemOperation(
+      {required this.shortName,
+      required this.description,
+      required this.status});
 
   factory SecurableItemOperation.fromJson(Map<String, dynamic> json) {
-    if (json == null) {
-      return null;
-    }
     return SecurableItemOperation(
         shortName: json['shortName'],
         description: json['description'],

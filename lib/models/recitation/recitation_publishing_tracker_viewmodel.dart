@@ -10,31 +10,28 @@ class RecitationPublishingTrackerViewModel {
   final bool secondDbUpdated;
   final bool succeeded;
   final bool error;
-  final String lastException;
+  final String? lastException;
   final String startDate;
   final String finishDate;
 
   RecitationPublishingTrackerViewModel(
-      {this.userEmail,
-      this.poemFullTitle,
-      this.artistName,
-      this.operation,
-      this.inProgress,
-      this.xmlFileCopied,
-      this.mp3FileCopied,
-      this.firstDbUpdated,
-      this.secondDbUpdated,
-      this.succeeded,
-      this.error,
-      this.lastException,
-      this.startDate,
-      this.finishDate});
+      {required this.userEmail,
+      required this.poemFullTitle,
+      required this.artistName,
+      required this.operation,
+      required this.inProgress,
+      required this.xmlFileCopied,
+      required this.mp3FileCopied,
+      required this.firstDbUpdated,
+      required this.secondDbUpdated,
+      required this.succeeded,
+      required this.error,
+      required this.lastException,
+      required this.startDate,
+      required this.finishDate});
 
   factory RecitationPublishingTrackerViewModel.fromJson(
       Map<String, dynamic> json) {
-    if (json == null) {
-      return null;
-    }
     return RecitationPublishingTrackerViewModel(
         userEmail: json['userEmail'],
         poemFullTitle: json['poemFullTitle'],

@@ -31,18 +31,14 @@ class RecitationService {
       bool mistakes,
       bool error401) async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
-      if (userInfo == null) {
-        return PaginatedItemsResponseModel<RecitationViewModel>(
-            error: 'کاربر وارد سیستم نشده است.');
-      }
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
       var apiRoot = GServiceAddress.url;
       http.Response response = await http.get(
           Uri.parse(
               '$apiRoot/api/audio?PageNumber=$pageNumber&PageSize=$pageSize&allUsers=$allUsers&status=$status&mistakes=$mistakes&searchTerm=$searchTerm'),
           headers: {
             'Content-Type': 'application/json; charset=UTF-8',
-            HttpHeaders.authorizationHeader: 'bearer ${userInfo.token}'
+            HttpHeaders.authorizationHeader: 'bearer ${userInfo!.token}'
           });
 
       if (!error401 && response.statusCode == 401) {
@@ -64,10 +60,10 @@ class RecitationService {
         return PaginatedItemsResponseModel<RecitationViewModel>(
             items: ret,
             paginationMetadata: PaginationMetadata.fromJson(
-                json.decode(response.headers['paging-headers'])),
+                json.decode(response.headers['paging-headers']!)),
             error: '',
             audioUploadEnabled:
-                json.decode(response.headers['audio-upload-enabled']));
+                json.decode(response.headers['audio-upload-enabled']!));
       } else {
         return PaginatedItemsResponseModel<RecitationViewModel>(
             error: 'کد برگشتی: ${response.statusCode} ${response.body}');
@@ -82,28 +78,24 @@ class RecitationService {
   /// updates an existing narration
   ///
   ///
-  Future<Tuple2<RecitationViewModel, String>> updateRecitation(
+  Future<Tuple2<RecitationViewModel?, String>> updateRecitation(
       RecitationViewModel narration, bool error401) async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
-      if (userInfo == null) {
-        return const Tuple2<RecitationViewModel, String>(
-            null, 'کاربر وارد سیستم نشده است.');
-      }
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
       var apiRoot = GServiceAddress.url;
       int id = narration.id;
       http.Response response =
           await http.put(Uri.parse('$apiRoot/api/audio/$id'),
               headers: {
                 'Content-Type': 'application/json; charset=UTF-8',
-                HttpHeaders.authorizationHeader: 'bearer ${userInfo.token}'
+                HttpHeaders.authorizationHeader: 'bearer ${userInfo!.token}'
               },
               body: jsonEncode(narration.toJson()));
 
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
         if (errSessionRenewal.isNotEmpty) {
-          return Tuple2<RecitationViewModel, String>(null, errSessionRenewal);
+          return Tuple2<RecitationViewModel?, String>(null, errSessionRenewal);
         }
         return await updateRecitation(narration, true);
       }
@@ -114,11 +106,11 @@ class RecitationService {
 
         return Tuple2<RecitationViewModel, String>(ret, '');
       } else {
-        return Tuple2<RecitationViewModel, String>(
+        return Tuple2<RecitationViewModel?, String>(
             null, 'کد برگشتی: ${response.statusCode} ${response.body}');
       }
     } catch (e) {
-      return Tuple2<RecitationViewModel, String>(null,
+      return Tuple2<RecitationViewModel?, String>(null,
           'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: $e');
     }
   }
@@ -126,14 +118,10 @@ class RecitationService {
   ///moderate narration
   ///
   ///
-  Future<Tuple2<RecitationViewModel, String>> moderateRecitation(int id,
+  Future<Tuple2<RecitationViewModel?, String>> moderateRecitation(int id,
       RecitationModerationResult res, String message, bool error401) async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
-      if (userInfo == null) {
-        return const Tuple2<RecitationViewModel, String>(
-            null, 'کاربر وارد سیستم نشده است.');
-      }
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
 
       int mres = res == RecitationModerationResult.metadataNeedsFixation
           ? 0
@@ -147,14 +135,14 @@ class RecitationService {
           await http.put(Uri.parse('$apiRoot/api/audio/moderate/$id'),
               headers: {
                 'Content-Type': 'application/json; charset=UTF-8',
-                HttpHeaders.authorizationHeader: 'bearer ${userInfo.token}'
+                HttpHeaders.authorizationHeader: 'bearer ${userInfo!.token}'
               },
               body: jsonEncode(model.toJson()));
 
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
         if (errSessionRenewal.isNotEmpty) {
-          return Tuple2<RecitationViewModel, String>(null, errSessionRenewal);
+          return Tuple2<RecitationViewModel?, String>(null, errSessionRenewal);
         }
         return await moderateRecitation(id, res, message, true);
       }
@@ -165,11 +153,11 @@ class RecitationService {
 
         return Tuple2<RecitationViewModel, String>(ret, '');
       } else {
-        return Tuple2<RecitationViewModel, String>(
+        return Tuple2<RecitationViewModel?, String>(
             null, 'کد برگشتی: ${response.statusCode} ${response.body}');
       }
     } catch (e) {
-      return Tuple2<RecitationViewModel, String>(null,
+      return Tuple2<RecitationViewModel?, String>(null,
           'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: $e');
     }
   }
@@ -179,16 +167,13 @@ class RecitationService {
   ///
   Future<Tuple2<bool, String>> deleteRecitation(int id, bool error401) async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
-      if (userInfo == null) {
-        return const Tuple2<bool, String>(false, 'کاربر وارد سیستم نشده است.');
-      }
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
       var apiRoot = GServiceAddress.url;
       http.Response response = await http.delete(
         Uri.parse('$apiRoot/api/audio/$id'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
-          HttpHeaders.authorizationHeader: 'bearer ${userInfo.token}'
+          HttpHeaders.authorizationHeader: 'bearer ${userInfo!.token}'
         },
       );
 
@@ -216,26 +201,22 @@ class RecitationService {
   ///
   ///returns a Tuple2, if any error occurs Items1 is null and Item2 contains the error message
   ///Items1 is the actual response if the call is successful
-  Future<Tuple2<List<UserRecitationProfileViewModel>, String>> getProfiles(
+  Future<Tuple2<List<UserRecitationProfileViewModel>?, String>> getProfiles(
       String artistName, bool error401) async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
-      if (userInfo == null) {
-        return const Tuple2<List<UserRecitationProfileViewModel>, String>(
-            null, 'کاربر وارد سیستم نشده است.');
-      }
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
       var apiRoot = GServiceAddress.url;
       http.Response response = await http.get(
           Uri.parse('$apiRoot/api/audio/profile?artistName=$artistName'),
           headers: {
             'Content-Type': 'application/json; charset=UTF-8',
-            HttpHeaders.authorizationHeader: 'bearer ${userInfo.token}'
+            HttpHeaders.authorizationHeader: 'bearer ${userInfo!.token}'
           });
 
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
         if (errSessionRenewal.isNotEmpty) {
-          return Tuple2<List<UserRecitationProfileViewModel>, String>(
+          return Tuple2<List<UserRecitationProfileViewModel>?, String>(
               null, errSessionRenewal);
         }
         return await getProfiles(artistName, true);
@@ -249,11 +230,11 @@ class RecitationService {
         }
         return Tuple2<List<UserRecitationProfileViewModel>, String>(ret, '');
       } else {
-        return Tuple2<List<UserRecitationProfileViewModel>, String>(
+        return Tuple2<List<UserRecitationProfileViewModel>?, String>(
             null, 'کد برگشتی: ${response.statusCode} ${response.body}');
       }
     } catch (e) {
-      return Tuple2<List<UserRecitationProfileViewModel>, String>(null,
+      return Tuple2<List<UserRecitationProfileViewModel>?, String>(null,
           'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: $e');
     }
   }
@@ -262,25 +243,21 @@ class RecitationService {
   ///
   ///returns a Tuple2, if any error occurs Items1 is null and Item2 contains the error message
   ///Items1 is the actual response if the call is successful
-  Future<Tuple2<UserRecitationProfileViewModel, String>> getDefProfile(
+  Future<Tuple2<UserRecitationProfileViewModel?, String>> getDefProfile(
       bool error401) async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
-      if (userInfo == null) {
-        return const Tuple2<UserRecitationProfileViewModel, String>(
-            null, 'کاربر وارد سیستم نشده است.');
-      }
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
       var apiRoot = GServiceAddress.url;
       http.Response response =
           await http.get(Uri.parse('$apiRoot/api/audio/profile/def'), headers: {
         'Content-Type': 'application/json; charset=UTF-8',
-        HttpHeaders.authorizationHeader: 'bearer ${userInfo.token}'
+        HttpHeaders.authorizationHeader: 'bearer ${userInfo!.token}'
       });
 
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
         if (errSessionRenewal.isNotEmpty) {
-          return Tuple2<UserRecitationProfileViewModel, String>(
+          return Tuple2<UserRecitationProfileViewModel?, String>(
               null, errSessionRenewal);
         }
         return await getDefProfile(true);
@@ -290,11 +267,11 @@ class RecitationService {
             UserRecitationProfileViewModel.fromJson(json.decode(response.body)),
             '');
       } else {
-        return Tuple2<UserRecitationProfileViewModel, String>(
+        return Tuple2<UserRecitationProfileViewModel?, String>(
             null, 'کد برگشتی: ${response.statusCode} ${response.body}');
       }
     } catch (e) {
-      return Tuple2<UserRecitationProfileViewModel, String>(null,
+      return Tuple2<UserRecitationProfileViewModel?, String>(null,
           'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: $e');
     }
   }
@@ -302,27 +279,23 @@ class RecitationService {
   /// adds a new profile
   ///
   ///
-  Future<Tuple2<UserRecitationProfileViewModel, String>> addProfile(
+  Future<Tuple2<UserRecitationProfileViewModel?, String>> addProfile(
       UserRecitationProfileViewModel profile, bool error401) async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
-      if (userInfo == null) {
-        return const Tuple2<UserRecitationProfileViewModel, String>(
-            null, 'کاربر وارد سیستم نشده است.');
-      }
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
       var apiRoot = GServiceAddress.url;
       http.Response response =
           await http.post(Uri.parse('$apiRoot/api/audio/profile'),
               headers: {
                 'Content-Type': 'application/json; charset=UTF-8',
-                HttpHeaders.authorizationHeader: 'bearer ${userInfo.token}'
+                HttpHeaders.authorizationHeader: 'bearer ${userInfo!.token}'
               },
               body: jsonEncode(profile.toJson()));
 
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
         if (errSessionRenewal.isNotEmpty) {
-          return Tuple2<UserRecitationProfileViewModel, String>(
+          return Tuple2<UserRecitationProfileViewModel?, String>(
               null, errSessionRenewal);
         }
         return await addProfile(profile, true);
@@ -334,11 +307,11 @@ class RecitationService {
 
         return Tuple2<UserRecitationProfileViewModel, String>(ret, '');
       } else {
-        return Tuple2<UserRecitationProfileViewModel, String>(
+        return Tuple2<UserRecitationProfileViewModel?, String>(
             null, 'کد برگشتی: ${response.statusCode} ${response.body}');
       }
     } catch (e) {
-      return Tuple2<UserRecitationProfileViewModel, String>(null,
+      return Tuple2<UserRecitationProfileViewModel?, String>(null,
           'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: $e');
     }
   }
@@ -346,27 +319,23 @@ class RecitationService {
   /// updates an existing profile
   ///
   ///
-  Future<Tuple2<UserRecitationProfileViewModel, String>> updateProfile(
+  Future<Tuple2<UserRecitationProfileViewModel?, String>> updateProfile(
       UserRecitationProfileViewModel profile, bool error401) async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
-      if (userInfo == null) {
-        return const Tuple2<UserRecitationProfileViewModel, String>(
-            null, 'کاربر وارد سیستم نشده است.');
-      }
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
       var apiRoot = GServiceAddress.url;
       http.Response response =
           await http.put(Uri.parse('$apiRoot/api/audio/profile'),
               headers: {
                 'Content-Type': 'application/json; charset=UTF-8',
-                HttpHeaders.authorizationHeader: 'bearer ${userInfo.token}'
+                HttpHeaders.authorizationHeader: 'bearer ${userInfo!.token}'
               },
               body: jsonEncode(profile.toJson()));
 
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
         if (errSessionRenewal.isNotEmpty) {
-          return Tuple2<UserRecitationProfileViewModel, String>(
+          return Tuple2<UserRecitationProfileViewModel?, String>(
               null, errSessionRenewal);
         }
         return await updateProfile(profile, true);
@@ -378,11 +347,11 @@ class RecitationService {
 
         return Tuple2<UserRecitationProfileViewModel, String>(ret, '');
       } else {
-        return Tuple2<UserRecitationProfileViewModel, String>(
+        return Tuple2<UserRecitationProfileViewModel?, String>(
             null, 'کد برگشتی: ${response.statusCode} ${response.body}');
       }
     } catch (e) {
-      return Tuple2<UserRecitationProfileViewModel, String>(null,
+      return Tuple2<UserRecitationProfileViewModel?, String>(null,
           'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: $e');
     }
   }
@@ -392,16 +361,13 @@ class RecitationService {
   ///
   Future<Tuple2<bool, String>> deleteProfile(String id, bool error401) async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
-      if (userInfo == null) {
-        return const Tuple2<bool, String>(false, 'کاربر وارد سیستم نشده است.');
-      }
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
       var apiRoot = GServiceAddress.url;
       http.Response response = await http.delete(
         Uri.parse('$apiRoot/api/audio/profile/$id'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
-          HttpHeaders.authorizationHeader: 'bearer ${userInfo.token}'
+          HttpHeaders.authorizationHeader: 'bearer ${userInfo!.token}'
         },
       );
 
@@ -431,18 +397,14 @@ class RecitationService {
   Future<PaginatedItemsResponseModel<UploadedItemViewModel>> getUploads(
       int pageNumber, int pageSize, bool error401) async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
-      if (userInfo == null) {
-        return PaginatedItemsResponseModel<UploadedItemViewModel>(
-            error: 'کاربر وارد سیستم نشده است.');
-      }
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
       var apiRoot = GServiceAddress.url;
       http.Response response = await http.get(
           Uri.parse(
               '$apiRoot/api/audio/uploads?PageNumber=$pageNumber&PageSize=$pageSize'),
           headers: {
             'Content-Type': 'application/json; charset=UTF-8',
-            HttpHeaders.authorizationHeader: 'bearer ${userInfo.token}'
+            HttpHeaders.authorizationHeader: 'bearer ${userInfo!.token}'
           });
 
       if (!error401 && response.statusCode == 401) {
@@ -463,10 +425,10 @@ class RecitationService {
         return PaginatedItemsResponseModel<UploadedItemViewModel>(
             items: ret,
             paginationMetadata: PaginationMetadata.fromJson(
-                json.decode(response.headers['paging-headers'])),
+                json.decode(response.headers['paging-headers']!)),
             error: '',
             audioUploadEnabled:
-                json.decode(response.headers['audio-upload-enabled']));
+                json.decode(response.headers['audio-upload-enabled']!));
       } else {
         return PaginatedItemsResponseModel<UploadedItemViewModel>(
             error: 'کد برگشتی: ${response.statusCode} ${response.body}');
@@ -478,7 +440,7 @@ class RecitationService {
     }
   }
 
-  Future<Tuple2<List<RecitationVerseSync>, String>> getVerses(int id) async {
+  Future<Tuple2<List<RecitationVerseSync>?, String>> getVerses(int id) async {
     try {
       var apiRoot = GServiceAddress.url;
       http.Response response =
@@ -494,11 +456,11 @@ class RecitationService {
         }
         return Tuple2<List<RecitationVerseSync>, String>(ret, '');
       } else {
-        return Tuple2<List<RecitationVerseSync>, String>(
+        return Tuple2<List<RecitationVerseSync>?, String>(
             null, 'کد برگشتی: ${response.statusCode} ${response.body}');
       }
     } catch (e) {
-      return Tuple2<List<RecitationVerseSync>, String>(null,
+      return Tuple2<List<RecitationVerseSync>?, String>(null,
           'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: $e');
     }
   }
@@ -517,17 +479,14 @@ class RecitationService {
   Future<Tuple2<int, String>> transferRecitationsOwnership(
       String targetEmailAddress, String artistName, bool error401) async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
-      if (userInfo == null) {
-        return const Tuple2<int, String>(0, 'کاربر وارد سیستم نشده است.');
-      }
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
       var apiRoot = GServiceAddress.url;
       http.Response response = await http.put(
         Uri.parse(
             '$apiRoot/api/audio/chown?targetEmailAddress=$targetEmailAddress&artistName=$artistName'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
-          HttpHeaders.authorizationHeader: 'bearer ${userInfo.token}'
+          HttpHeaders.authorizationHeader: 'bearer ${userInfo!.token}'
         },
       );
 
@@ -558,25 +517,21 @@ class RecitationService {
   ///
   ///returns a Tuple2, if any error occurs Items1 is null and Item2 contains the error message
   ///Items1 is the actual response if the call is successful
-  Future<Tuple2<List<RecitationViewModel>, String>> getSynchronizationQueue(
+  Future<Tuple2<List<RecitationViewModel>?, String>> getSynchronizationQueue(
       bool error401) async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
-      if (userInfo == null) {
-        return const Tuple2<List<RecitationViewModel>, String>(
-            null, 'کاربر وارد سیستم نشده است.');
-      }
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
       var apiRoot = GServiceAddress.url;
       http.Response response =
           await http.get(Uri.parse('$apiRoot/api/audio/syncqueue'), headers: {
         'Content-Type': 'application/json; charset=UTF-8',
-        HttpHeaders.authorizationHeader: 'bearer ${userInfo.token}'
+        HttpHeaders.authorizationHeader: 'bearer ${userInfo!.token}'
       });
 
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
         if (errSessionRenewal.isNotEmpty) {
-          return Tuple2<List<RecitationViewModel>, String>(
+          return Tuple2<List<RecitationViewModel>?, String>(
               null, errSessionRenewal);
         }
         return await getSynchronizationQueue(true);
@@ -590,11 +545,11 @@ class RecitationService {
         }
         return Tuple2<List<RecitationViewModel>, String>(ret, '');
       } else {
-        return Tuple2<List<RecitationViewModel>, String>(
+        return Tuple2<List<RecitationViewModel>?, String>(
             null, 'کد برگشتی: ${response.statusCode} ${response.body}');
       }
     } catch (e) {
-      return Tuple2<List<RecitationViewModel>, String>(null,
+      return Tuple2<List<RecitationViewModel>?, String>(null,
           'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: $e');
     }
   }
@@ -605,15 +560,12 @@ class RecitationService {
   ///retrurns empty response if the call is successful
   Future<String> retryPublish(bool error401) async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
-      if (userInfo == null) {
-        return 'کاربر وارد سیستم نشده است.';
-      }
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
       var apiRoot = GServiceAddress.url;
       http.Response response = await http
           .post(Uri.parse('$apiRoot/api/audio/retrypublish'), headers: {
         'Content-Type': 'application/json; charset=UTF-8',
-        HttpHeaders.authorizationHeader: 'bearer ${userInfo.token}'
+        HttpHeaders.authorizationHeader: 'bearer ${userInfo!.token}'
       });
 
       if (!error401 && response.statusCode == 401) {
@@ -638,18 +590,14 @@ class RecitationService {
       getReportedRecitations(
           int pageNumber, int pageSize, bool error401) async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
-      if (userInfo == null) {
-        return PaginatedItemsResponseModel<RecitationErrorReportViewModel>(
-            error: 'کاربر وارد سیستم نشده است.');
-      }
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
       var apiRoot = GServiceAddress.url;
       http.Response response = await http.get(
           Uri.parse(
               '$apiRoot/api/audio/errors/report?PageNumber=$pageNumber&PageSize=$pageSize'),
           headers: {
             'Content-Type': 'application/json; charset=UTF-8',
-            HttpHeaders.authorizationHeader: 'bearer ${userInfo.token}'
+            HttpHeaders.authorizationHeader: 'bearer ${userInfo!.token}'
           });
 
       if (!error401 && response.statusCode == 401) {
@@ -670,7 +618,7 @@ class RecitationService {
         return PaginatedItemsResponseModel<RecitationErrorReportViewModel>(
           items: ret,
           paginationMetadata: PaginationMetadata.fromJson(
-              json.decode(response.headers['paging-headers'])),
+              json.decode(response.headers['paging-headers']!)),
           error: '',
         );
       } else {
@@ -687,17 +635,14 @@ class RecitationService {
   Future<Tuple2<bool, String>> rejectReport(
       int id, String rejectionNote, bool error401) async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
-      if (userInfo == null) {
-        return const Tuple2<bool, String>(false, 'کاربر وارد سیستم نشده است.');
-      }
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
       var apiRoot = GServiceAddress.url;
       http.Response response = await http.delete(
         Uri.parse(
             '$apiRoot/api/audio/errors/report/$id?rejectionNote=$rejectionNote'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
-          HttpHeaders.authorizationHeader: 'bearer ${userInfo.token}'
+          HttpHeaders.authorizationHeader: 'bearer ${userInfo!.token}'
         },
       );
 
@@ -723,16 +668,13 @@ class RecitationService {
 
   Future<Tuple2<bool, String>> approveReport(int id, bool error401) async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
-      if (userInfo == null) {
-        return const Tuple2<bool, String>(false, 'کاربر وارد سیستم نشده است.');
-      }
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
       var apiRoot = GServiceAddress.url;
       http.Response response = await http.delete(
         Uri.parse('$apiRoot/api/audio/errors/report/accept/$id'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
-          HttpHeaders.authorizationHeader: 'bearer ${userInfo.token}'
+          HttpHeaders.authorizationHeader: 'bearer ${userInfo!.token}'
         },
       );
 
@@ -759,17 +701,14 @@ class RecitationService {
   Future<Tuple2<bool, String>> saveRictationMistake(
       RecitationErrorReportViewModel report, bool error401) async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
-      if (userInfo == null) {
-        return const Tuple2<bool, String>(false, 'کاربر وارد سیستم نشده است.');
-      }
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
 
       var apiRoot = GServiceAddress.url;
       http.Response response =
           await http.put(Uri.parse('$apiRoot/api/audio/errors/report/save'),
               headers: {
                 'Content-Type': 'application/json; charset=UTF-8',
-                HttpHeaders.authorizationHeader: 'bearer ${userInfo.token}'
+                HttpHeaders.authorizationHeader: 'bearer ${userInfo!.token}'
               },
               body: jsonEncode(report.toJson()));
 
@@ -796,28 +735,24 @@ class RecitationService {
   /// get publish queue
   ///
   Future<
-      Tuple2<PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>,
+      Tuple2<PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>?,
           String>> getPublishQueue(bool error401) async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
-      if (userInfo == null) {
-        return const Tuple2<
-            PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>,
-            String>(null, 'کاربر وارد سیستم نشده است.');
-      }
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
       var apiRoot = GServiceAddress.url;
       http.Response response = await http.get(
           Uri.parse('$apiRoot/api/audio/publishqueue?unfinished=true'),
           headers: {
             'Content-Type': 'application/json; charset=UTF-8',
-            HttpHeaders.authorizationHeader: 'bearer ${userInfo.token}'
+            HttpHeaders.authorizationHeader: 'bearer ${userInfo!.token}'
           });
 
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
         if (errSessionRenewal.isNotEmpty) {
           return Tuple2<
-              PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>,
+              PaginatedItemsResponseModel<
+                  RecitationPublishingTrackerViewModel>?,
               String>(null, errSessionRenewal);
         }
         return await getPublishQueue(true);
@@ -836,16 +771,16 @@ class RecitationService {
             PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>(
                 items: ret,
                 paginationMetadata: PaginationMetadata.fromJson(
-                    json.decode(response.headers['paging-headers']))),
+                    json.decode(response.headers['paging-headers']!))),
             '');
       } else {
         return Tuple2<
-            PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>,
+            PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>?,
             String>(null, 'کد برگشتی: ${response.statusCode} ${response.body}');
       }
     } catch (e) {
       return Tuple2<
-              PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>,
+              PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel>?,
               String>(null,
           'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: $e');
     }
@@ -856,16 +791,13 @@ class RecitationService {
   ///
   Future<Tuple2<int, String>> makeFFRecitationsFirst(bool error401) async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
-      if (userInfo == null) {
-        return const Tuple2<int, String>(0, 'کاربر وارد سیستم نشده است.');
-      }
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
       var apiRoot = GServiceAddress.url;
       http.Response response = await http.put(
         Uri.parse('$apiRoot/api/audio/ff'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
-          HttpHeaders.authorizationHeader: 'bearer ${userInfo.token}'
+          HttpHeaders.authorizationHeader: 'bearer ${userInfo!.token}'
         },
       );
 

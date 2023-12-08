@@ -1,5 +1,5 @@
 class UserRecitationProfileViewModel {
-  final String id;
+  String? id;
   String name;
   String fileSuffixWithoutDash;
   String artistName;
@@ -11,18 +11,15 @@ class UserRecitationProfileViewModel {
 
   UserRecitationProfileViewModel(
       {this.id,
-      this.name,
-      this.fileSuffixWithoutDash,
-      this.artistName,
-      this.artistUrl,
-      this.audioSrc,
-      this.audioSrcUrl,
-      this.isDefault});
+      required this.name,
+      required this.fileSuffixWithoutDash,
+      required this.artistName,
+      required this.artistUrl,
+      required this.audioSrc,
+      required this.audioSrcUrl,
+      required this.isDefault});
 
   factory UserRecitationProfileViewModel.fromJson(Map<String, dynamic> json) {
-    if (json == null) {
-      return null;
-    }
     return UserRecitationProfileViewModel(
       id: json['id'],
       name: json['name'],

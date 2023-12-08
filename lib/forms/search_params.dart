@@ -4,7 +4,7 @@ import 'package:tuple/tuple.dart';
 class SearchParams extends StatefulWidget {
   final Tuple2<int, String> sparams;
 
-  const SearchParams({Key key, this.sparams}) : super(key: key);
+  const SearchParams({Key? key, required this.sparams}) : super(key: key);
   @override
   State<StatefulWidget> createState() => _SearchParamsState();
 }
@@ -12,7 +12,7 @@ class SearchParams extends StatefulWidget {
 class _SearchParamsState extends State<SearchParams> {
   final TextEditingController _searchController = TextEditingController();
 
-  int _pageSize;
+  int _pageSize = 100;
 
   @override
   void dispose() {
@@ -64,7 +64,7 @@ class _SearchParamsState extends State<SearchParams> {
                     ],
                     onChanged: (value) {
                       setState(() {
-                        _pageSize = value;
+                        _pageSize = int.parse(value.toString());
                       });
                     }),
               ),

@@ -8,12 +8,12 @@ class LoggedOnUserModel {
   final List<SecurableItem> securableItem;
 
   LoggedOnUserModel(
-      {this.sessionId, this.token, this.user, this.securableItem});
+      {required this.sessionId,
+      required this.token,
+      required this.user,
+      required this.securableItem});
 
   factory LoggedOnUserModel.fromJson(Map<String, dynamic> json) {
-    if (json == null) {
-      return null;
-    }
     return LoggedOnUserModel(
         sessionId: json['sessionId'],
         token: json['token'],

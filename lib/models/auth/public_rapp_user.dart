@@ -9,19 +9,16 @@ class PublicRAppUser {
   final String rImageId;
 
   PublicRAppUser(
-      {this.id,
-      this.username,
-      this.email,
-      this.phoneNumber,
-      this.firstName,
-      this.sureName,
-      this.status,
-      this.rImageId});
+      {required this.id,
+      required this.username,
+      required this.email,
+      required this.phoneNumber,
+      required this.firstName,
+      required this.sureName,
+      required this.status,
+      required this.rImageId});
 
   factory PublicRAppUser.fromJson(Map<String, dynamic> json) {
-    if (json == null) {
-      return null;
-    }
     return PublicRAppUser(
       id: json['id'],
       username: json['username'],

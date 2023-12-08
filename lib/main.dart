@@ -12,9 +12,9 @@ Future<void> main() async {
 }
 
 class GAudioPanelApp extends StatefulWidget {
-  final Widget initialWidget;
+  final Widget? initialWidget;
 
-  const GAudioPanelApp({Key key, this.initialWidget}) : super(key: key);
+  const GAudioPanelApp({Key? key, this.initialWidget}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => GAudioPanelAppState();
@@ -62,7 +62,7 @@ class GAudioPanelAppState extends State<GAudioPanelApp> {
               builder: (BuildContext context) {
                 return MediaQuery(
                   data: MediaQuery.of(context).copyWith(
-                    textScaleFactor: 1.0,
+                    textScaler: const TextScaler.linear(1.0),
                   ),
                   child: child,
                 );

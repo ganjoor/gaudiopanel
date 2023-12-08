@@ -54,11 +54,8 @@ class AuthService {
   ///
   Future<bool> hasPermission(
       String securableItemShortName, String operationShortName) async {
-    LoggedOnUserModel userInfo = await _storageService.userInfo;
-    if (userInfo == null) {
-      return false;
-    }
-    var securableItems = userInfo.securableItem
+    LoggedOnUserModel? userInfo = await _storageService.userInfo;
+    var securableItems = userInfo!.securableItem
         .where((element) => element.shortName == securableItemShortName)
         .toList();
     if (securableItems.isNotEmpty) {
@@ -79,8 +76,8 @@ class AuthService {
   /// result is written in local storage
   Future<String> relogin() async {
     try {
-      LoggedOnUserModel oldLoginInfo = await _storageService.userInfo;
-      var sessionId = oldLoginInfo.sessionId;
+      LoggedOnUserModel? oldLoginInfo = await _storageService.userInfo;
+      var sessionId = oldLoginInfo!.sessionId;
       var apiRoot = GServiceAddress.url;
       final http.Response response = await http.put(
         Uri.parse('$apiRoot/api/users/relogin/$sessionId'),
@@ -106,9 +103,9 @@ class AuthService {
   ///
   Future<String> logout() async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
       await _storageService.delUserInfo();
-      var userId = userInfo.user.id;
+      var userId = userInfo!.user.id;
       var sessionId = userInfo.sessionId;
       var apiRoot = GServiceAddress.url;
       final http.Response response = await http.delete(

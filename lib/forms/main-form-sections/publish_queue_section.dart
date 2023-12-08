@@ -5,7 +5,7 @@ import 'package:gaudiopanel/models/recitation/recitation_publishing_tracker_view
 class PublishQueueSection extends StatefulWidget {
   final PaginatedItemsResponseModel<RecitationPublishingTrackerViewModel> queue;
 
-  const PublishQueueSection({Key key, this.queue}) : super(key: key);
+  const PublishQueueSection({Key? key, required this.queue}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _PublishQueueSectionState();
@@ -21,26 +21,26 @@ class _PublishQueueSectionState extends State<PublishQueueSection> {
   }
 
   String _lastException(index) {
-    return widget.queue.items[index].lastException == null
+    return widget.queue.items![index].lastException == null
         ? ''
-        : 'خطا: ${widget.queue.items[index].lastException}';
+        : 'خطا: ${widget.queue.items![index].lastException}';
   }
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-        itemCount: widget.queue.items.length,
+        itemCount: widget.queue.items!.length,
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
-              leading: getStatusIcon(widget.queue.items[index]),
+              leading: getStatusIcon(widget.queue.items![index]),
               title: Directionality(
                   textDirection: TextDirection.ltr,
-                  child: Text(widget.queue.items[index].poemFullTitle)),
+                  child: Text(widget.queue.items![index].poemFullTitle)),
               subtitle: Column(children: [
-                Text(widget.queue.items[index].artistName),
-                Text(widget.queue.items[index].operation),
+                Text(widget.queue.items![index].artistName),
+                Text(widget.queue.items![index].operation),
                 Visibility(
-                  visible: widget.queue.items[index].error,
+                  visible: widget.queue.items![index].error,
                   child: Text(_lastException(index)),
                 )
               ]));

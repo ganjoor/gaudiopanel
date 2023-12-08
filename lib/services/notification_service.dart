@@ -16,25 +16,21 @@ class NotificationService {
   ///
   ///returns a Tuple2, if any error occurs Items1 is null and Item2 contains the error message
   ///Items1 is the actual response if the call is successful
-  Future<Tuple2<List<RUserNotificationViewModel>, String>> getNotifications(
+  Future<Tuple2<List<RUserNotificationViewModel>?, String>> getNotifications(
       bool error401) async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
-      if (userInfo == null) {
-        return const Tuple2<List<RUserNotificationViewModel>, String>(
-            null, 'کاربر وارد سیستم نشده است.');
-      }
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
       var apiRoot = GServiceAddress.url;
       http.Response response =
           await http.get(Uri.parse('$apiRoot/api/notifications'), headers: {
         'Content-Type': 'application/json; charset=UTF-8',
-        HttpHeaders.authorizationHeader: 'bearer ${userInfo.token}'
+        HttpHeaders.authorizationHeader: 'bearer ${userInfo!.token}'
       });
 
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
         if (errSessionRenewal.isNotEmpty) {
-          return Tuple2<List<RUserNotificationViewModel>, String>(
+          return Tuple2<List<RUserNotificationViewModel>?, String>(
               null, errSessionRenewal);
         }
         return await getNotifications(true);
@@ -48,11 +44,11 @@ class NotificationService {
         }
         return Tuple2<List<RUserNotificationViewModel>, String>(ret, '');
       } else {
-        return Tuple2<List<RUserNotificationViewModel>, String>(
+        return Tuple2<List<RUserNotificationViewModel>?, String>(
             null, 'کد برگشتی: ${response.statusCode} ${response.body}');
       }
     } catch (e) {
-      return Tuple2<List<RUserNotificationViewModel>, String>(null,
+      return Tuple2<List<RUserNotificationViewModel>?, String>(null,
           'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: $e');
     }
   }
@@ -62,16 +58,13 @@ class NotificationService {
   /// returns non empty string if fails
   Future<String> switchStatus(String id, bool error401) async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
-      if (userInfo == null) {
-        return 'کاربر وارد سیستم نشده است.';
-      }
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
       var apiRoot = GServiceAddress.url;
       http.Response response = await http.put(
         Uri.parse('$apiRoot/api/notifications/$id'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
-          HttpHeaders.authorizationHeader: 'bearer ${userInfo.token}'
+          HttpHeaders.authorizationHeader: 'bearer ${userInfo!.token}'
         },
       );
 
@@ -99,16 +92,13 @@ class NotificationService {
   Future<Tuple2<bool, String>> deleteNotification(
       String id, bool error401) async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
-      if (userInfo == null) {
-        return const Tuple2<bool, String>(false, 'کاربر وارد سیستم نشده است.');
-      }
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
       var apiRoot = GServiceAddress.url;
       http.Response response = await http.delete(
         Uri.parse('$apiRoot/api/notifications/$id'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
-          HttpHeaders.authorizationHeader: 'bearer ${userInfo.token}'
+          HttpHeaders.authorizationHeader: 'bearer ${userInfo!.token}'
         },
       );
 
@@ -138,15 +128,12 @@ class NotificationService {
   ///Items1 is the actual response if the call is successful
   Future<Tuple2<int, String>> getUnreadNotificationsCount(bool error401) async {
     try {
-      LoggedOnUserModel userInfo = await _storageService.userInfo;
-      if (userInfo == null) {
-        return const Tuple2<int, String>(-1, 'کاربر وارد سیستم نشده است.');
-      }
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
       var apiRoot = GServiceAddress.url;
       http.Response response = await http
           .get(Uri.parse('$apiRoot/api/notifications/unread/count'), headers: {
         'Content-Type': 'application/json; charset=UTF-8',
-        HttpHeaders.authorizationHeader: 'bearer ${userInfo.token}'
+        HttpHeaders.authorizationHeader: 'bearer ${userInfo!.token}'
       });
 
       if (!error401 && response.statusCode == 401) {

@@ -3,7 +3,7 @@ import 'package:gaudiopanel/models/recitation/recitation_viewmodel.dart';
 class RecitationErrorReportViewModel {
   final int id;
   final int recitationId;
-  String reasonText;
+  String? reasonText;
   final RecitationViewModel recitation;
   final int numberOfLinesAffected;
   int coupletIndex;
@@ -11,18 +11,15 @@ class RecitationErrorReportViewModel {
   bool isMarked = false;
 
   RecitationErrorReportViewModel(
-      {this.id,
-      this.recitationId,
-      this.reasonText,
-      this.recitation,
-      this.numberOfLinesAffected,
-      this.coupletIndex,
-      this.dateTime});
+      {required this.id,
+      required this.recitationId,
+      required this.reasonText,
+      required this.recitation,
+      required this.numberOfLinesAffected,
+      required this.coupletIndex,
+      required this.dateTime});
 
   factory RecitationErrorReportViewModel.fromJson(Map<String, dynamic> json) {
-    if (json == null) {
-      return null;
-    }
     return RecitationErrorReportViewModel(
         id: json['id'],
         recitationId: json['recitationId'],

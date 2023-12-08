@@ -9,19 +9,16 @@ class UploadedItemViewModel {
   final String processEndTime;
 
   UploadedItemViewModel(
-      {this.fileName,
-      this.processResult,
-      this.processResultMsg,
-      this.uploadEndTime,
-      this.userName,
-      this.processStartTime,
-      this.processProgress,
-      this.processEndTime});
+      {required this.fileName,
+      required this.processResult,
+      required this.processResultMsg,
+      required this.uploadEndTime,
+      required this.userName,
+      required this.processStartTime,
+      required this.processProgress,
+      required this.processEndTime});
 
   factory UploadedItemViewModel.fromJson(Map<String, dynamic> json) {
-    if (json == null) {
-      return null;
-    }
     return UploadedItemViewModel(
       fileName: json['fileName'],
       processResult: json['processResult'],

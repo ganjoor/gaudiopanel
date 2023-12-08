@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ChownToEmail extends StatefulWidget {
-  const ChownToEmail({Key key}) : super(key: key);
+  const ChownToEmail({Key? key}) : super(key: key);
   @override
   State<StatefulWidget> createState() => _ChownToEmailState();
 }

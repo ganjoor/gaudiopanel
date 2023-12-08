@@ -14,7 +14,10 @@ class NarrationEdit extends StatefulWidget {
   final SnackbarNeeded snackbarNeeded;
 
   const NarrationEdit(
-      {Key key, this.narration, this.loadingStateChanged, this.snackbarNeeded})
+      {Key? key,
+      required this.narration,
+      required this.loadingStateChanged,
+      required this.snackbarNeeded})
       : super(key: key);
 
   @override
@@ -23,7 +26,7 @@ class NarrationEdit extends StatefulWidget {
 
 class _NarrationEditState extends State<NarrationEdit>
     with AfterLayoutMixin<NarrationEdit> {
-  AudioPlayer _player;
+  AudioPlayer? _player;
   bool _canPublish = false;
 
   final TextEditingController _titleController = TextEditingController();
@@ -43,7 +46,7 @@ class _NarrationEditState extends State<NarrationEdit>
 
   @override
   void dispose() {
-    _player.dispose();
+    _player!.dispose();
     _titleController.dispose();
     _artistNameController.dispose();
     _artistUrlController.dispose();
@@ -53,14 +56,8 @@ class _NarrationEditState extends State<NarrationEdit>
   }
 
   String getVerse(RecitationViewModel narration, Duration position) {
-    if (position == null || narration == null || narration.verses == null) {
-      return '';
-    }
-    var verse = narration.verses.lastWhere(
+    var verse = narration.verses!.lastWhere(
         (element) => element.audioStartMilliseconds <= position.inMilliseconds);
-    if (verse == null) {
-      return '';
-    }
     return verse.verseText;
   }
 
@@ -179,14 +176,14 @@ class _NarrationEditState extends State<NarrationEdit>
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ControlButtons(_player, widget.narration,
+                    ControlButtons(_player!, widget.narration,
                         widget.loadingStateChanged, widget.snackbarNeeded),
-                    StreamBuilder<Duration>(
-                      stream: _player.durationStream,
+                    StreamBuilder<Duration?>(
+                      stream: _player!.durationStream,
                       builder: (context, snapshot) {
                         final duration = snapshot.data ?? Duration.zero;
                         return StreamBuilder<Duration>(
-                          stream: _player.positionStream,
+                          stream: _player!.positionStream,
                           builder: (context, snapshot) {
                             var position = snapshot.data ?? Duration.zero;
                             if (position > duration) {
@@ -200,7 +197,7 @@ class _NarrationEditState extends State<NarrationEdit>
                                     duration: duration,
                                     position: position,
                                     onChangeEnd: (newPosition) {
-                                      _player.seek(newPosition);
+                                      _player!.seek(newPosition);
                                     },
                                   ),
                                   Text(getVerse(widget.narration, position))

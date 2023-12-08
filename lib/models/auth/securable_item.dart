@@ -5,12 +5,12 @@ class SecurableItem {
   final String description;
   final List<SecurableItemOperation> operations;
 
-  SecurableItem({this.shortName, this.description, this.operations});
+  SecurableItem(
+      {required this.shortName,
+      required this.description,
+      required this.operations});
 
   factory SecurableItem.fromJson(Map<String, dynamic> json) {
-    if (json == null) {
-      return null;
-    }
     return SecurableItem(
         shortName: json['shortName'],
         description: json['description'],

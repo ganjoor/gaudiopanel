@@ -12,12 +12,13 @@ class RUserNotificationViewModel {
   bool isMarked = false;
 
   RUserNotificationViewModel(
-      {this.id, this.dateTime, this.status, this.subject, this.htmlText});
+      {required this.id,
+      required this.dateTime,
+      required this.status,
+      required this.subject,
+      required this.htmlText});
 
   factory RUserNotificationViewModel.fromJson(Map<String, dynamic> json) {
-    if (json == null) {
-      return null;
-    }
     return RUserNotificationViewModel(
       id: json['id'],
       dateTime: json['dateTime'],

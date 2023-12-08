@@ -4,7 +4,8 @@ import 'package:gaudiopanel/models/recitation/recitation_viewmodel.dart';
 class RejectRecitation extends StatefulWidget {
   final RecitationViewModel recitation;
 
-  const RejectRecitation({Key key, this.recitation}) : super(key: key);
+  const RejectRecitation({Key? key, required this.recitation})
+      : super(key: key);
   @override
   State<StatefulWidget> createState() => _RejectRecitationState();
 }

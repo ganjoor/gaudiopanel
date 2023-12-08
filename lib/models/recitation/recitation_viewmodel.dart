@@ -10,7 +10,7 @@ class RecitationModerateViewModel {
   final int result;
   final String message;
 
-  RecitationModerateViewModel({this.result, this.message});
+  RecitationModerateViewModel({required this.result, required this.message});
 
   toJson() {
     Map<String, dynamic> m = {};
@@ -69,33 +69,30 @@ class RecitationViewModel {
   final String uploadDate;
   final int audioSyncStatus;
   int reviewStatus;
-  List<RecitationVerseSync> verses;
+  List<RecitationVerseSync>? verses;
   final String reviewMsg;
 
   RecitationViewModel(
-      {this.id,
-      this.owner,
-      this.ganjoorAudioId,
-      this.ganjoorPostId,
-      this.poemFullTitle,
-      this.poemFullUrl,
-      this.mp3Url,
-      this.xmlUrl,
-      this.audioTitle,
-      this.audioArtist,
-      this.audioArtistUrl,
-      this.audioSrc,
-      this.audioSrcUrl,
-      this.mp3SizeInBytes,
-      this.uploadDate,
-      this.audioSyncStatus,
-      this.reviewStatus,
-      this.reviewMsg});
+      {required this.id,
+      required this.owner,
+      required this.ganjoorAudioId,
+      required this.ganjoorPostId,
+      required this.poemFullTitle,
+      required this.poemFullUrl,
+      required this.mp3Url,
+      required this.xmlUrl,
+      required this.audioTitle,
+      required this.audioArtist,
+      required this.audioArtistUrl,
+      required this.audioSrc,
+      required this.audioSrcUrl,
+      required this.mp3SizeInBytes,
+      required this.uploadDate,
+      required this.audioSyncStatus,
+      required this.reviewStatus,
+      required this.reviewMsg});
 
   factory RecitationViewModel.fromJson(Map<String, dynamic> json) {
-    if (json == null) {
-      return null;
-    }
     return RecitationViewModel(
         id: json['id'],
         owner: PublicRAppUser.fromJson(json['owner']),

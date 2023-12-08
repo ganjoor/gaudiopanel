@@ -12,10 +12,10 @@ class ReportedDataSection extends StatefulWidget {
   final SnackbarNeeded snackbarNeeded;
 
   const ReportedDataSection(
-      {Key key,
-      this.reportedRecitations,
-      this.loadingStateChanged,
-      this.snackbarNeeded})
+      {Key? key,
+      required this.reportedRecitations,
+      required this.loadingStateChanged,
+      required this.snackbarNeeded})
       : super(key: key);
 
   @override
@@ -29,7 +29,7 @@ class _ProfilesState extends State<ReportedDataSection> {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Theme.of(context).backgroundColor,
+          backgroundColor: Theme.of(context).colorScheme.background,
           title: const Text('خطا'),
           content: SingleChildScrollView(
             child: ListBody(
@@ -49,7 +49,7 @@ class _ProfilesState extends State<ReportedDataSection> {
     );
   }
 
-  Future<String> _input(String title, String field, String value) async {
+  Future<String?> _input(String title, String field, String value) async {
     TextEditingController controller = TextEditingController();
     controller.text = value;
 
@@ -60,7 +60,7 @@ class _ProfilesState extends State<ReportedDataSection> {
         return AlertDialog(
           title: Text(
             title,
-            style: Theme.of(context).textTheme.headline2,
+            style: Theme.of(context).textTheme.displayMedium,
           ),
           content: SingleChildScrollView(
             child: ListBody(
@@ -110,14 +110,14 @@ class _ProfilesState extends State<ReportedDataSection> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-        itemCount: widget.reportedRecitations.items.length,
+        itemCount: widget.reportedRecitations.items!.length,
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
               leading: IconButton(
                 icon: const Icon(Icons.open_in_browser),
                 onPressed: () async {
                   var url =
-                      'http://ava.ganjoor.net/#/${widget.reportedRecitations.items[index].recitationId}';
+                      'http://ava.ganjoor.net/#/${widget.reportedRecitations.items![index].recitationId}';
                   if (await canLaunch(url)) {
                     await launch(url);
                   } else {
@@ -126,27 +126,28 @@ class _ProfilesState extends State<ReportedDataSection> {
                 },
               ),
               title: Text(
-                  '${widget.reportedRecitations.items[index].recitation.audioTitle} به خوانش ${widget.reportedRecitations.items[index].recitation.audioArtist}'),
+                  '${widget.reportedRecitations.items![index].recitation.audioTitle} به خوانش ${widget.reportedRecitations.items![index].recitation.audioArtist}'),
               subtitle: Column(children: [
-                Text(widget.reportedRecitations.items[index].reasonText ?? ''),
+                Text(widget.reportedRecitations.items![index].reasonText ?? ''),
                 Text(
-                    'خط متناظر: ${widget.reportedRecitations.items[index].coupletIndex + 1}'),
+                    'خط متناظر: ${widget.reportedRecitations.items![index].coupletIndex + 1}'),
                 Text(widget
-                    .reportedRecitations.items[index].recitation.audioArtist),
+                    .reportedRecitations.items![index].recitation.audioArtist),
                 ElevatedButton(
                   style: ButtonStyle(
                       backgroundColor:
                           MaterialStateProperty.all<Color>(Colors.blueGrey)),
                   onPressed: () async {
-                    String rejectionNote = await _input('دلیل عدم پذیرش',
-                        'دلیل', 'عدم تطابق با معیارهای حذف خوانش');
+                    String rejectionNote = (await _input('دلیل عدم پذیرش',
+                            'دلیل', 'عدم تطابق با معیارهای حذف خوانش')) ??
+                        '';
                     if (rejectionNote.isEmpty) return;
                     var res = await RecitationService().rejectReport(
-                        widget.reportedRecitations.items[index].id,
+                        widget.reportedRecitations.items![index].id,
                         rejectionNote,
                         false);
                     if (res.item1) {
-                      widget.reportedRecitations.items.removeAt(index);
+                      widget.reportedRecitations.items!.removeAt(index);
                       setState(() {});
                     } else {
                       widget.snackbarNeeded(res.item2);
@@ -159,20 +160,16 @@ class _ProfilesState extends State<ReportedDataSection> {
                       backgroundColor:
                           MaterialStateProperty.all<Color>(Colors.red)),
                   onPressed: () async {
-                    if (widget.loadingStateChanged != null) {
-                      widget.loadingStateChanged(true);
-                    }
+                    widget.loadingStateChanged(true);
                     var res = await RecitationService().approveReport(
-                        widget.reportedRecitations.items[index].id, false);
+                        widget.reportedRecitations.items![index].id, false);
                     if (res.item1) {
-                      widget.reportedRecitations.items.removeAt(index);
+                      widget.reportedRecitations.items!.removeAt(index);
                       setState(() {});
                     } else {
                       widget.snackbarNeeded(res.item2);
                     }
-                    if (widget.loadingStateChanged != null) {
-                      widget.loadingStateChanged(false);
-                    }
+                    widget.loadingStateChanged(false);
                   },
                   child: const Text('خوانش اشکال دارد و باید حذف شود'),
                 ),
@@ -181,53 +178,55 @@ class _ProfilesState extends State<ReportedDataSection> {
                       backgroundColor:
                           MaterialStateProperty.all<Color>(Colors.purple)),
                   onPressed: () async {
-                    String mistake = await _input('اشکال', 'اشکال',
-                        widget.reportedRecitations.items[index].reasonText);
+                    String mistake = (await _input(
+                            'اشکال',
+                            'اشکال',
+                            widget.reportedRecitations.items![index]
+                                .reasonText!)) ??
+                        '';
 
                     if (mistake.isEmpty) return;
-                    if (widget.reportedRecitations.items[index].coupletIndex !=
+                    if (widget.reportedRecitations.items![index].coupletIndex !=
                         -1) {
-                      String coupletIndex = await _input(
-                          'اندیس خط',
-                          'اندیس خط',
-                          widget.reportedRecitations.items[index].coupletIndex
-                              .toString());
+                      String coupletIndex = (await _input(
+                              'اندیس خط',
+                              'اندیس خط',
+                              widget.reportedRecitations.items![index]
+                                  .coupletIndex
+                                  .toString())) ??
+                          '';
                       if (coupletIndex.isEmpty) {
-                        widget.reportedRecitations.items[index].coupletIndex =
+                        widget.reportedRecitations.items![index].coupletIndex =
                             -1;
                       } else {
-                        widget.reportedRecitations.items[index].coupletIndex =
+                        widget.reportedRecitations.items![index].coupletIndex =
                             int.parse(coupletIndex);
                       }
                     }
-                    widget.reportedRecitations.items[index].reasonText =
+                    widget.reportedRecitations.items![index].reasonText =
                         mistake;
-                    if (widget.loadingStateChanged != null) {
-                      widget.loadingStateChanged(true);
-                    }
+                    widget.loadingStateChanged(true);
                     var res = await RecitationService().saveRictationMistake(
-                        widget.reportedRecitations.items[index], false);
+                        widget.reportedRecitations.items![index], false);
                     if (res.item1) {
-                      widget.reportedRecitations.items.removeAt(index);
+                      widget.reportedRecitations.items!.removeAt(index);
                       setState(() {});
                     } else {
                       widget.snackbarNeeded(res.item2);
                     }
-                    if (widget.loadingStateChanged != null) {
-                      widget.loadingStateChanged(false);
-                    }
+                    widget.loadingStateChanged(false);
                   },
                   child: const Text('در فهرست اشکالات خوانش ثبت شود'),
                 )
               ]),
               trailing: IconButton(
-                icon: widget.reportedRecitations.items[index].isMarked
+                icon: widget.reportedRecitations.items![index].isMarked
                     ? const Icon(Icons.check_box)
                     : const Icon(Icons.check_box_outline_blank),
                 onPressed: () {
                   setState(() {
-                    widget.reportedRecitations.items[index].isMarked =
-                        !widget.reportedRecitations.items[index].isMarked;
+                    widget.reportedRecitations.items![index].isMarked =
+                        !widget.reportedRecitations.items![index].isMarked;
                   });
                 },
               ));

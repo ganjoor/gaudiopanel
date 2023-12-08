@@ -6,7 +6,7 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LoginForm extends StatefulWidget {
-  const LoginForm({Key key}) : super(key: key);
+  const LoginForm({Key? key}) : super(key: key);
 
   @override
   LoginFormState createState() => LoginFormState();
@@ -32,7 +32,7 @@ class LoginFormState extends State<LoginForm> {
     setState(() {
       _loginError = '';
     });
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
@@ -44,7 +44,7 @@ class LoginFormState extends State<LoginForm> {
       });
 
       if (_loginError.isNotEmpty) {
-        _formKey.currentState.validate();
+        _formKey.currentState!.validate();
       } else {
         if (!mounted) return;
         await Navigator.pushReplacement(
@@ -77,6 +77,9 @@ class LoginFormState extends State<LoginForm> {
                               autofillHints: const [AutofillHints.username],
                               textDirection: TextDirection.ltr,
                               validator: (value) {
+                                if (value == null) {
+                                  return 'پست الکترونیکی وارد نشده است.';
+                                }
                                 if (value.isEmpty) {
                                   return 'پست الکترونیکی وارد نشده است.';
                                 }
@@ -97,7 +100,7 @@ class LoginFormState extends State<LoginForm> {
                               autofillHints: const [AutofillHints.password],
                               textDirection: TextDirection.ltr,
                               validator: (value) {
-                                if (value.isEmpty) {
+                                if (value == null || value.isEmpty) {
                                   return 'گذرواژه وارد نشده است.';
                                 }
                                 return null;

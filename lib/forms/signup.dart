@@ -7,7 +7,7 @@ import 'package:gaudiopanel/services/gservice_address.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 
 class SignUpForm extends StatefulWidget {
-  const SignUpForm({Key key}) : super(key: key);
+  const SignUpForm({Key? key}) : super(key: key);
 
   @override
   SignUpFormState createState() => SignUpFormState();
@@ -55,7 +55,7 @@ class SignUpFormState extends State<SignUpForm>
     setState(() {
       _signupError = '';
     });
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
@@ -67,7 +67,7 @@ class SignUpFormState extends State<SignUpForm>
       });
 
       if (_signupError != 'verify' && _signupError != 'finalize') {
-        _formKey.currentState.validate();
+        _formKey.currentState!.validate();
         await _newCaptcha();
       } else {
         var res = _signupError;
@@ -84,7 +84,7 @@ class SignUpFormState extends State<SignUpForm>
     setState(() {
       _signupError = '';
     });
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
@@ -97,7 +97,7 @@ class SignUpFormState extends State<SignUpForm>
         setState(() {
           _signupError = verifyRes.item2;
         });
-        _formKey.currentState.validate();
+        _formKey.currentState!.validate();
       } else {
         setState(() {
           _emailSent = true;
@@ -112,7 +112,7 @@ class SignUpFormState extends State<SignUpForm>
     setState(() {
       _signupError = '';
     });
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
@@ -126,7 +126,7 @@ class SignUpFormState extends State<SignUpForm>
         setState(() {
           _signupError = error;
         });
-        _formKey.currentState.validate();
+        _formKey.currentState!.validate();
       } else {
         setState(() {
           _finalized = true;
@@ -156,7 +156,7 @@ class SignUpFormState extends State<SignUpForm>
     setState(() {
       _signupError = '';
     });
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
@@ -168,7 +168,7 @@ class SignUpFormState extends State<SignUpForm>
       });
 
       if (_signupError.isNotEmpty) {
-        _formKey.currentState.validate();
+        _formKey.currentState!.validate();
       } else {
         if (!mounted) return;
         await Navigator.pushReplacement(
@@ -211,12 +211,13 @@ class SignUpFormState extends State<SignUpForm>
                                   autofillHints: const [AutofillHints.username],
                                   textDirection: TextDirection.ltr,
                                   validator: (value) {
-                                    if (!_emailSent && value.isEmpty) {
+                                    if (!_emailSent &&
+                                        (value == null || value.isEmpty)) {
                                       return 'پست الکترونیکی وارد نشده است.';
                                     }
                                     if (!RegExp(
                                             r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
-                                        .hasMatch(value)) {
+                                        .hasMatch(value!)) {
                                       return 'پست الکترونیکی وارد شده معتبر نیست.';
                                     }
                                     if (_signupError.isNotEmpty) {
@@ -280,7 +281,8 @@ class SignUpFormState extends State<SignUpForm>
                                   controller: _secret,
                                   textDirection: TextDirection.ltr,
                                   validator: (value) {
-                                    if (_emailSent && value.isEmpty) {
+                                    if (_emailSent &&
+                                        (value == null || value.isEmpty)) {
                                       return 'رمز دریافتی را وارد نمایید.';
                                     }
                                     if (_signupError.isNotEmpty) {
@@ -301,7 +303,7 @@ class SignUpFormState extends State<SignUpForm>
                                   validator: (value) {
                                     if (_emailVerified &&
                                         !_finalized &&
-                                        value.isEmpty) {
+                                        (value == null || value.isEmpty)) {
                                       return 'لطفا نام خود را وارد نمایید.';
                                     }
 
@@ -320,7 +322,7 @@ class SignUpFormState extends State<SignUpForm>
                                   validator: (value) {
                                     if (_emailVerified &&
                                         !_finalized &&
-                                        value.isEmpty) {
+                                        (value == null || value.isEmpty)) {
                                       return 'لطفا نام خانوادگی خود را وارد نمایید.';
                                     }
 
@@ -342,7 +344,8 @@ class SignUpFormState extends State<SignUpForm>
                                   controller: _captcha,
                                   textDirection: TextDirection.ltr,
                                   validator: (value) {
-                                    if (!_emailSent && value.isEmpty) {
+                                    if (!_emailSent &&
+                                        (value == null || value.isEmpty)) {
                                       return 'عدد تصویر امنیتی بالا را وارد کنید.';
                                     }
                                     return null;
@@ -377,7 +380,7 @@ class SignUpFormState extends State<SignUpForm>
                                   autofillHints: const [AutofillHints.password],
                                   textDirection: TextDirection.ltr,
                                   validator: (value) {
-                                    if (value.isEmpty) {
+                                    if ((value == null || value.isEmpty)) {
                                       return 'گذرواژه وارد نشده است.';
                                     }
                                     if (_signupError.isNotEmpty) {
@@ -399,7 +402,7 @@ class SignUpFormState extends State<SignUpForm>
                                   autofillHints: const [AutofillHints.password],
                                   textDirection: TextDirection.ltr,
                                   validator: (value) {
-                                    if (value.isEmpty) {
+                                    if ((value == null || value.isEmpty)) {
                                       return 'تکرار گذرواژه وارد نشده است.';
                                     }
                                     if (value != _password.text) {

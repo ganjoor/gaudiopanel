@@ -5,7 +5,7 @@ import 'package:gaudiopanel/models/recitation/uploaded_item_viewmodel.dart';
 class UploadsDataSection extends StatefulWidget {
   final PaginatedItemsResponseModel<UploadedItemViewModel> uploads;
 
-  const UploadsDataSection({Key key, this.uploads}) : super(key: key);
+  const UploadsDataSection({Key? key, required this.uploads}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _UploadsState();
@@ -25,14 +25,14 @@ class _UploadsState extends State<UploadsDataSection> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-        itemCount: widget.uploads.items.length,
+        itemCount: widget.uploads.items!.length,
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
-              leading: getUploadIcon(widget.uploads.items[index]),
+              leading: getUploadIcon(widget.uploads.items![index]),
               title: Directionality(
                   textDirection: TextDirection.ltr,
-                  child: Text(widget.uploads.items[index].fileName)),
-              subtitle: Text(widget.uploads.items[index].processResultMsg));
+                  child: Text(widget.uploads.items![index].fileName)),
+              subtitle: Text(widget.uploads.items![index].processResultMsg));
         });
   }
 }

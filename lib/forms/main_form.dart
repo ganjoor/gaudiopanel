@@ -43,7 +43,7 @@ enum GActiveFormSection {
 }
 
 class MainForm extends StatefulWidget {
-  const MainForm({Key key}) : super(key: key);
+  const MainForm({Key? key}) : super(key: key);
 
   @override
   MainFormWidgetState createState() => MainFormWidgetState();
@@ -98,14 +98,11 @@ class MainFormWidgetState extends State<MainForm>
         return 'خوانش‌های گزارش شده';
       case GActiveFormSection.rejectedRecitaions:
         return 'خوانش‌های برگشت‌خورده';
-        break;
       case GActiveFormSection.recitationsWithMistakes:
         return 'خوانش‌های دارای اشکال';
-        break;
       case GActiveFormSection.synchronizationQueue:
         return 'صف انتشار در گنجور';
     }
-    return '';
   }
 
   Future<void> _loadNarrationsData() async {
@@ -127,10 +124,10 @@ class MainFormWidgetState extends State<MainForm>
         _searchTerm,
         _activeSection == GActiveFormSection.recitationsWithMistakes,
         false);
-    if (narrations.error.isEmpty) {
+    if (narrations.error!.isEmpty) {
       setState(() {
-        _narrations.items.clear();
-        _narrations.items.addAll(narrations.items);
+        _narrations.items!.clear();
+        _narrations.items!.addAll(narrations.items!);
         _narrations.paginationMetadata = narrations.paginationMetadata;
         _audioUpdateEnabled = narrations.audioUploadEnabled;
         _isLoading = false;
@@ -139,7 +136,7 @@ class MainFormWidgetState extends State<MainForm>
       setState(() {
         _isLoading = false;
       });
-      _key.currentState.showSnackBar(SnackBar(
+      _key.currentState!.showSnackBar(SnackBar(
         content: Text('خطا در دریافت خوانش‌ها: ${narrations.error}'),
         backgroundColor: Colors.red,
       ));
@@ -152,10 +149,10 @@ class MainFormWidgetState extends State<MainForm>
     });
     var reportedOnes = await RecitationService()
         .getReportedRecitations(_narrationsPageNumber, _pageSize, false);
-    if (reportedOnes.error.isEmpty) {
+    if (reportedOnes.error!.isEmpty) {
       setState(() {
-        _reporteds.items.clear();
-        _reporteds.items.addAll(reportedOnes.items);
+        _reporteds.items!.clear();
+        _reporteds.items!.addAll(reportedOnes.items!);
         _narrations.paginationMetadata = reportedOnes.paginationMetadata;
         _isLoading = false;
       });
@@ -163,7 +160,7 @@ class MainFormWidgetState extends State<MainForm>
       setState(() {
         _isLoading = false;
       });
-      _key.currentState.showSnackBar(SnackBar(
+      _key.currentState!.showSnackBar(SnackBar(
         content: Text('خطا در دریافت اطلاعات: ${reportedOnes.error}'),
         backgroundColor: Colors.red,
       ));
@@ -177,10 +174,10 @@ class MainFormWidgetState extends State<MainForm>
     var uploads = await RecitationService()
         .getUploads(_uploadsPageNumber, _pageSize, false);
 
-    if (uploads.error.isEmpty) {
+    if (uploads.error!.isEmpty) {
       setState(() {
-        _uploads.items.clear();
-        _uploads.items.addAll(uploads.items);
+        _uploads.items!.clear();
+        _uploads.items!.addAll(uploads.items!);
         _uploads.paginationMetadata = uploads.paginationMetadata;
         _audioUpdateEnabled = uploads.audioUploadEnabled;
         _isLoading = false;
@@ -189,7 +186,7 @@ class MainFormWidgetState extends State<MainForm>
       setState(() {
         _isLoading = false;
       });
-      _key.currentState.showSnackBar(SnackBar(
+      _key.currentState!.showSnackBar(SnackBar(
         content: Text('خطا در دریافت بارگذاری‌ها: ${uploads.error}'),
         backgroundColor: Colors.red,
       ));
@@ -204,15 +201,15 @@ class MainFormWidgetState extends State<MainForm>
 
     if (profiles.item2.isEmpty) {
       setState(() {
-        _profiles.items.clear();
-        _profiles.items.addAll(profiles.item1);
+        _profiles.items!.clear();
+        _profiles.items!.addAll(profiles.item1!);
         _isLoading = false;
       });
     } else {
       setState(() {
         _isLoading = false;
       });
-      _key.currentState.showSnackBar(SnackBar(
+      _key.currentState!.showSnackBar(SnackBar(
         content: Text('خطا در دریافت نمایه‌ها: ${profiles.item2}'),
         backgroundColor: Colors.red,
       ));
@@ -229,12 +226,12 @@ class MainFormWidgetState extends State<MainForm>
     });
     if (publishQueue.item2.isEmpty) {
       setState(() {
-        _queue.items.clear();
-        _queue.items.addAll(publishQueue.item1.items);
-        _queue.paginationMetadata = publishQueue.item1.paginationMetadata;
+        _queue.items!.clear();
+        _queue.items!.addAll(publishQueue.item1!.items!);
+        _queue.paginationMetadata = publishQueue.item1!.paginationMetadata;
       });
     } else {
-      _key.currentState.showSnackBar(SnackBar(
+      _key.currentState!.showSnackBar(SnackBar(
         content: Text('خطا در دریافت صف انتشار در سایت: ${publishQueue.item2}'),
         backgroundColor: Colors.red,
       ));
@@ -251,11 +248,11 @@ class MainFormWidgetState extends State<MainForm>
     });
     if (notificationsList.item2.isEmpty) {
       setState(() {
-        _notifications.items.clear();
-        _notifications.items.addAll(notificationsList.item1);
+        _notifications.items!.clear();
+        _notifications.items!.addAll(notificationsList.item1!);
       });
     } else {
-      _key.currentState.showSnackBar(SnackBar(
+      _key.currentState!.showSnackBar(SnackBar(
         content: Text('خطا در دریافت اعلان‌ها: ${notificationsList.item2}'),
         backgroundColor: Colors.red,
       ));
@@ -274,7 +271,7 @@ class MainFormWidgetState extends State<MainForm>
         _unreadNotificationsCount = retNotificationsCount.item1;
       });
     } else {
-      _key.currentState.showSnackBar(SnackBar(
+      _key.currentState!.showSnackBar(SnackBar(
         content: Text(
             'خطا در دریافت تعداد اعلان‌ها: ${retNotificationsCount.item2}'),
         backgroundColor: Colors.red,
@@ -317,9 +314,7 @@ class MainFormWidgetState extends State<MainForm>
   @override
   void afterFirstLayout(BuildContext context) async {
     var user = await StorageService().userInfo;
-    if (user != null) {
-      _userFrinedlyName = '${user.user.firstName} ${user.user.sureName}';
-    }
+    _userFrinedlyName = '${user!.user.firstName} ${user.user.sureName}';
 
     if (await AuthService().hasPermission('recitation', 'reorder')) {
       _canReOrder = true;
@@ -343,7 +338,7 @@ class MainFormWidgetState extends State<MainForm>
   }
 
   void _snackbarNeeded(String msg) {
-    _key.currentState.showSnackBar(SnackBar(
+    _key.currentState!.showSnackBar(SnackBar(
       content: Text(msg),
       backgroundColor: Colors.red,
     ));
@@ -355,7 +350,7 @@ class MainFormWidgetState extends State<MainForm>
     });
   }
 
-  Future<UserRecitationProfileViewModel> _newProfile() async {
+  Future<UserRecitationProfileViewModel?> _newProfile() async {
     return showDialog<UserRecitationProfileViewModel>(
       context: context,
       barrierDismissible: false,
@@ -380,7 +375,7 @@ class MainFormWidgetState extends State<MainForm>
     );
   }
 
-  Future<bool> _getNewRecitationParams(
+  Future<bool?> _getNewRecitationParams(
       UserRecitationProfileViewModel profile) async {
     return showDialog<bool>(
       context: context,
@@ -397,7 +392,7 @@ class MainFormWidgetState extends State<MainForm>
     );
   }
 
-  Future<Tuple2<int, String>> _getSearchParams() async {
+  Future<Tuple2<int, String>?> _getSearchParams() async {
     return showDialog<Tuple2<int, String>>(
       context: context,
       barrierDismissible: false,
@@ -414,7 +409,7 @@ class MainFormWidgetState extends State<MainForm>
     );
   }
 
-  Future<bool> _confirm(String title, String text) async {
+  Future<bool?> _confirm(String title, String text) async {
     return showDialog<bool>(
       context: context,
       barrierDismissible: false,
@@ -453,26 +448,15 @@ class MainFormWidgetState extends State<MainForm>
       _isLoading = false;
     });
     if (profileResult.item2.isNotEmpty) {
-      _key.currentState.showSnackBar(SnackBar(
+      _key.currentState!.showSnackBar(SnackBar(
         content: Text(
             'خطا در یافتن نمایهٔ پیش‌فرض ، اطلاعات بیشتر ${profileResult.item2}'),
         backgroundColor: Colors.red,
       ));
       return;
     }
-    if (profileResult.item1 == null) {
-      _key.currentState.showSnackBar(const SnackBar(
-        content: Text(
-            'برای ارسال خوانش لازم است ابتدا نمایه‌ای پیش‌فرض تعریف کنید.'),
-        backgroundColor: Colors.red,
-      ));
-      return;
-    }
-    var replace = await _getNewRecitationParams(profileResult.item1);
-    if (replace == null) {
-      return;
-    }
-    FilePickerResult result = await FilePicker.platform.pickFiles(
+    var replace = await _getNewRecitationParams(profileResult.item1!);
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
       allowMultiple: true,
       type: FileType.custom,
       allowedExtensions: ['mp3', 'xml'],
@@ -483,10 +467,10 @@ class MainFormWidgetState extends State<MainForm>
       });
 
       String err = await UploadRecitationService()
-          .uploadFiles(result.files, replace, false);
+          .uploadFiles(result.files, replace!, false);
 
       if (err.isNotEmpty) {
-        _key.currentState.showSnackBar(SnackBar(
+        _key.currentState!.showSnackBar(SnackBar(
           content: Text('خطا در ارسال خوانش‌های جدید: $err'),
           backgroundColor: Colors.red,
         ));
@@ -500,9 +484,9 @@ class MainFormWidgetState extends State<MainForm>
 
   Future _changeMarkedNotificationsStatus(bool read) async {
     var markedNotifications =
-        _notifications.items.where((element) => element.isMarked).toList();
+        _notifications.items!.where((element) => element.isMarked).toList();
     if (markedNotifications.isEmpty) {
-      _key.currentState.showSnackBar(const SnackBar(
+      _key.currentState!.showSnackBar(const SnackBar(
         content: Text('لطفاً اعلان‌های مد نظر را علامتگذاری کنید.'),
         backgroundColor: Colors.red,
       ));
@@ -520,7 +504,7 @@ class MainFormWidgetState extends State<MainForm>
       }
       String error = await NotificationService().switchStatus(item.id, false);
       if (error.isNotEmpty) {
-        _key.currentState.showSnackBar(SnackBar(
+        _key.currentState!.showSnackBar(SnackBar(
           content: Text(
               'خطا در تغییر وضعیت اعلان  ${item.subject}، اطلاعات بیشتر $error'),
           backgroundColor: Colors.red,
@@ -534,7 +518,7 @@ class MainFormWidgetState extends State<MainForm>
     }
     setState(() {
       _isLoading = false;
-      _unreadNotificationsCount = _notifications.items
+      _unreadNotificationsCount = _notifications.items!
           .where((element) => element.status == NotificationStatus.unread)
           .length;
     });
@@ -542,9 +526,9 @@ class MainFormWidgetState extends State<MainForm>
 
   Future _deleteMarkedNotificaions() async {
     var markedNotifications =
-        _notifications.items.where((element) => element.isMarked).toList();
+        _notifications.items!.where((element) => element.isMarked).toList();
     if (markedNotifications.isEmpty) {
-      _key.currentState.showSnackBar(const SnackBar(
+      _key.currentState!.showSnackBar(const SnackBar(
         content: Text('لطفاً اعلان‌های مد نظر را علامتگذاری کنید.'),
         backgroundColor: Colors.red,
       ));
@@ -553,7 +537,7 @@ class MainFormWidgetState extends State<MainForm>
     String confirmation = markedNotifications.length > 1
         ? 'آیا از حذف ${markedNotifications.length} اعلان علامتگذاری شده اطمینان دارید؟'
         : 'آیا از حذف اعلان «${markedNotifications[0].subject}» اطمینان دارید؟';
-    if (await _confirm('تأییدیه', confirmation)) {
+    if (await _confirm('تأییدیه', confirmation) == true) {
       setState(() {
         _isLoading = true;
       });
@@ -561,7 +545,7 @@ class MainFormWidgetState extends State<MainForm>
         var delRes =
             await NotificationService().deleteNotification(item.id, false);
         if (delRes.item2.isNotEmpty) {
-          _key.currentState.showSnackBar(SnackBar(
+          _key.currentState!.showSnackBar(SnackBar(
             content: Text(
                 'خطا در حذف اعلان ${item.subject}، اطلاعات بیشتر ${delRes.item2}'),
             backgroundColor: Colors.red,
@@ -570,13 +554,13 @@ class MainFormWidgetState extends State<MainForm>
         }
         if (delRes.item1) {
           setState(() {
-            _notifications.items.remove(item);
+            _notifications.items!.remove(item);
           });
         }
       }
       setState(() {
         _isLoading = false;
-        _unreadNotificationsCount = _notifications.items
+        _unreadNotificationsCount = _notifications.items!
             .where((element) => element.status == NotificationStatus.unread)
             .length;
       });
@@ -585,9 +569,9 @@ class MainFormWidgetState extends State<MainForm>
 
   Future _deleteMarkedProfiles() async {
     var markedProfiles =
-        _profiles.items.where((element) => element.isMarked).toList();
+        _profiles.items!.where((element) => element.isMarked).toList();
     if (markedProfiles.isEmpty) {
-      _key.currentState.showSnackBar(const SnackBar(
+      _key.currentState!.showSnackBar(const SnackBar(
         content: Text('لطفاً نمایه‌های مد نظر را علامتگذاری کنید.'),
         backgroundColor: Colors.red,
       ));
@@ -596,14 +580,14 @@ class MainFormWidgetState extends State<MainForm>
     String confirmation = markedProfiles.length > 1
         ? 'آیا از حذف ${markedProfiles.length} نمایهٔ علامتگذاری شده اطمینان دارید؟'
         : 'آیا از حذف نمایهٔ «${markedProfiles[0].name}» اطمینان دارید؟';
-    if (await _confirm('تأییدیه', confirmation)) {
+    if (await _confirm('تأییدیه', confirmation) == true) {
       setState(() {
         _isLoading = true;
       });
       for (var item in markedProfiles) {
-        var delRes = await RecitationService().deleteProfile(item.id, false);
+        var delRes = await RecitationService().deleteProfile(item.id!, false);
         if (delRes.item2.isNotEmpty) {
-          _key.currentState.showSnackBar(SnackBar(
+          _key.currentState!.showSnackBar(SnackBar(
             content: Text(
                 'خطا در حذف نمایهٔ ${item.name}، اطلاعات بیشتر ${delRes.item2}'),
             backgroundColor: Colors.red,
@@ -612,7 +596,7 @@ class MainFormWidgetState extends State<MainForm>
         }
         if (delRes.item1) {
           setState(() {
-            _profiles.items.remove(item);
+            _profiles.items!.remove(item);
           });
         }
       }
@@ -624,9 +608,9 @@ class MainFormWidgetState extends State<MainForm>
 
   Future _deleteMarkedRecitations() async {
     var markedRecitations =
-        _narrations.items.where((element) => element.isMarked).toList();
+        _narrations.items!.where((element) => element.isMarked).toList();
     if (markedRecitations.isEmpty) {
-      _key.currentState.showSnackBar(const SnackBar(
+      _key.currentState!.showSnackBar(const SnackBar(
         content: Text('لطفاً خوانش‌های مد نظر را علامتگذاری کنید.'),
         backgroundColor: Colors.red,
       ));
@@ -635,14 +619,14 @@ class MainFormWidgetState extends State<MainForm>
     String confirmation = markedRecitations.length > 1
         ? 'آیا از حذف ${markedRecitations.length} خوانش علامتگذاری شده اطمینان دارید؟'
         : 'آیا از حذف خوانش «${markedRecitations[0].audioTitle}» اطمینان دارید؟';
-    if (await _confirm('تأییدیه', confirmation)) {
+    if (await _confirm('تأییدیه', confirmation) == true) {
       setState(() {
         _isLoading = true;
       });
       for (var item in markedRecitations) {
         var delRes = await RecitationService().deleteRecitation(item.id, false);
         if (delRes.item2.isNotEmpty) {
-          _key.currentState.showSnackBar(SnackBar(
+          _key.currentState!.showSnackBar(SnackBar(
             content: Text(
                 'خطا در حذف خوانش ${item.audioTitle}، اطلاعات بیشتر ${delRes.item2}'),
             backgroundColor: Colors.red,
@@ -651,7 +635,7 @@ class MainFormWidgetState extends State<MainForm>
         }
         if (delRes.item1) {
           setState(() {
-            _narrations.items.remove(item);
+            _narrations.items!.remove(item);
           });
         }
       }
@@ -663,9 +647,9 @@ class MainFormWidgetState extends State<MainForm>
 
   Future _applyDefProfileToMarkedRecitations() async {
     var markedRecitations =
-        _narrations.items.where((element) => element.isMarked).toList();
+        _narrations.items!.where((element) => element.isMarked).toList();
     if (markedRecitations.isEmpty) {
-      _key.currentState.showSnackBar(const SnackBar(
+      _key.currentState!.showSnackBar(const SnackBar(
         content: Text('لطفاً خوانش‌های مد نظر را علامتگذاری کنید.'),
         backgroundColor: Colors.red,
       ));
@@ -680,23 +664,17 @@ class MainFormWidgetState extends State<MainForm>
       _isLoading = false;
     });
     if (defProfile.item2.isNotEmpty) {
-      _key.currentState.showSnackBar(SnackBar(
+      _key.currentState!.showSnackBar(SnackBar(
         content: Text(
             'خطا در دریافت نمایهٔ فعال ، اطلاعات بیشتر ${defProfile.item2}'),
         backgroundColor: Colors.red,
       ));
       return;
     }
-    if (defProfile.item1 == null) {
-      _key.currentState.showSnackBar(const SnackBar(
-        content: Text('شما نمایهٔ پیش‌فرضی ندارید.'),
-        backgroundColor: Colors.red,
-      ));
-      return;
-    }
 
-    bool confirmed = await _confirm('تأییدیه',
-        'آیا از اعمال نمایهٔ ${defProfile.item1.name} به خوانش‌های علامتگذاری شده اطمینان دارید؟');
+    bool confirmed = true ==
+        await _confirm('تأییدیه',
+            'آیا از اعمال نمایهٔ ${defProfile.item1!.name} به خوانش‌های علامتگذاری شده اطمینان دارید؟');
     if (!confirmed) return;
 
     setState(() {
@@ -705,14 +683,14 @@ class MainFormWidgetState extends State<MainForm>
     var service = RecitationService();
     var profile = defProfile.item1;
     for (var recitation in markedRecitations) {
-      recitation.audioArtist = profile.artistName;
+      recitation.audioArtist = profile!.artistName;
       recitation.audioArtistUrl = profile.artistUrl;
       recitation.audioSrc = profile.audioSrc;
       recitation.audioSrcUrl = profile.audioSrcUrl;
 
       var res = await service.updateRecitation(recitation, false);
-      if (res.item1 == null || res.item2.isNotEmpty) {
-        _key.currentState.showSnackBar(SnackBar(
+      if (res.item2.isNotEmpty) {
+        _key.currentState!.showSnackBar(SnackBar(
           content: Text(res.item2),
           backgroundColor: Colors.red,
         ));
@@ -726,7 +704,7 @@ class MainFormWidgetState extends State<MainForm>
     await _loadData();
   }
 
-  Future<String> _getEmail() async {
+  Future<String?> _getEmail() async {
     return showDialog<String>(
       context: context,
       barrierDismissible: false,
@@ -743,47 +721,45 @@ class MainFormWidgetState extends State<MainForm>
 
   Future _transferOwnership() async {
     var markedProfiles =
-        _profiles.items.where((element) => element.isMarked).toList();
+        _profiles.items!.where((element) => element.isMarked).toList();
     if (markedProfiles.isEmpty) {
-      _key.currentState.showSnackBar(const SnackBar(
+      _key.currentState!.showSnackBar(const SnackBar(
         content: Text('لطفاً نمایه‌های مد نظر را علامتگذاری کنید.'),
         backgroundColor: Colors.red,
       ));
       return;
     }
-    String email = await _getEmail();
-    if (email != null) {
-      int transfered = 0;
-      for (var profile in markedProfiles) {
-        setState(() {
-          _isLoading = true;
-        });
+    String email = (await _getEmail())!;
+    int transfered = 0;
+    for (var profile in markedProfiles) {
+      setState(() {
+        _isLoading = true;
+      });
 
-        var ret = await RecitationService()
-            .transferRecitationsOwnership(email, profile.artistName, false);
+      var ret = await RecitationService()
+          .transferRecitationsOwnership(email, profile.artistName, false);
 
-        setState(() {
-          _isLoading = false;
-        });
+      setState(() {
+        _isLoading = false;
+      });
 
-        if (ret.item2.isNotEmpty) {
-          _key.currentState.showSnackBar(SnackBar(
-            content: Text(ret.item2),
-            backgroundColor: Colors.red,
-          ));
-          break;
-        } else {
-          transfered += ret.item1;
-        }
+      if (ret.item2.isNotEmpty) {
+        _key.currentState!.showSnackBar(SnackBar(
+          content: Text(ret.item2),
+          backgroundColor: Colors.red,
+        ));
+        break;
+      } else {
+        transfered += ret.item1;
       }
-
-      _key.currentState.showSnackBar(SnackBar(
-        content: Text('موارد منتقل شده: $transfered'),
-        backgroundColor: Colors.green,
-      ));
-
-      await _loadData();
     }
+
+    _key.currentState!.showSnackBar(SnackBar(
+      content: Text('موارد منتقل شده: $transfered'),
+      backgroundColor: Colors.green,
+    ));
+
+    await _loadData();
   }
 
   Widget get items {
@@ -830,17 +806,13 @@ class MainFormWidgetState extends State<MainForm>
   }
 
   String get currentPageText {
-    if (_narrations != null &&
-        _narrations.paginationMetadata != null &&
-        (_activeSection == GActiveFormSection.draftRecitations ||
-            _activeSection == GActiveFormSection.allMyRecitations ||
-            _activeSection == GActiveFormSection.allUsersPendingRecitations)) {
-      return 'صفحهٔ ${_narrations.paginationMetadata.currentPage} از ${_narrations.paginationMetadata.totalPages} (${_narrations.items.length} از ${_narrations.paginationMetadata.totalCount})';
+    if ((_activeSection == GActiveFormSection.draftRecitations ||
+        _activeSection == GActiveFormSection.allMyRecitations ||
+        _activeSection == GActiveFormSection.allUsersPendingRecitations)) {
+      return 'صفحهٔ ${_narrations.paginationMetadata!.currentPage} از ${_narrations.paginationMetadata!.totalPages} (${_narrations.items!.length} از ${_narrations.paginationMetadata!.totalCount})';
     }
-    if (_activeSection == GActiveFormSection.uploads &&
-        _uploads != null &&
-        _uploads.paginationMetadata != null) {
-      return 'صفحهٔ ${_uploads.paginationMetadata.currentPage} از ${_uploads.paginationMetadata.totalPages} (${_uploads.items.length} از ${_uploads.paginationMetadata.totalCount})';
+    if (_activeSection == GActiveFormSection.uploads) {
+      return 'صفحهٔ ${_uploads.paginationMetadata!.currentPage} از ${_uploads.paginationMetadata!.totalPages} (${_uploads.items!.length} از ${_uploads.paginationMetadata!.totalCount})';
     }
 
     return '';
@@ -869,20 +841,20 @@ class MainFormWidgetState extends State<MainForm>
                         tooltip: 'علامتگذاری همه',
                         onPressed: () {
                           if (_activeSection == GActiveFormSection.profiles) {
-                            for (var item in _profiles.items) {
+                            for (var item in _profiles.items!) {
                               setState(() {
                                 item.isMarked = true;
                               });
                             }
                           } else if (_activeSection ==
                               GActiveFormSection.notifications) {
-                            for (var item in _notifications.items) {
+                            for (var item in _notifications.items!) {
                               setState(() {
                                 item.isMarked = true;
                               });
                             }
                           } else {
-                            for (var item in _narrations.items) {
+                            for (var item in _narrations.items!) {
                               setState(() {
                                 item.isMarked = true;
                               });
@@ -897,20 +869,20 @@ class MainFormWidgetState extends State<MainForm>
                         tooltip: 'برداشتن علامت همه',
                         onPressed: () {
                           if (_activeSection == GActiveFormSection.profiles) {
-                            for (var item in _profiles.items) {
+                            for (var item in _profiles.items!) {
                               setState(() {
                                 item.isMarked = false;
                               });
                             }
                           } else if (_activeSection ==
                               GActiveFormSection.notifications) {
-                            for (var item in _notifications.items) {
+                            for (var item in _notifications.items!) {
                               setState(() {
                                 item.isMarked = false;
                               });
                             }
                           } else {
-                            for (var item in _narrations.items) {
+                            for (var item in _narrations.items!) {
                               setState(() {
                                 item.isMarked = false;
                               });
@@ -975,11 +947,11 @@ class MainFormWidgetState extends State<MainForm>
                         icon: const Icon(Icons.publish),
                         tooltip: 'درخواست بررسی',
                         onPressed: () async {
-                          var markedNarrations = _narrations.items
+                          var markedNarrations = _narrations.items!
                               .where((element) => element.isMarked)
                               .toList();
                           if (markedNarrations.isEmpty) {
-                            _key.currentState.showSnackBar(const SnackBar(
+                            _key.currentState!.showSnackBar(const SnackBar(
                               content: Text(
                                   'لطفاً خوانش‌های مد نظر را علامتگذاری کنید.'),
                               backgroundColor: Colors.red,
@@ -989,7 +961,7 @@ class MainFormWidgetState extends State<MainForm>
                           String confirmation = markedNarrations.length > 1
                               ? 'آیا از تغییر وضعیت به درخواست بررسی ${markedNarrations.length} خوانش علامتگذاری شده اطمینان دارید؟'
                               : 'آیا از تغییر وضعیت به درخواست بررسی «${markedNarrations[0].audioTitle}» اطمینان دارید؟';
-                          if (await _confirm('تأییدیه', confirmation)) {
+                          if (await _confirm('تأییدیه', confirmation) == true) {
                             setState(() {
                               _isLoading = true;
                             });
@@ -998,17 +970,15 @@ class MainFormWidgetState extends State<MainForm>
                               var updateRes = await RecitationService()
                                   .updateRecitation(item, false);
                               if (updateRes.item2.isNotEmpty) {
-                                _key.currentState.showSnackBar(SnackBar(
+                                _key.currentState!.showSnackBar(SnackBar(
                                   content: Text(
                                       'خطا در تغییر وضعیت خوانش ${item.audioTitle}، اطلاعات بیشتر ${updateRes.item2}'),
                                   backgroundColor: Colors.red,
                                 ));
                               }
-                              if (updateRes.item1 != null) {
-                                setState(() {
-                                  _narrations.items.remove(item);
-                                });
-                              }
+                              setState(() {
+                                _narrations.items!.remove(item);
+                              });
                             }
                             setState(() {
                               _isLoading = false;
@@ -1026,11 +996,11 @@ class MainFormWidgetState extends State<MainForm>
                         icon: const Icon(Icons.publish),
                         tooltip: 'انتشار',
                         onPressed: () async {
-                          var markedNarrations = _narrations.items
+                          var markedNarrations = _narrations.items!
                               .where((element) => element.isMarked)
                               .toList();
                           if (markedNarrations.isEmpty) {
-                            _key.currentState.showSnackBar(const SnackBar(
+                            _key.currentState!.showSnackBar(const SnackBar(
                               content: Text(
                                   'لطفاً خوانش‌های مد نظر را علامتگذاری کنید.'),
                               backgroundColor: Colors.red,
@@ -1040,7 +1010,7 @@ class MainFormWidgetState extends State<MainForm>
                           String confirmation = markedNarrations.length > 1
                               ? 'آیا از انتشار ${markedNarrations.length} خوانش علامتگذاری شده اطمینان دارید؟'
                               : 'آیا از انتشار «${markedNarrations[0].audioTitle}» اطمینان دارید؟';
-                          if (await _confirm('تأییدیه', confirmation)) {
+                          if (await _confirm('تأییدیه', confirmation) == true) {
                             setState(() {
                               _isLoading = true;
                             });
@@ -1053,17 +1023,15 @@ class MainFormWidgetState extends State<MainForm>
                                       '',
                                       false);
                               if (updateRes.item2.isNotEmpty) {
-                                _key.currentState.showSnackBar(SnackBar(
+                                _key.currentState!.showSnackBar(SnackBar(
                                   content: Text(
                                       'خطا در تغییر وضعیت خوانش ${item.audioTitle}، اطلاعات بیشتر ${updateRes.item2}'),
                                   backgroundColor: Colors.red,
                                 ));
                               }
-                              if (updateRes.item1 != null) {
-                                setState(() {
-                                  _narrations.items.remove(item);
-                                });
-                              }
+                              setState(() {
+                                _narrations.items!.remove(item);
+                              });
                             }
                             setState(() {
                               _isLoading = false;
@@ -1097,7 +1065,7 @@ class MainFormWidgetState extends State<MainForm>
                           _isLoading = false;
                         });
                         if (ret.isNotEmpty) {
-                          _key.currentState.showSnackBar(SnackBar(
+                          _key.currentState!.showSnackBar(SnackBar(
                             content: Text('خطا در تلاش مجدد: $ret'),
                             backgroundColor: Colors.red,
                           ));
@@ -1113,7 +1081,8 @@ class MainFormWidgetState extends State<MainForm>
                         tooltip: 'انتقال خوانش‌های فریدون فرح‌اندوز',
                         onPressed: () async {
                           if (await _confirm('انتقال به بالا',
-                              'از انتقال خوانشهای فریدون فرح‌اندوز به بالا اطمینان دارید؟')) {
+                                  'از انتقال خوانشهای فریدون فرح‌اندوز به بالا اطمینان دارید؟') ==
+                              true) {
                             setState(() {
                               _isLoading = true;
                             });
@@ -1126,12 +1095,12 @@ class MainFormWidgetState extends State<MainForm>
                             });
 
                             if (ret.item2.isNotEmpty) {
-                              _key.currentState.showSnackBar(SnackBar(
+                              _key.currentState!.showSnackBar(SnackBar(
                                 content: Text(ret.item2),
                                 backgroundColor: Colors.red,
                               ));
                             } else {
-                              _key.currentState.showSnackBar(SnackBar(
+                              _key.currentState!.showSnackBar(SnackBar(
                                 content: Text(
                                     'تعداد خوانش‌های تحت تأثیر قرار گرفته: ${ret.item1}'),
                                 backgroundColor: Colors.green,
@@ -1169,7 +1138,7 @@ class MainFormWidgetState extends State<MainForm>
                         if (_activeSection !=
                             GActiveFormSection.draftRecitations) {
                           setState(() {
-                            _narrations.items.clear();
+                            _narrations.items!.clear();
                             _narrationsPageNumber = 1;
                             _activeSection =
                                 GActiveFormSection.draftRecitations;
@@ -1211,7 +1180,7 @@ class MainFormWidgetState extends State<MainForm>
                             GActiveFormSection.allMyRecitations) {
                           setState(() {
                             _narrationsPageNumber = 1;
-                            _narrations.items.clear();
+                            _narrations.items!.clear();
                             _activeSection =
                                 GActiveFormSection.allMyRecitations;
                           });
@@ -1236,7 +1205,7 @@ class MainFormWidgetState extends State<MainForm>
                                 GActiveFormSection.allUsersPendingRecitations) {
                               setState(() {
                                 _narrationsPageNumber = 1;
-                                _narrations.items.clear();
+                                _narrations.items!.clear();
                                 _activeSection = GActiveFormSection
                                     .allUsersPendingRecitations;
                               });
@@ -1261,7 +1230,7 @@ class MainFormWidgetState extends State<MainForm>
                                 GActiveFormSection.reportedRecitations) {
                               setState(() {
                                 _narrationsPageNumber = 1;
-                                _reporteds.items.clear();
+                                _reporteds.items!.clear();
                                 _activeSection =
                                     GActiveFormSection.reportedRecitations;
                               });
@@ -1368,7 +1337,7 @@ class MainFormWidgetState extends State<MainForm>
                             GActiveFormSection.recitationsWithMistakes) {
                           setState(() {
                             _narrationsPageNumber = 1;
-                            _narrations.items.clear();
+                            _narrations.items!.clear();
                             _activeSection =
                                 GActiveFormSection.recitationsWithMistakes;
                           });
@@ -1391,7 +1360,7 @@ class MainFormWidgetState extends State<MainForm>
                             GActiveFormSection.rejectedRecitaions) {
                           setState(() {
                             _narrationsPageNumber = 1;
-                            _narrations.items.clear();
+                            _narrations.items!.clear();
                             _activeSection =
                                 GActiveFormSection.rejectedRecitaions;
                           });
@@ -1500,7 +1469,7 @@ class MainFormWidgetState extends State<MainForm>
                                 _narrations.paginationMetadata == null
                                     ? 1
                                     : _narrations
-                                            .paginationMetadata.currentPage -
+                                            .paginationMetadata!.currentPage -
                                         1;
                             if (_narrationsPageNumber <= 0) {
                               _narrationsPageNumber = 1;
@@ -1511,7 +1480,7 @@ class MainFormWidgetState extends State<MainForm>
                             _uploadsPageNumber = _uploads.paginationMetadata ==
                                     null
                                 ? 1
-                                : _uploads.paginationMetadata.currentPage - 1;
+                                : _uploads.paginationMetadata!.currentPage - 1;
                             if (_uploadsPageNumber <= 0) _uploadsPageNumber = 1;
                             await _loadData();
                           }
@@ -1541,7 +1510,7 @@ class MainFormWidgetState extends State<MainForm>
                                 _narrations.paginationMetadata == null
                                     ? 1
                                     : _narrations
-                                            .paginationMetadata.currentPage +
+                                            .paginationMetadata!.currentPage +
                                         1;
                             await _loadData();
                           } else if (_activeSection ==
@@ -1549,7 +1518,7 @@ class MainFormWidgetState extends State<MainForm>
                             _uploadsPageNumber = _uploads.paginationMetadata ==
                                     null
                                 ? 1
-                                : _uploads.paginationMetadata.currentPage + 1;
+                                : _uploads.paginationMetadata!.currentPage + 1;
                             await _loadData();
                           }
                         },
@@ -1577,14 +1546,15 @@ class MainFormWidgetState extends State<MainForm>
                             _narrationsPageNumber =
                                 _narrations.paginationMetadata == null
                                     ? 1
-                                    : _narrations.paginationMetadata.totalPages;
+                                    : _narrations
+                                        .paginationMetadata!.totalPages;
                             await _loadData();
                           } else if (_activeSection ==
                               GActiveFormSection.uploads) {
                             _uploadsPageNumber =
                                 _uploads.paginationMetadata == null
                                     ? 1
-                                    : _uploads.paginationMetadata.totalPages;
+                                    : _uploads.paginationMetadata!.totalPages;
                             await _loadData();
                           }
                         },
@@ -1603,13 +1573,11 @@ class MainFormWidgetState extends State<MainForm>
                         tooltip: 'جستجو',
                         onPressed: () async {
                           var res = await _getSearchParams();
-                          if (res != null) {
-                            setState(() {
-                              _pageSize = res.item1;
-                              _searchTerm = res.item2;
-                            });
-                            await _loadData();
-                          }
+                          setState(() {
+                            _pageSize = res!.item1;
+                            _searchTerm = res.item2;
+                          });
+                          await _loadData();
                         },
                       )),
                   IconButton(
@@ -1666,7 +1634,7 @@ class MainFormWidgetState extends State<MainForm>
                     case GActiveFormSection.recitationsWithMistakes:
                     case GActiveFormSection.synchronizationQueue:
                       if (!_audioUpdateEnabled) {
-                        _key.currentState.showSnackBar(const SnackBar(
+                        _key.currentState!.showSnackBar(const SnackBar(
                           content: Text(
                               'ارسال خوانش جدید به دلیل تغییرات فنی سایت موقتاً غیرفعال است.'),
                           backgroundColor: Colors.red,
@@ -1680,31 +1648,29 @@ class MainFormWidgetState extends State<MainForm>
                       break;
                     case GActiveFormSection.profiles:
                       var result = await _newProfile();
-                      if (result != null) {
+                      setState(() {
+                        _isLoading = true;
+                      });
+                      var serviceResult =
+                          await RecitationService().addProfile(result!, false);
+                      setState(() {
+                        _isLoading = false;
+                      });
+                      if (serviceResult.item2 == '') {
                         setState(() {
-                          _isLoading = true;
-                        });
-                        var serviceResult =
-                            await RecitationService().addProfile(result, false);
-                        setState(() {
-                          _isLoading = false;
-                        });
-                        if (serviceResult.item2 == '') {
-                          setState(() {
-                            if (serviceResult.item1.isDefault) {
-                              for (var item in _profiles.items) {
-                                item.isDefault = false;
-                              }
+                          if (serviceResult.item1!.isDefault) {
+                            for (var item in _profiles.items!) {
+                              item.isDefault = false;
                             }
-                            _profiles.items.insert(0, serviceResult.item1);
-                          });
-                        } else {
-                          _key.currentState.showSnackBar(SnackBar(
-                            content: Text(
-                                'خطا در ایجاد نمایه: ${serviceResult.item2}'),
-                            backgroundColor: Colors.red,
-                          ));
-                        }
+                          }
+                          _profiles.items!.insert(0, serviceResult.item1!);
+                        });
+                      } else {
+                        _key.currentState!.showSnackBar(SnackBar(
+                          content: Text(
+                              'خطا در ایجاد نمایه: ${serviceResult.item2}'),
+                          backgroundColor: Colors.red,
+                        ));
                       }
                       break;
                   }

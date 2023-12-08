@@ -7,17 +7,14 @@ class PaginationMetadata {
   final bool hasNextPage;
 
   PaginationMetadata(
-      {this.totalCount,
-      this.pageSize,
-      this.currentPage,
-      this.totalPages,
-      this.hasPreviousPage,
-      this.hasNextPage});
+      {required this.totalCount,
+      required this.pageSize,
+      required this.currentPage,
+      required this.totalPages,
+      required this.hasPreviousPage,
+      required this.hasNextPage});
 
   factory PaginationMetadata.fromJson(Map<String, dynamic> json) {
-    if (json == null) {
-      return null;
-    }
     return PaginationMetadata(
       totalCount: json['totalCount'],
       pageSize: json['pageSize'],

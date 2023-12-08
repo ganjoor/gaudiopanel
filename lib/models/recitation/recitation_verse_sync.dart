@@ -4,12 +4,11 @@ class RecitationVerseSync {
   final int audioStartMilliseconds;
 
   RecitationVerseSync(
-      {this.verseOrder, this.verseText, this.audioStartMilliseconds});
+      {required this.verseOrder,
+      required this.verseText,
+      required this.audioStartMilliseconds});
 
   factory RecitationVerseSync.fromJson(Map<String, dynamic> json) {
-    if (json == null) {
-      return null;
-    }
     return RecitationVerseSync(
         verseOrder: json['verseOrder'],
         verseText: json['verseText'],
