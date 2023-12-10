@@ -55,6 +55,16 @@ class ControlButtons extends StatelessWidget {
                 iconSize: 64.0,
                 onPressed: () async {
                   var service = RecitationService();
+                  if (narration.verses == null) {
+                    loadingStateChanged(true);
+                    var res = await service.getVerses(narration.id);
+                    loadingStateChanged(false);
+                    if (res.item2.isNotEmpty) {
+                      snackbarNeeded(res.item2);
+                    } else {
+                      narration.verses = res.item1;
+                    }
+                  }
                   await player.setUrl(service.getAudioFileUrl(narration.id));
                   await player.play();
                 },
