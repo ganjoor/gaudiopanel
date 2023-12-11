@@ -375,9 +375,9 @@ class MainFormWidgetState extends State<MainForm>
     );
   }
 
-  Future<bool?> _getNewRecitationParams(
+  Future<(bool replace, bool commentary)?> _getNewRecitationParams(
       UserRecitationProfileViewModel profile) async {
-    return showDialog<bool>(
+    return showDialog<(bool replace, bool commentary)>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
@@ -455,8 +455,9 @@ class MainFormWidgetState extends State<MainForm>
       ));
       return;
     }
-    var replace = await _getNewRecitationParams(profileResult.item1!);
-    if (replace == null) return;
+    (bool replace, bool commentary)? res =
+        await _getNewRecitationParams(profileResult.item1!);
+    if (res == null) return;
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       allowMultiple: true,
       type: FileType.custom,
@@ -468,7 +469,7 @@ class MainFormWidgetState extends State<MainForm>
       });
 
       String err = await UploadRecitationService()
-          .uploadFiles(result.files, replace, false);
+          .uploadFiles(result.files, res.$1, res.$2, false);
 
       if (err.isNotEmpty) {
         _key.currentState!.showSnackBar(SnackBar(

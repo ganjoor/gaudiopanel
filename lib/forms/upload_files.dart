@@ -13,6 +13,7 @@ class _UploadFilesState extends State<UploadFiles> {
   final TextEditingController _profileController = TextEditingController();
 
   bool _replace = true;
+  bool _commentary = false;
 
   @override
   void dispose() {
@@ -58,6 +59,24 @@ class _UploadFilesState extends State<UploadFiles> {
               ),
               const Text(
                   'اگر گزینهٔ جایگزینی خوانش‌های موجود فعال باشد و شما خوانشی برای یک شعر با نام خوانشگر یکسان با خوانش ارسالی داشته باشید این خوانش جایگزین آن خواهد شد. به این ترتیب موقعیت خوانش شما حفظ می‌شود.'),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Text('شرح صوتی'),
+                      Switch(
+                          value: _commentary,
+                          onChanged: (value) {
+                            setState(() {
+                              _commentary = value;
+                            });
+                          })
+                    ]),
+              ),
+              const Text(
+                  'شرح‌های صوتی در بخشی جدا از خوانش‌ها نمایش داده می‌شوند.'),
               const Text('برای هر خوانش یک زوج فایل (mp3+xml) مورد نیاز است. '),
               const Text(
                   'فایل‌های xml را با همگام‌سازی خوانش با متن شعر در گنجور رومیزی تولید کنید.'),
@@ -71,7 +90,8 @@ class _UploadFilesState extends State<UploadFiles> {
                       ElevatedButton(
                         child: const Text('انتخاب و ارسال فایل‌ها'),
                         onPressed: () {
-                          Navigator.of(context).pop(_replace);
+                          Navigator.of(context).pop(
+                              (replace: _replace, commentary: _commentary));
                         },
                       ),
                       TextButton(
