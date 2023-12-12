@@ -32,7 +32,7 @@ import 'main-form-sections/reported_data_section.dart';
 enum GActiveFormSection {
   draftRecitations,
   allMyRecitations,
-  allUsersPendingRecitations,
+  allUsersPendingNormalRecitations,
   uploads,
   profiles,
   synchronizationQueue,
@@ -40,6 +40,7 @@ enum GActiveFormSection {
   reportedRecitations,
   rejectedRecitaions,
   recitationsWithMistakes,
+  allUsersPendingCommentaryRecitations,
 }
 
 class MainForm extends StatefulWidget {
@@ -90,8 +91,10 @@ class MainFormWidgetState extends State<MainForm>
         return 'خوانش‌های پیش‌نویس من';
       case GActiveFormSection.allMyRecitations:
         return 'همهٔ خوانش‌های من';
-      case GActiveFormSection.allUsersPendingRecitations:
+      case GActiveFormSection.allUsersPendingNormalRecitations:
         return 'خوانش‌های در انتظار تأیید';
+      case GActiveFormSection.allUsersPendingCommentaryRecitations:
+        return 'شرح‌های صوتی در انتظار تأیید';
       case GActiveFormSection.notifications:
         return 'اعلان‌های من';
       case GActiveFormSection.reportedRecitations:
@@ -105,25 +108,32 @@ class MainFormWidgetState extends State<MainForm>
     }
   }
 
-  Future<void> _loadNarrationsData() async {
+  Future<void> _loadNarrationsData(bool commentaries) async {
     setState(() {
       _isLoading = true;
     });
     var narrations = await RecitationService().getRecitations(
-        _narrationsPageNumber,
-        _pageSize,
-        _activeSection == GActiveFormSection.allUsersPendingRecitations,
-        _activeSection == GActiveFormSection.allMyRecitations ||
+        pageNumber: _narrationsPageNumber,
+        pageSize: _pageSize,
+        allUsers: _activeSection ==
+                GActiveFormSection.allUsersPendingNormalRecitations ||
+            _activeSection ==
+                GActiveFormSection.allUsersPendingCommentaryRecitations,
+        status: _activeSection == GActiveFormSection.allMyRecitations ||
                 _activeSection == GActiveFormSection.recitationsWithMistakes
             ? -1
-            : _activeSection == GActiveFormSection.allUsersPendingRecitations
+            : _activeSection ==
+                        GActiveFormSection.allUsersPendingNormalRecitations ||
+                    _activeSection ==
+                        GActiveFormSection.allUsersPendingCommentaryRecitations
                 ? 1
                 : _activeSection == GActiveFormSection.rejectedRecitaions
                     ? 4
                     : 0,
-        _searchTerm,
-        _activeSection == GActiveFormSection.recitationsWithMistakes,
-        false);
+        searchTerm: _searchTerm,
+        mistakes: _activeSection == GActiveFormSection.recitationsWithMistakes,
+        commentaries: commentaries,
+        error401: false);
     if (narrations.error!.isEmpty) {
       setState(() {
         _narrations.items!.clear();
@@ -287,10 +297,12 @@ class MainFormWidgetState extends State<MainForm>
     switch (_activeSection) {
       case GActiveFormSection.draftRecitations:
       case GActiveFormSection.allMyRecitations:
-      case GActiveFormSection.allUsersPendingRecitations:
+      case GActiveFormSection.allUsersPendingNormalRecitations:
+      case GActiveFormSection.allUsersPendingCommentaryRecitations:
       case GActiveFormSection.rejectedRecitaions:
       case GActiveFormSection.recitationsWithMistakes:
-        await _loadNarrationsData();
+        await _loadNarrationsData(_activeSection ==
+            GActiveFormSection.allUsersPendingCommentaryRecitations);
         break;
       case GActiveFormSection.uploads:
         await _loadUploadsData();
@@ -768,7 +780,8 @@ class MainFormWidgetState extends State<MainForm>
     switch (_activeSection) {
       case GActiveFormSection.draftRecitations:
       case GActiveFormSection.allMyRecitations:
-      case GActiveFormSection.allUsersPendingRecitations:
+      case GActiveFormSection.allUsersPendingNormalRecitations:
+      case GActiveFormSection.allUsersPendingCommentaryRecitations:
       case GActiveFormSection.rejectedRecitaions:
       case GActiveFormSection.recitationsWithMistakes:
         return RecitationsDataSection(
@@ -777,7 +790,11 @@ class MainFormWidgetState extends State<MainForm>
           snackbarNeeded: _snackbarNeeded,
           status: _activeSection == GActiveFormSection.draftRecitations
               ? 0
-              : _activeSection == GActiveFormSection.allUsersPendingRecitations
+              : _activeSection ==
+                          GActiveFormSection.allUsersPendingNormalRecitations ||
+                      _activeSection ==
+                          GActiveFormSection
+                              .allUsersPendingCommentaryRecitations
                   ? 1
                   : _activeSection == GActiveFormSection.recitationsWithMistakes
                       ? 5
@@ -810,7 +827,9 @@ class MainFormWidgetState extends State<MainForm>
   String get currentPageText {
     if ((_activeSection == GActiveFormSection.draftRecitations ||
         _activeSection == GActiveFormSection.allMyRecitations ||
-        _activeSection == GActiveFormSection.allUsersPendingRecitations)) {
+        _activeSection == GActiveFormSection.allUsersPendingNormalRecitations ||
+        _activeSection ==
+            GActiveFormSection.allUsersPendingCommentaryRecitations)) {
       if (_narrations.paginationMetadata == null) return '';
       return 'صفحهٔ ${_narrations.paginationMetadata!.currentPage} از ${_narrations.paginationMetadata!.totalPages} (${_narrations.items!.length} از ${_narrations.paginationMetadata!.totalCount})';
     }
@@ -995,7 +1014,8 @@ class MainFormWidgetState extends State<MainForm>
                                   GActiveFormSection.draftRecitations &&
                               _canPublish) ||
                           (_activeSection ==
-                              GActiveFormSection.allUsersPendingRecitations),
+                              GActiveFormSection
+                                  .allUsersPendingNormalRecitations),
                       child: IconButton(
                         icon: const Icon(Icons.publish),
                         tooltip: 'انتشار',
@@ -1203,15 +1223,44 @@ class MainFormWidgetState extends State<MainForm>
                           leading: Icon(Icons.music_note,
                               color: Theme.of(context).primaryColor),
                           selected: _activeSection ==
-                              GActiveFormSection.allUsersPendingRecitations,
+                              GActiveFormSection
+                                  .allUsersPendingNormalRecitations,
                           onTap: () async {
                             if (_activeSection !=
-                                GActiveFormSection.allUsersPendingRecitations) {
+                                GActiveFormSection
+                                    .allUsersPendingNormalRecitations) {
                               setState(() {
                                 _narrationsPageNumber = 1;
                                 _narrations.items!.clear();
                                 _activeSection = GActiveFormSection
-                                    .allUsersPendingRecitations;
+                                    .allUsersPendingNormalRecitations;
+                              });
+                              await _loadData();
+
+                              if (!mounted) return;
+
+                              Navigator.of(context).pop(); //close drawer
+                            }
+                          },
+                        )),
+                    Visibility(
+                        visible: _canModerate,
+                        child: ListTile(
+                          title: const Text('شرح‌های صوتی در انتظار تأیید'),
+                          leading: Icon(Icons.music_note,
+                              color: Theme.of(context).primaryColor),
+                          selected: _activeSection ==
+                              GActiveFormSection
+                                  .allUsersPendingCommentaryRecitations,
+                          onTap: () async {
+                            if (_activeSection !=
+                                GActiveFormSection
+                                    .allUsersPendingCommentaryRecitations) {
+                              setState(() {
+                                _narrationsPageNumber = 1;
+                                _narrations.items!.clear();
+                                _activeSection = GActiveFormSection
+                                    .allUsersPendingCommentaryRecitations;
                               });
                               await _loadData();
 
@@ -1433,7 +1482,7 @@ class MainFormWidgetState extends State<MainForm>
                                   GActiveFormSection.allMyRecitations ||
                               _activeSection ==
                                   GActiveFormSection
-                                      .allUsersPendingRecitations ||
+                                      .allUsersPendingNormalRecitations ||
                               _activeSection ==
                                   GActiveFormSection.recitationsWithMistakes ||
                               _activeSection ==
@@ -1462,7 +1511,7 @@ class MainFormWidgetState extends State<MainForm>
                                   GActiveFormSection.allMyRecitations ||
                               _activeSection ==
                                   GActiveFormSection
-                                      .allUsersPendingRecitations ||
+                                      .allUsersPendingNormalRecitations ||
                               _activeSection ==
                                   GActiveFormSection.recitationsWithMistakes ||
                               _activeSection ==
@@ -1503,7 +1552,7 @@ class MainFormWidgetState extends State<MainForm>
                                   GActiveFormSection.allMyRecitations ||
                               _activeSection ==
                                   GActiveFormSection
-                                      .allUsersPendingRecitations ||
+                                      .allUsersPendingNormalRecitations ||
                               _activeSection ==
                                   GActiveFormSection.recitationsWithMistakes ||
                               _activeSection ==
@@ -1540,7 +1589,7 @@ class MainFormWidgetState extends State<MainForm>
                                   GActiveFormSection.allMyRecitations ||
                               _activeSection ==
                                   GActiveFormSection
-                                      .allUsersPendingRecitations ||
+                                      .allUsersPendingNormalRecitations ||
                               _activeSection ==
                                   GActiveFormSection.recitationsWithMistakes ||
                               _activeSection ==
@@ -1630,7 +1679,9 @@ class MainFormWidgetState extends State<MainForm>
                   switch (_activeSection) {
                     case GActiveFormSection.draftRecitations:
                     case GActiveFormSection.allMyRecitations:
-                    case GActiveFormSection.allUsersPendingRecitations:
+                    case GActiveFormSection.allUsersPendingNormalRecitations:
+                    case GActiveFormSection
+                          .allUsersPendingCommentaryRecitations:
                     case GActiveFormSection.uploads:
                     case GActiveFormSection.notifications:
                     case GActiveFormSection.reportedRecitations:
