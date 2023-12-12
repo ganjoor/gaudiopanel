@@ -68,6 +68,14 @@ class _RejectRecitationState extends State<RejectRecitation> {
                     },
                   )),
               Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    child: const Text('شرح صوتی نیست'),
+                    onPressed: () {
+                      Navigator.of(context).pop('شرح صوتی نیست');
+                    },
+                  )),
+              Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   controller: _causeController,

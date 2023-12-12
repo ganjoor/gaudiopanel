@@ -34,7 +34,7 @@ class RecitationService {
     try {
       LoggedOnUserModel? userInfo = await _storageService.userInfo;
       var apiRoot = GServiceAddress.url;
-      int recitationType = commentaries ? 1 : 0;
+      int recitationType = commentaries ? 1 : 1000;
       http.Response response = await http.get(
           Uri.parse(
               '$apiRoot/api/audio?PageNumber=$pageNumber&PageSize=$pageSize&allUsers=$allUsers&status=$status&mistakes=$mistakes&recitationType=$recitationType&searchTerm=$searchTerm'),

@@ -71,47 +71,52 @@ class RecitationViewModel {
   int reviewStatus;
   List<RecitationVerseSync>? verses;
   final String? reviewMsg;
+  final int recitationType;
 
-  RecitationViewModel(
-      {required this.id,
-      required this.owner,
-      required this.ganjoorAudioId,
-      required this.ganjoorPostId,
-      required this.poemFullTitle,
-      required this.poemFullUrl,
-      required this.mp3Url,
-      required this.xmlUrl,
-      required this.audioTitle,
-      required this.audioArtist,
-      required this.audioArtistUrl,
-      required this.audioSrc,
-      required this.audioSrcUrl,
-      required this.mp3SizeInBytes,
-      required this.uploadDate,
-      required this.audioSyncStatus,
-      required this.reviewStatus,
-      required this.reviewMsg});
+  RecitationViewModel({
+    required this.id,
+    required this.owner,
+    required this.ganjoorAudioId,
+    required this.ganjoorPostId,
+    required this.poemFullTitle,
+    required this.poemFullUrl,
+    required this.mp3Url,
+    required this.xmlUrl,
+    required this.audioTitle,
+    required this.audioArtist,
+    required this.audioArtistUrl,
+    required this.audioSrc,
+    required this.audioSrcUrl,
+    required this.mp3SizeInBytes,
+    required this.uploadDate,
+    required this.audioSyncStatus,
+    required this.reviewStatus,
+    required this.reviewMsg,
+    required this.recitationType,
+  });
 
   factory RecitationViewModel.fromJson(Map<String, dynamic> json) {
     return RecitationViewModel(
-        id: json['id'],
-        owner: PublicRAppUser.fromJson(json['owner']),
-        ganjoorAudioId: json['ganjoorAudioId'],
-        ganjoorPostId: json['ganjoorPostId'],
-        poemFullTitle: json['poemFullTitle'],
-        poemFullUrl: json['poemFullUrl'],
-        mp3Url: json['mp3Url'],
-        xmlUrl: json['xmlUrl'],
-        audioTitle: json['audioTitle'],
-        audioArtist: json['audioArtist'],
-        audioArtistUrl: json['audioArtistUrl'],
-        audioSrc: json['audioSrc'],
-        audioSrcUrl: json['audioSrcUrl'],
-        mp3SizeInBytes: json['mp3SizeInBytes'],
-        uploadDate: json['uploadDate'],
-        audioSyncStatus: json['audioSyncStatus'],
-        reviewStatus: json['reviewStatus'],
-        reviewMsg: json['reviewMsg']);
+      id: json['id'],
+      owner: PublicRAppUser.fromJson(json['owner']),
+      ganjoorAudioId: json['ganjoorAudioId'],
+      ganjoorPostId: json['ganjoorPostId'],
+      poemFullTitle: json['poemFullTitle'],
+      poemFullUrl: json['poemFullUrl'],
+      mp3Url: json['mp3Url'],
+      xmlUrl: json['xmlUrl'],
+      audioTitle: json['audioTitle'],
+      audioArtist: json['audioArtist'],
+      audioArtistUrl: json['audioArtistUrl'],
+      audioSrc: json['audioSrc'],
+      audioSrcUrl: json['audioSrcUrl'],
+      mp3SizeInBytes: json['mp3SizeInBytes'],
+      uploadDate: json['uploadDate'],
+      audioSyncStatus: json['audioSyncStatus'],
+      reviewStatus: json['reviewStatus'],
+      reviewMsg: json['reviewMsg'],
+      recitationType: json['recitationType'],
+    );
   }
 
   toJson() {
@@ -134,6 +139,7 @@ class RecitationViewModel {
     m['audioSyncStatus'] = audioSyncStatus;
     m['reviewStatus'] = reviewStatus;
     m['reviewMsg'] = reviewMsg;
+    m['recitationType'] = recitationType;
     return m;
   }
 }
