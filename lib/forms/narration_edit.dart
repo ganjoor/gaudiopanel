@@ -158,6 +158,7 @@ class _NarrationEditState extends State<NarrationEdit>
                             } else {
                               widget.narration.recitationType = 0;
                             }
+                            widget.narration.isModified = true;
                             setState(() {});
                           })
                     ]),
