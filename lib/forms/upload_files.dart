@@ -90,8 +90,7 @@ class _UploadFilesState extends State<UploadFiles> {
                       ElevatedButton(
                         child: const Text('انتخاب و ارسال فایل‌ها'),
                         onPressed: () {
-                          Navigator.of(context).pop(
-                              (replace: _replace, commentary: _commentary));
+                          Navigator.of(context).pop((_replace, _commentary));
                         },
                       ),
                       TextButton(

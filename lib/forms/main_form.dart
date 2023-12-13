@@ -470,6 +470,13 @@ class MainFormWidgetState extends State<MainForm>
     (bool replace, bool commentary)? res =
         await _getNewRecitationParams(profileResult.item1!);
     if (res == null) return;
+    if (res.$2 == true) {
+      if (false !=
+          await _confirm('تأییدیه',
+              'شما گزینهٔ شرح صوتی را فعال کرده‌اید.\r\nآیا این در اثر اشتباه بوده است؟')) {
+        return;
+      }
+    }
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       allowMultiple: true,
       type: FileType.custom,
