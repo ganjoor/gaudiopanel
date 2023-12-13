@@ -143,20 +143,24 @@ class _NarrationEditState extends State<NarrationEdit>
                               },
                             )))),
               ),
-              Visibility(
-                visible: widget.narration.recitationType == 1,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Text('شرح صوتی'),
-                        Switch(
-                            value: widget.narration.recitationType == 1,
-                            onChanged: (_) {})
-                      ]),
-                ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Text('شرح صوتی'),
+                      Switch(
+                          value: widget.narration.recitationType == 1,
+                          onChanged: (value) {
+                            if (value) {
+                              widget.narration.recitationType = 1;
+                            } else {
+                              widget.narration.recitationType = 0;
+                            }
+                            setState(() {});
+                          })
+                    ]),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),

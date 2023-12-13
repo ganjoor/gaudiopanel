@@ -71,7 +71,7 @@ class RecitationViewModel {
   int reviewStatus;
   List<RecitationVerseSync>? verses;
   final String? reviewMsg;
-  final int recitationType;
+  int recitationType;
 
   RecitationViewModel({
     required this.id,
