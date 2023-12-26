@@ -1022,7 +1022,10 @@ class MainFormWidgetState extends State<MainForm>
                               _canPublish) ||
                           (_activeSection ==
                               GActiveFormSection
-                                  .allUsersPendingNormalRecitations),
+                                  .allUsersPendingNormalRecitations) ||
+                          (_activeSection ==
+                              GActiveFormSection
+                                  .allUsersPendingCommentaryRecitations),
                       child: IconButton(
                         icon: const Icon(Icons.publish),
                         tooltip: 'انتشار',
