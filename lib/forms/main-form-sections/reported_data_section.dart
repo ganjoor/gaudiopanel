@@ -115,8 +115,17 @@ class _ProfilesState extends State<ReportedDataSection> {
               leading: IconButton(
                 icon: const Icon(Icons.open_in_browser),
                 onPressed: () async {
+                  var res = await RecitationService()
+                      .getPublishedRecitationById(
+                          id: widget
+                              .reportedRecitations.items![index].recitationId,
+                          error401: false);
+                  if (res.item2.isNotEmpty) {
+                    await _showMyDialog(res.item2);
+                    return;
+                  }
                   var url =
-                      'http://ava.ganjoor.net/#/${widget.reportedRecitations.items![index].recitationId}';
+                      'https://ganjoor.net${res.item1!.poemFullUrl}?allaudio=1#${res.item1!.id}';
                   if (await canLaunchUrl(Uri.parse(url))) {
                     await launchUrl(Uri.parse(url));
                   } else {

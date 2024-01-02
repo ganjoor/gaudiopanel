@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:gaudiopanel/models/auth/logged_on_user_model.dart';
 import 'package:gaudiopanel/models/common/pagination_metadata.dart';
+import 'package:gaudiopanel/models/recitation/public_recitation_viewmodel.dart';
 import 'package:gaudiopanel/models/recitation/recitation_verse_sync.dart';
 import 'package:gaudiopanel/models/recitation/recitation_viewmodel.dart';
 import 'package:gaudiopanel/models/common/paginated_items_response_model.dart';
@@ -834,7 +835,7 @@ class RecitationService {
 
   /// *
   /// published recitaions by id
-  Future<Tuple2<RecitationViewModel?, String>> getPublishedRecitationById(
+  Future<Tuple2<PublicRecitationViewModel?, String>> getPublishedRecitationById(
       {required int id, required bool error401}) async {
     try {
       LoggedOnUserModel? userInfo = await _storageService.userInfo;
@@ -849,20 +850,21 @@ class RecitationService {
       if (!error401 && response.statusCode == 401) {
         String errSessionRenewal = await AuthService().relogin();
         if (errSessionRenewal.isNotEmpty) {
-          return Tuple2<RecitationViewModel?, String>(null, errSessionRenewal);
+          return Tuple2<PublicRecitationViewModel?, String>(
+              null, errSessionRenewal);
         }
         return await getPublishedRecitationById(id: id, error401: true);
       }
 
       if (response.statusCode == 200) {
-        return Tuple2<RecitationViewModel?, String>(
-            RecitationViewModel.fromJson(json.decode(response.body)), '');
+        return Tuple2<PublicRecitationViewModel?, String>(
+            PublicRecitationViewModel.fromJson(json.decode(response.body)), '');
       } else {
-        return Tuple2<RecitationViewModel?, String>(
+        return Tuple2<PublicRecitationViewModel?, String>(
             null, 'کد برگشتی: ${response.statusCode} ${response.body}');
       }
     } catch (e) {
-      return Tuple2<RecitationViewModel?, String>(null,
+      return Tuple2<PublicRecitationViewModel?, String>(null,
           'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: $e');
     }
   }
