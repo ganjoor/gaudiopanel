@@ -831,4 +831,39 @@ class RecitationService {
           0, 'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: $e');
     }
   }
+
+  /// *
+  /// published recitaions by id
+  Future<Tuple2<RecitationViewModel?, String>> getPublishedRecitationById(
+      {required int id, required bool error401}) async {
+    try {
+      LoggedOnUserModel? userInfo = await _storageService.userInfo;
+      var apiRoot = GServiceAddress.url;
+
+      http.Response response = await http
+          .get(Uri.parse('$apiRoot/api/audio/published/$id'), headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: 'bearer ${userInfo!.token}'
+      });
+
+      if (!error401 && response.statusCode == 401) {
+        String errSessionRenewal = await AuthService().relogin();
+        if (errSessionRenewal.isNotEmpty) {
+          return Tuple2<RecitationViewModel?, String>(null, errSessionRenewal);
+        }
+        return await getPublishedRecitationById(id: id, error401: true);
+      }
+
+      if (response.statusCode == 200) {
+        return Tuple2<RecitationViewModel?, String>(
+            RecitationViewModel.fromJson(json.decode(response.body)), '');
+      } else {
+        return Tuple2<RecitationViewModel?, String>(
+            null, 'کد برگشتی: ${response.statusCode} ${response.body}');
+      }
+    } catch (e) {
+      return Tuple2<RecitationViewModel?, String>(null,
+          'سرور مشخص شده در تنظیمات در دسترس نیست.\u200Fجزئیات بیشتر: $e');
+    }
+  }
 }
