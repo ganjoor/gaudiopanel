@@ -106,6 +106,35 @@ class _ProfilesState extends State<ReportedDataSection> {
     );
   }
 
+  Future<bool?> _confirm(String title, String text) async {
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: SingleChildScrollView(
+            child: Text(text),
+          ),
+          actions: [
+            ElevatedButton(
+              child: const Text('بله'),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+            TextButton(
+              child: const Text('خیر'),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -124,8 +153,11 @@ class _ProfilesState extends State<ReportedDataSection> {
                     await _showMyDialog(res.item2);
                     return;
                   }
-                  var url =
-                      'https://ganjoor.net${res.item1!.poemFullUrl}?allaudio=1#${res.item1!.id}';
+                  var url = widget
+                              .reportedRecitations.items![index].coupletIndex ==
+                          -1
+                      ? 'https://ganjoor.net${res.item1!.poemFullUrl}?allaudio=1#${res.item1!.id}'
+                      : 'https://ganjoor.net${res.item1!.poemFullUrl}#bn${widget.reportedRecitations.items![index].coupletIndex + 1}';
                   if (await canLaunchUrl(Uri.parse(url))) {
                     await launchUrl(Uri.parse(url));
                   } else {
@@ -168,6 +200,11 @@ class _ProfilesState extends State<ReportedDataSection> {
                       backgroundColor:
                           MaterialStateProperty.all<Color>(Colors.red)),
                   onPressed: () async {
+                    if (true !=
+                        await _confirm('تأییدیه',
+                            'آیا اطمینان دارید که این خوانش باید حذف شود؟')) {
+                      return;
+                    }
                     widget.loadingStateChanged(true);
                     var res = await RecitationService().approveReport(
                         widget.reportedRecitations.items![index].id, false);
@@ -184,7 +221,7 @@ class _ProfilesState extends State<ReportedDataSection> {
                 ElevatedButton(
                   style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.purple)),
+                          MaterialStateProperty.all<Color>(Colors.yellow)),
                   onPressed: () async {
                     String mistake = (await _input(
                             'اشکال',
