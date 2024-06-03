@@ -277,8 +277,8 @@ class RecitationService {
             UserRecitationProfileViewModel.fromJson(json.decode(response.body)),
             '');
       } else {
-        return Tuple2<UserRecitationProfileViewModel?, String>(
-            null, 'کد برگشتی: ${response.statusCode} ${response.body}');
+        return Tuple2<UserRecitationProfileViewModel?, String>(null,
+            'کد برگشتی: ${response.statusCode} ${json.decode(response.body)}');
       }
     } catch (e) {
       return Tuple2<UserRecitationProfileViewModel?, String>(null,
