@@ -2,6 +2,7 @@ import 'package:after_layout/after_layout.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:gaudiopanel/forms/chwon_to_email.dart';
+import 'package:gaudiopanel/forms/generic_lookups.dart';
 import 'package:gaudiopanel/forms/login.dart';
 import 'package:gaudiopanel/forms/main-form-sections/notifications_data_section.dart';
 import 'package:gaudiopanel/forms/main-form-sections/profiles_data_section.dart';
@@ -460,11 +461,9 @@ class MainFormWidgetState extends State<MainForm>
       _isLoading = false;
     });
     if (profileResult.item2.isNotEmpty) {
-      _key.currentState!.showSnackBar(SnackBar(
-        content: Text(
-            'خطا در یافتن نمایهٔ پیش‌فرض ، اطلاعات بیشتر ${profileResult.item2}'),
-        backgroundColor: Colors.red,
-      ));
+      if (!mounted) return;
+      await alert(context, 'خطا',
+          'خطا در یافتن نمایهٔ پیش‌فرض ، اطلاعات بیشتر ${profileResult.item2}');
       return;
     }
     (bool replace, bool commentary)? res =
