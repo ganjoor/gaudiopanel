@@ -147,10 +147,9 @@ class MainFormWidgetState extends State<MainForm>
       setState(() {
         _isLoading = false;
       });
-      _key.currentState!.showSnackBar(SnackBar(
-        content: Text('خطا در دریافت خوانش‌ها: ${narrations.error}'),
-        backgroundColor: Colors.red,
-      ));
+      if (!mounted) return;
+      await alert(
+          context, 'خطا', 'خطا در دریافت خوانش‌ها: ${narrations.error}');
     }
   }
 
@@ -171,10 +170,9 @@ class MainFormWidgetState extends State<MainForm>
       setState(() {
         _isLoading = false;
       });
-      _key.currentState!.showSnackBar(SnackBar(
-        content: Text('خطا در دریافت اطلاعات: ${reportedOnes.error}'),
-        backgroundColor: Colors.red,
-      ));
+      if (!mounted) return;
+      await alert(
+          context, 'خطا', 'خطا در دریافت اطلاعات: ${reportedOnes.error}');
     }
   }
 
@@ -197,10 +195,9 @@ class MainFormWidgetState extends State<MainForm>
       setState(() {
         _isLoading = false;
       });
-      _key.currentState!.showSnackBar(SnackBar(
-        content: Text('خطا در دریافت بارگذاری‌ها: ${uploads.error}'),
-        backgroundColor: Colors.red,
-      ));
+      if (!mounted) return;
+      await alert(
+          context, 'خطا', 'خطا در دریافت بارگذاری‌ها: ${uploads.error}');
     }
   }
 
@@ -220,10 +217,8 @@ class MainFormWidgetState extends State<MainForm>
       setState(() {
         _isLoading = false;
       });
-      _key.currentState!.showSnackBar(SnackBar(
-        content: Text('خطا در دریافت نمایه‌ها: ${profiles.item2}'),
-        backgroundColor: Colors.red,
-      ));
+      if (!mounted) return;
+      await alert(context, 'خطا', 'خطا در دریافت نمایه‌ها: ${profiles.item2}');
     }
   }
 
@@ -242,10 +237,9 @@ class MainFormWidgetState extends State<MainForm>
         _queue.paginationMetadata = publishQueue.item1!.paginationMetadata;
       });
     } else {
-      _key.currentState!.showSnackBar(SnackBar(
-        content: Text('خطا در دریافت صف انتشار در سایت: ${publishQueue.item2}'),
-        backgroundColor: Colors.red,
-      ));
+      if (!mounted) return;
+      await alert(context, 'خطا',
+          'خطا در دریافت صف انتشار در سایت: ${publishQueue.item2}');
     }
   }
 
@@ -263,10 +257,9 @@ class MainFormWidgetState extends State<MainForm>
         _notifications.items!.addAll(notificationsList.item1!);
       });
     } else {
-      _key.currentState!.showSnackBar(SnackBar(
-        content: Text('خطا در دریافت اعلان‌ها: ${notificationsList.item2}'),
-        backgroundColor: Colors.red,
-      ));
+      if (!mounted) return;
+      await alert(
+          context, 'خطا', 'خطا در دریافت اعلان‌ها: ${notificationsList.item2}');
     }
   }
 
@@ -282,11 +275,9 @@ class MainFormWidgetState extends State<MainForm>
         _unreadNotificationsCount = retNotificationsCount.item1;
       });
     } else {
-      _key.currentState!.showSnackBar(SnackBar(
-        content: Text(
-            'خطا در دریافت تعداد اعلان‌ها: ${retNotificationsCount.item2}'),
-        backgroundColor: Colors.red,
-      ));
+      if (!mounted) return;
+      await alert(context, 'خطا',
+          'خطا در دریافت تعداد اعلان‌ها: ${retNotificationsCount.item2}');
     }
 
     setState(() {
@@ -490,10 +481,8 @@ class MainFormWidgetState extends State<MainForm>
           .uploadFiles(result.files, res.$1, res.$2, false);
 
       if (err.isNotEmpty) {
-        _key.currentState!.showSnackBar(SnackBar(
-          content: Text('خطا در ارسال خوانش‌های جدید: $err'),
-          backgroundColor: Colors.red,
-        ));
+        if (!mounted) return;
+        await alert(context, 'خطا', 'خطا در ارسال خوانش‌های جدید: $err');
       }
 
       setState(() {
@@ -506,10 +495,9 @@ class MainFormWidgetState extends State<MainForm>
     var markedNotifications =
         _notifications.items!.where((element) => element.isMarked).toList();
     if (markedNotifications.isEmpty) {
-      _key.currentState!.showSnackBar(const SnackBar(
-        content: Text('لطفاً اعلان‌های مد نظر را علامتگذاری کنید.'),
-        backgroundColor: Colors.red,
-      ));
+      if (!mounted) return;
+      await alert(context, 'خطا', 'لطفاً اعلان‌های مد نظر را علامتگذاری کنید.');
+
       return;
     }
     setState(() {
@@ -524,11 +512,10 @@ class MainFormWidgetState extends State<MainForm>
       }
       String error = await NotificationService().switchStatus(item.id, false);
       if (error.isNotEmpty) {
-        _key.currentState!.showSnackBar(SnackBar(
-          content: Text(
-              'خطا در تغییر وضعیت اعلان  ${item.subject}، اطلاعات بیشتر $error'),
-          backgroundColor: Colors.red,
-        ));
+        if (!mounted) return;
+        await alert(context, 'خطا',
+            'خطا در تغییر وضعیت اعلان  ${item.subject}، اطلاعات بیشتر $error');
+
         break;
       }
       setState(() {
@@ -548,10 +535,9 @@ class MainFormWidgetState extends State<MainForm>
     var markedNotifications =
         _notifications.items!.where((element) => element.isMarked).toList();
     if (markedNotifications.isEmpty) {
-      _key.currentState!.showSnackBar(const SnackBar(
-        content: Text('لطفاً اعلان‌های مد نظر را علامتگذاری کنید.'),
-        backgroundColor: Colors.red,
-      ));
+      if (!mounted) return;
+      await alert(context, 'خطا', 'لطفاً اعلان‌های مد نظر را علامتگذاری کنید.');
+
       return;
     }
     String confirmation = markedNotifications.length > 1
@@ -565,11 +551,10 @@ class MainFormWidgetState extends State<MainForm>
         var delRes =
             await NotificationService().deleteNotification(item.id, false);
         if (delRes.item2.isNotEmpty) {
-          _key.currentState!.showSnackBar(SnackBar(
-            content: Text(
-                'خطا در حذف اعلان ${item.subject}، اطلاعات بیشتر ${delRes.item2}'),
-            backgroundColor: Colors.red,
-          ));
+          if (!mounted) return;
+          await alert(context, 'خطا',
+              'خطا در حذف اعلان ${item.subject}، اطلاعات بیشتر ${delRes.item2}');
+
           break;
         }
         if (delRes.item1) {
@@ -591,10 +576,9 @@ class MainFormWidgetState extends State<MainForm>
     var markedProfiles =
         _profiles.items!.where((element) => element.isMarked).toList();
     if (markedProfiles.isEmpty) {
-      _key.currentState!.showSnackBar(const SnackBar(
-        content: Text('لطفاً نمایه‌های مد نظر را علامتگذاری کنید.'),
-        backgroundColor: Colors.red,
-      ));
+      if (!mounted) return;
+      await alert(context, 'خطا', 'لطفاً نمایه‌های مد نظر را علامتگذاری کنید.');
+
       return;
     }
     String confirmation = markedProfiles.length > 1
@@ -607,11 +591,10 @@ class MainFormWidgetState extends State<MainForm>
       for (var item in markedProfiles) {
         var delRes = await RecitationService().deleteProfile(item.id!, false);
         if (delRes.item2.isNotEmpty) {
-          _key.currentState!.showSnackBar(SnackBar(
-            content: Text(
-                'خطا در حذف نمایهٔ ${item.name}، اطلاعات بیشتر ${delRes.item2}'),
-            backgroundColor: Colors.red,
-          ));
+          if (!mounted) return;
+          await alert(context, 'خطا',
+              'خطا در حذف نمایهٔ ${item.name}، اطلاعات بیشتر ${delRes.item2}');
+
           break;
         }
         if (delRes.item1) {
@@ -630,10 +613,9 @@ class MainFormWidgetState extends State<MainForm>
     var markedRecitations =
         _narrations.items!.where((element) => element.isMarked).toList();
     if (markedRecitations.isEmpty) {
-      _key.currentState!.showSnackBar(const SnackBar(
-        content: Text('لطفاً خوانش‌های مد نظر را علامتگذاری کنید.'),
-        backgroundColor: Colors.red,
-      ));
+      if (!mounted) return;
+      await alert(context, 'خطا', 'لطفاً خوانش‌های مد نظر را علامتگذاری کنید.');
+
       return;
     }
     String confirmation = markedRecitations.length > 1
@@ -646,11 +628,9 @@ class MainFormWidgetState extends State<MainForm>
       for (var item in markedRecitations) {
         var delRes = await RecitationService().deleteRecitation(item.id, false);
         if (delRes.item2.isNotEmpty) {
-          _key.currentState!.showSnackBar(SnackBar(
-            content: Text(
-                'خطا در حذف خوانش ${item.audioTitle}، اطلاعات بیشتر ${delRes.item2}'),
-            backgroundColor: Colors.red,
-          ));
+          if (!mounted) return;
+          await alert(context, 'خطا',
+              'خطا در حذف خوانش ${item.audioTitle}، اطلاعات بیشتر ${delRes.item2}');
           break;
         }
         if (delRes.item1) {
@@ -669,10 +649,8 @@ class MainFormWidgetState extends State<MainForm>
     var markedRecitations =
         _narrations.items!.where((element) => element.isMarked).toList();
     if (markedRecitations.isEmpty) {
-      _key.currentState!.showSnackBar(const SnackBar(
-        content: Text('لطفاً خوانش‌های مد نظر را علامتگذاری کنید.'),
-        backgroundColor: Colors.red,
-      ));
+      if (!mounted) return;
+      await alert(context, 'خطا', 'لطفاً خوانش‌های مد نظر را علامتگذاری کنید.');
       return;
     }
 
@@ -684,11 +662,9 @@ class MainFormWidgetState extends State<MainForm>
       _isLoading = false;
     });
     if (defProfile.item2.isNotEmpty) {
-      _key.currentState!.showSnackBar(SnackBar(
-        content: Text(
-            'خطا در دریافت نمایهٔ فعال ، اطلاعات بیشتر ${defProfile.item2}'),
-        backgroundColor: Colors.red,
-      ));
+      if (!mounted) return;
+      await alert(context, 'خطا',
+          'خطا در دریافت نمایهٔ فعال ، اطلاعات بیشتر ${defProfile.item2}');
       return;
     }
 
@@ -710,10 +686,9 @@ class MainFormWidgetState extends State<MainForm>
 
       var res = await service.updateRecitation(recitation, false);
       if (res.item2.isNotEmpty) {
-        _key.currentState!.showSnackBar(SnackBar(
-          content: Text(res.item2),
-          backgroundColor: Colors.red,
-        ));
+        if (!mounted) return;
+        await alert(context, 'خطا', res.item2);
+
         break;
       }
     }
@@ -743,10 +718,8 @@ class MainFormWidgetState extends State<MainForm>
     var markedProfiles =
         _profiles.items!.where((element) => element.isMarked).toList();
     if (markedProfiles.isEmpty) {
-      _key.currentState!.showSnackBar(const SnackBar(
-        content: Text('لطفاً نمایه‌های مد نظر را علامتگذاری کنید.'),
-        backgroundColor: Colors.red,
-      ));
+      if (!mounted) return;
+      await alert(context, 'خطا', 'لطفاً نمایه‌های مد نظر را علامتگذاری کنید.');
       return;
     }
     String email = (await _getEmail())!;
@@ -764,20 +737,15 @@ class MainFormWidgetState extends State<MainForm>
       });
 
       if (ret.item2.isNotEmpty) {
-        _key.currentState!.showSnackBar(SnackBar(
-          content: Text(ret.item2),
-          backgroundColor: Colors.red,
-        ));
+        if (!mounted) return;
+        await alert(context, 'خطا', ret.item2);
         break;
       } else {
         transfered += ret.item1;
       }
     }
-
-    _key.currentState!.showSnackBar(SnackBar(
-      content: Text('موارد منتقل شده: $transfered'),
-      backgroundColor: Colors.green,
-    ));
+    if (!mounted) return;
+    await alert(context, 'خطا', 'موارد منتقل شده: $transfered');
 
     await _loadData();
   }
@@ -999,11 +967,9 @@ class MainFormWidgetState extends State<MainForm>
                               var updateRes = await RecitationService()
                                   .updateRecitation(item, false);
                               if (updateRes.item2.isNotEmpty) {
-                                _key.currentState!.showSnackBar(SnackBar(
-                                  content: Text(
-                                      'خطا در تغییر وضعیت خوانش ${item.audioTitle}، اطلاعات بیشتر ${updateRes.item2}'),
-                                  backgroundColor: Colors.red,
-                                ));
+                                if (!mounted) return;
+                                await alert(context, 'خطا',
+                                    'خطا در تغییر وضعیت خوانش ${item.audioTitle}، اطلاعات بیشتر ${updateRes.item2}');
                               }
                               setState(() {
                                 _narrations.items!.remove(item);
@@ -1033,11 +999,9 @@ class MainFormWidgetState extends State<MainForm>
                               .where((element) => element.isMarked)
                               .toList();
                           if (markedNarrations.isEmpty) {
-                            _key.currentState!.showSnackBar(const SnackBar(
-                              content: Text(
-                                  'لطفاً خوانش‌های مد نظر را علامتگذاری کنید.'),
-                              backgroundColor: Colors.red,
-                            ));
+                            if (!mounted) return;
+                            await alert(context, 'خطا',
+                                'لطفاً خوانش‌های مد نظر را علامتگذاری کنید.');
                             return;
                           }
                           String confirmation = markedNarrations.length > 1
@@ -1056,11 +1020,9 @@ class MainFormWidgetState extends State<MainForm>
                                       '',
                                       false);
                               if (updateRes.item2.isNotEmpty) {
-                                _key.currentState!.showSnackBar(SnackBar(
-                                  content: Text(
-                                      'خطا در تغییر وضعیت خوانش ${item.audioTitle}، اطلاعات بیشتر ${updateRes.item2}'),
-                                  backgroundColor: Colors.red,
-                                ));
+                                if (!mounted) return;
+                                await alert(context, 'خطا',
+                                    'خطا در تغییر وضعیت خوانش ${item.audioTitle}، اطلاعات بیشتر ${updateRes.item2}');
                               }
                               setState(() {
                                 _narrations.items!.remove(item);
@@ -1098,10 +1060,8 @@ class MainFormWidgetState extends State<MainForm>
                           _isLoading = false;
                         });
                         if (ret.isNotEmpty) {
-                          _key.currentState!.showSnackBar(SnackBar(
-                            content: Text('خطا در تلاش مجدد: $ret'),
-                            backgroundColor: Colors.red,
-                          ));
+                          if (!mounted) return;
+                          await alert(context, 'خطا', 'خطا در تلاش مجدد: $ret');
                         }
                       },
                     ),
@@ -1128,16 +1088,12 @@ class MainFormWidgetState extends State<MainForm>
                             });
 
                             if (ret.item2.isNotEmpty) {
-                              _key.currentState!.showSnackBar(SnackBar(
-                                content: Text(ret.item2),
-                                backgroundColor: Colors.red,
-                              ));
+                              if (!mounted) return;
+                              await alert(context, 'خطا', ret.item2);
                             } else {
-                              _key.currentState!.showSnackBar(SnackBar(
-                                content: Text(
-                                    'تعداد خوانش‌های تحت تأثیر قرار گرفته: ${ret.item1}'),
-                                backgroundColor: Colors.green,
-                              ));
+                              if (!mounted) return;
+                              await alert(context, 'خطا',
+                                  'تعداد خوانش‌های تحت تأثیر قرار گرفته: ${ret.item1}');
                             }
                           }
                         }),
@@ -1698,11 +1654,9 @@ class MainFormWidgetState extends State<MainForm>
                     case GActiveFormSection.recitationsWithMistakes:
                     case GActiveFormSection.synchronizationQueue:
                       if (!_audioUpdateEnabled) {
-                        _key.currentState!.showSnackBar(const SnackBar(
-                          content: Text(
-                              'ارسال خوانش جدید به دلیل تغییرات فنی سایت موقتاً غیرفعال است.'),
-                          backgroundColor: Colors.red,
-                        ));
+                        if (!mounted) return;
+                        await alert(context, 'خطا',
+                            'ارسال خوانش جدید به دلیل تغییرات فنی سایت موقتاً غیرفعال است.');
                         return;
                       }
                       await _newNarrations();
@@ -1731,11 +1685,9 @@ class MainFormWidgetState extends State<MainForm>
                           _profiles.items!.insert(0, serviceResult.item1!);
                         });
                       } else {
-                        _key.currentState!.showSnackBar(SnackBar(
-                          content: Text(
-                              'خطا در ایجاد نمایه: ${serviceResult.item2}'),
-                          backgroundColor: Colors.red,
-                        ));
+                        if (!mounted) return;
+                        await alert(context, 'خطا',
+                            'خطا در ایجاد نمایه: ${serviceResult.item2}');
                       }
                       break;
                   }
