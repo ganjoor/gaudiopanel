@@ -246,8 +246,7 @@ class _NarrationEditState extends State<NarrationEdit>
                           child: ElevatedButton(
                             style: ButtonStyle(
                                 backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.red)),
+                                    WidgetStateProperty.all<Color>(Colors.red)),
                             onPressed: () {
                               widget.narration.reviewStatus =
                                   AudioReviewStatus.rejected; //Rejected

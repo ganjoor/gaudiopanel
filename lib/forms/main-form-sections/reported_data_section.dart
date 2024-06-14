@@ -28,7 +28,7 @@ class _ProfilesState extends State<ReportedDataSection> {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Theme.of(context).colorScheme.background,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           title: const Text('خطا'),
           content: SingleChildScrollView(
             child: ListBody(
@@ -176,7 +176,7 @@ class _ProfilesState extends State<ReportedDataSection> {
                 ElevatedButton(
                   style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.blueGrey)),
+                          WidgetStateProperty.all<Color>(Colors.blueGrey)),
                   onPressed: () async {
                     String rejectionNote = (await _input('دلیل عدم پذیرش',
                             'دلیل', 'عدم تطابق با معیارهای حذف خوانش')) ??
@@ -198,7 +198,7 @@ class _ProfilesState extends State<ReportedDataSection> {
                 ElevatedButton(
                   style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.red)),
+                          WidgetStateProperty.all<Color>(Colors.red)),
                   onPressed: () async {
                     if (true !=
                         await _confirm('تأییدیه',
@@ -221,7 +221,7 @@ class _ProfilesState extends State<ReportedDataSection> {
                 ElevatedButton(
                   style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.yellow)),
+                          WidgetStateProperty.all<Color>(Colors.yellow)),
                   onPressed: () async {
                     String mistake = (await _input(
                             'اشکال',

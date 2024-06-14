@@ -967,7 +967,7 @@ class MainFormWidgetState extends State<MainForm>
                               var updateRes = await RecitationService()
                                   .updateRecitation(item, false);
                               if (updateRes.item2.isNotEmpty) {
-                                if (!mounted) return;
+                                if (!context.mounted) return;
                                 await alert(context, 'خطا',
                                     'خطا در تغییر وضعیت خوانش ${item.audioTitle}، اطلاعات بیشتر ${updateRes.item2}');
                               }
@@ -1020,7 +1020,7 @@ class MainFormWidgetState extends State<MainForm>
                                       '',
                                       false);
                               if (updateRes.item2.isNotEmpty) {
-                                if (!mounted) return;
+                                if (!context.mounted) return;
                                 await alert(context, 'خطا',
                                     'خطا در تغییر وضعیت خوانش ${item.audioTitle}، اطلاعات بیشتر ${updateRes.item2}');
                               }
@@ -1060,7 +1060,7 @@ class MainFormWidgetState extends State<MainForm>
                           _isLoading = false;
                         });
                         if (ret.isNotEmpty) {
-                          if (!mounted) return;
+                          if (!context.mounted) return;
                           await alert(context, 'خطا', 'خطا در تلاش مجدد: $ret');
                         }
                       },
@@ -1088,10 +1088,10 @@ class MainFormWidgetState extends State<MainForm>
                             });
 
                             if (ret.item2.isNotEmpty) {
-                              if (!mounted) return;
+                              if (!context.mounted) return;
                               await alert(context, 'خطا', ret.item2);
                             } else {
-                              if (!mounted) return;
+                              if (!context.mounted) return;
                               await alert(context, 'خطا',
                                   'تعداد خوانش‌های تحت تأثیر قرار گرفته: ${ret.item1}');
                             }
@@ -1134,7 +1134,7 @@ class MainFormWidgetState extends State<MainForm>
                           });
                           await _loadData();
 
-                          if (!mounted) return;
+                          if (!context.mounted) return;
 
                           Navigator.of(context).pop(); //close drawer
                         }
@@ -1152,7 +1152,7 @@ class MainFormWidgetState extends State<MainForm>
                           });
                           await _loadData();
 
-                          if (!mounted) return;
+                          if (!context.mounted) return;
 
                           Navigator.of(context).pop(); //close drawer
                         }
@@ -1175,7 +1175,7 @@ class MainFormWidgetState extends State<MainForm>
                           });
                           await _loadData();
 
-                          if (!mounted) return;
+                          if (!context.mounted) return;
 
                           Navigator.of(context).pop(); //close drawer
                         }
@@ -1202,7 +1202,7 @@ class MainFormWidgetState extends State<MainForm>
                               });
                               await _loadData();
 
-                              if (!mounted) return;
+                              if (!context.mounted) return;
 
                               Navigator.of(context).pop(); //close drawer
                             }
@@ -1229,7 +1229,7 @@ class MainFormWidgetState extends State<MainForm>
                               });
                               await _loadData();
 
-                              if (!mounted) return;
+                              if (!context.mounted) return;
 
                               Navigator.of(context).pop(); //close drawer
                             }
@@ -1254,7 +1254,7 @@ class MainFormWidgetState extends State<MainForm>
                               });
                               await _loadData();
 
-                              if (!mounted) return;
+                              if (!context.mounted) return;
 
                               Navigator.of(context).pop(); //close drawer
                             }
@@ -1272,7 +1272,7 @@ class MainFormWidgetState extends State<MainForm>
                           });
                           await _loadData();
 
-                          if (!mounted) return;
+                          if (!context.mounted) return;
                           Navigator.of(context).pop(); //close drawer
                         }
                       },
@@ -1317,7 +1317,7 @@ class MainFormWidgetState extends State<MainForm>
                           });
                           await _loadData();
 
-                          if (!mounted) return;
+                          if (!context.mounted) return;
 
                           Navigator.of(context).pop(); //close drawer
                         }
@@ -1338,7 +1338,7 @@ class MainFormWidgetState extends State<MainForm>
                           });
                           await _loadData();
 
-                          if (!mounted) return;
+                          if (!context.mounted) return;
 
                           Navigator.of(context).pop(); //close drawer
                         }
@@ -1361,7 +1361,7 @@ class MainFormWidgetState extends State<MainForm>
                           });
                           await _loadData();
 
-                          if (!mounted) return;
+                          if (!context.mounted) return;
 
                           Navigator.of(context).pop(); //close drawer
                         }
@@ -1384,7 +1384,7 @@ class MainFormWidgetState extends State<MainForm>
                           });
                           await _loadData();
 
-                          if (!mounted) return;
+                          if (!context.mounted) return;
 
                           Navigator.of(context).pop(); //close drawer
                         }
@@ -1401,7 +1401,7 @@ class MainFormWidgetState extends State<MainForm>
                         } else {
                           throw 'خطا در نمایش نشانی $url';
                         }
-                        if (!mounted) return;
+                        if (!context.mounted) return;
                         Navigator.of(context).pop(); //close drawer
                       },
                     ),
@@ -1420,7 +1420,7 @@ class MainFormWidgetState extends State<MainForm>
                           _isLoading = false;
                         });
 
-                        if (!mounted) return;
+                        if (!context.mounted) return;
 
                         await Navigator.pushReplacement(
                             context,
@@ -1685,7 +1685,7 @@ class MainFormWidgetState extends State<MainForm>
                           _profiles.items!.insert(0, serviceResult.item1!);
                         });
                       } else {
-                        if (!mounted) return;
+                        if (!context.mounted) return;
                         await alert(context, 'خطا',
                             'خطا در ایجاد نمایه: ${serviceResult.item2}');
                       }

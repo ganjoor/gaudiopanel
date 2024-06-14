@@ -261,8 +261,8 @@ class SignUpFormState extends State<SignUpForm>
                                               'تبریک! ثبت نام شما تکمیل شد. ورود به سیستم'),
                                           style: ButtonStyle(
                                             backgroundColor:
-                                                MaterialStateProperty.all<
-                                                    Color>(Colors.green),
+                                                WidgetStateProperty.all<Color>(
+                                                    Colors.green),
                                           ),
                                           onPressed: _login,
                                         )))),
@@ -367,8 +367,8 @@ class SignUpFormState extends State<SignUpForm>
                                           label: const Text('ادامه'),
                                           style: ButtonStyle(
                                             backgroundColor:
-                                                MaterialStateProperty.all<
-                                                    Color>(Colors.green),
+                                                WidgetStateProperty.all<Color>(
+                                                    Colors.green),
                                           ),
                                           onPressed: _verify,
                                         )))),
@@ -438,8 +438,8 @@ class SignUpFormState extends State<SignUpForm>
                                           label: const Text('ادامه'),
                                           style: ButtonStyle(
                                             backgroundColor:
-                                                MaterialStateProperty.all<
-                                                    Color>(Colors.green),
+                                                WidgetStateProperty.all<Color>(
+                                                    Colors.green),
                                           ),
                                           onPressed: _signup,
                                         )))),
@@ -454,8 +454,8 @@ class SignUpFormState extends State<SignUpForm>
                                           label: const Text('ادامه'),
                                           style: ButtonStyle(
                                             backgroundColor:
-                                                MaterialStateProperty.all<
-                                                    Color>(Colors.green),
+                                                WidgetStateProperty.all<Color>(
+                                                    Colors.green),
                                           ),
                                           onPressed: _finalize,
                                         )))),
