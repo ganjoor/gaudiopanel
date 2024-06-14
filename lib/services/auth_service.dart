@@ -206,7 +206,7 @@ class AuthService {
   ///
   ///returns the error if occurs, empty if successfull
   Future<String> finalizeSignUp(String email, String secret, String password,
-      String firstName, String sureName) async {
+      String firstName, String surName) async {
     try {
       var apiRoot = GServiceAddress.url;
       final http.Response response = await http.post(
@@ -219,7 +219,7 @@ class AuthService {
           'secret': secret,
           'password': password,
           'firstName': firstName,
-          'sureName': sureName
+          'surName': surName
         }),
       );
 

@@ -318,7 +318,7 @@ class MainFormWidgetState extends State<MainForm>
   @override
   void afterFirstLayout(BuildContext context) async {
     var user = await StorageService().userInfo;
-    _userFrinedlyName = '${user!.user.firstName} ${user.user.sureName}';
+    _userFrinedlyName = '${user!.user.firstName} ${user.user.surName}';
 
     if (await AuthService().hasPermission('recitation', 'reorder')) {
       _canReOrder = true;

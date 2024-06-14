@@ -4,7 +4,7 @@ class PublicRAppUser {
   final String email;
   final String? phoneNumber;
   final String firstName;
-  final String sureName;
+  final String? surName;
   final int status;
   final String? rImageId;
 
@@ -14,7 +14,7 @@ class PublicRAppUser {
       required this.email,
       required this.phoneNumber,
       required this.firstName,
-      required this.sureName,
+      required this.surName,
       required this.status,
       required this.rImageId});
 
@@ -25,7 +25,7 @@ class PublicRAppUser {
       email: json['email'],
       phoneNumber: json['phoneNumber'],
       firstName: json['firstName'],
-      sureName: json['sureName'],
+      surName: json['surName'],
       status: json['status'],
       rImageId: json['rImageId'],
     );
@@ -38,7 +38,7 @@ class PublicRAppUser {
     m['email'] = email;
     m['phoneNumber'] = phoneNumber;
     m['firstName'] = firstName;
-    m['sureName'] = sureName;
+    m['surName'] = surName;
     m['status'] = status;
     m['rImageId'] = rImageId;
     return m;
