@@ -1,12 +1,15 @@
+import 'dart:convert';
+
 import 'package:gaudiopanel/models/auth/logged_on_user_model.dart';
 import 'package:localstorage/localstorage.dart';
 
 class StorageService {
-  final LocalStorage _appStorage = LocalStorage('app');
-
   Future setUserInfo(LoggedOnUserModel? model) async {
-    await _appStorage.ready;
-    await _appStorage.setItem('login', model?.toJson());
+    if (model == null) {
+      localStorage.removeItem('login');
+    } else {
+      localStorage.setItem('login', json.encode(model.toJson()));
+    }
   }
 
   Future delUserInfo() async {
@@ -14,7 +17,10 @@ class StorageService {
   }
 
   Future<LoggedOnUserModel?> get userInfo async {
-    await _appStorage.ready;
-    return LoggedOnUserModel.fromJson(_appStorage.getItem('login'));
+    String? raw = localStorage.getItem('login');
+    if (raw == null || raw.isEmpty) {
+      return null;
+    }
+    return LoggedOnUserModel.fromJson(json.decode(raw));
   }
 }

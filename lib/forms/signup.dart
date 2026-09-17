@@ -1,4 +1,3 @@
-import 'package:after_layout/after_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:gaudiopanel/forms/login.dart';
 import 'package:gaudiopanel/forms/main_form.dart';
@@ -13,8 +12,7 @@ class SignUpForm extends StatefulWidget {
   SignUpFormState createState() => SignUpFormState();
 }
 
-class SignUpFormState extends State<SignUpForm>
-    with AfterLayoutMixin<SignUpForm> {
+class SignUpFormState extends State<SignUpForm> {
   bool _alreadyLoggedIn = false;
   bool _emailSent = false;
   bool _emailVerified = false;
@@ -38,6 +36,12 @@ class SignUpFormState extends State<SignUpForm>
   final TextEditingController _confirm = TextEditingController();
 
   String _signupError = '';
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _afterFirstLayout());
+  }
 
   @override
   void dispose() {
@@ -177,8 +181,7 @@ class SignUpFormState extends State<SignUpForm>
     }
   }
 
-  @override
-  void afterFirstLayout(BuildContext context) async {
+  Future<void> _afterFirstLayout() async {
     _alreadyLoggedIn = await AuthService().isLoggedOn;
     if (!_alreadyLoggedIn) {
       await _newCaptcha();

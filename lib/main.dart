@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:gaudiopanel/forms/login.dart';
 import 'package:gaudiopanel/forms/main_form.dart';
 import 'package:gaudiopanel/services/auth_service.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:universal_html/html.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initLocalStorage();
   Widget initialWidget =
       (await AuthService().isLoggedOn) ? const MainForm() : const LoginForm();
   runApp(GAudioPanelApp(initialWidget: initialWidget));

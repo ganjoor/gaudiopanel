@@ -18,32 +18,53 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.6.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
 
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  loading_overlay: ^0.3.0
-  url_launcher: ^6.0.17
-  localstorage: ^4.0.0+1
-  http: ^1.1.2
-  after_layout: ^1.0.7+2
-  tuple: ^2.0.0
+  loading_overlay: ^0.5.0
+  url_launcher: ^6.3.2
+  # v6 rewrote the API to a synchronous, string-only `localStorage` singleton
+  # (see lib/main.dart's initLocalStorage() call and lib/services/storage_service.dart).
+  localstorage: ^6.0.0
+  http: ^1.6.0
+  # after_layout was dropped: it only ever wrapped
+  # WidgetsBinding.instance.addPostFrameCallback, which is now called directly.
+  tuple: ^2.0.2
+  # file_picker 11.0.3 turned out to be genuinely broken for web in this
+  # setup (dart2js couldn't find file_picker/_internal/file_picker_web.dart,
+  # and FilePicker.platform was reported undefined) — a real bug in that
+  # release, not a version-solving issue. The original 5.2.10 is proven
+  # working (it built fine before any of these changes), so it's pinned
+  # back to that rather than guessing at another version blind.
   file_picker: ^5.2.10
-  just_audio: ^0.9.18
-  flutter_html: ^3.0.0-beta.2
+  # 0.9.x's bundled just_audio_web was the actual cause of the web build
+  # failure (a dart2js/JS-interop bug fixed upstream in just_audio_web 0.4.13+).
+  # 0.10.x (needs Dart 3.6+) pulls in a fixed just_audio_web automatically.
+  # Confirmed: no just_audio-related errors in the last build.
+  just_audio: ^0.10.5
+  # 3.0.0 stable is genuinely broken here (dart2js: "Method not found:
+  # 'matches'" in styled_element.dart — a transitive csslib/html version
+  # mismatch). Reverted to the original beta.2, which is proven working.
+  # NOTE: this must be an EXACT pin (no ^) — a caret range like
+  # ^3.0.0-beta.2 only caps the upper bound at <4.0.0; stable 3.0.0 sorts
+  # higher than 3.0.0-beta.2 in semver, so pub still resolves to the
+  # broken 3.0.0 unless the version is pinned exactly.
+  flutter_html: 3.0.0-beta.2
+  # 2.3.0 requires csslib ^1.0.2, which conflicts with flutter_html
+  # beta.2's csslib ^0.17.2 — reverted to the original 2.2.4, which never
+  # needed bumping in the first place (it wasn't part of the actual bug).
   universal_html: ^2.2.4
-  
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^3.0.1
+  # 6.0.0 needs Dart SDK 3.8+; this toolchain has Dart 3.7.2, so pinned to the
+  # last version that only needs Dart 3.5.
+  flutter_lints: ^5.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -1,4 +1,3 @@
-import 'package:after_layout/after_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gaudiopanel/callbacks/g_ui_callbacks.dart';
@@ -23,8 +22,7 @@ class NarrationEdit extends StatefulWidget {
   State<StatefulWidget> createState() => _NarrationEditState();
 }
 
-class _NarrationEditState extends State<NarrationEdit>
-    with AfterLayoutMixin<NarrationEdit> {
+class _NarrationEditState extends State<NarrationEdit> {
   AudioPlayer? _player;
   bool _canPublish = false;
 
@@ -41,6 +39,7 @@ class _NarrationEditState extends State<NarrationEdit>
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.black,
     ));
+    WidgetsBinding.instance.addPostFrameCallback((_) => _afterFirstLayout());
   }
 
   @override
@@ -63,9 +62,9 @@ class _NarrationEditState extends State<NarrationEdit>
     return verse.verseText;
   }
 
-  @override
-  void afterFirstLayout(BuildContext context) async {
+  Future<void> _afterFirstLayout() async {
     if (await AuthService().hasPermission('recitation', 'publish')) {
+      if (!mounted) return;
       setState(() {
         _canPublish = true;
       });

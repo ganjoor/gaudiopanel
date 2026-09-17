@@ -1,4 +1,3 @@
-import 'package:after_layout/after_layout.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:gaudiopanel/forms/chwon_to_email.dart';
@@ -51,8 +50,7 @@ class MainForm extends StatefulWidget {
   MainFormWidgetState createState() => MainFormWidgetState();
 }
 
-class MainFormWidgetState extends State<MainForm>
-    with AfterLayoutMixin<MainForm> {
+class MainFormWidgetState extends State<MainForm> {
   final GlobalKey<ScaffoldMessengerState> _key =
       GlobalKey<ScaffoldMessengerState>();
   bool _canPublish = false;
@@ -82,6 +80,13 @@ class MainFormWidgetState extends State<MainForm>
       PaginatedItemsResponseModel<RUserNotificationViewModel>(items: []);
   final PaginatedItemsResponseModel<RecitationErrorReportViewModel> _reporteds =
       PaginatedItemsResponseModel<RecitationErrorReportViewModel>(items: []);
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _afterFirstLayout());
+  }
+
   String get title {
     switch (_activeSection) {
       case GActiveFormSection.uploads:
@@ -315,8 +320,7 @@ class MainFormWidgetState extends State<MainForm>
     await _loadNotificationsCount();
   }
 
-  @override
-  void afterFirstLayout(BuildContext context) async {
+  Future<void> _afterFirstLayout() async {
     var user = await StorageService().userInfo;
     _userFrinedlyName = '${user!.user.firstName} ${user.user.surName}';
 
