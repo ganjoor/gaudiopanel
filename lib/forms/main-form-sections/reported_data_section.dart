@@ -131,6 +131,7 @@ class _ProfilesState extends State<ReportedDataSection> {
                           id: widget
                               .reportedRecitations.items![index].recitationId,
                           error401: false);
+                  if (!context.mounted) return;
                   if (res.item2.isNotEmpty) {
                     await errorAlert(context, res.item2);
                     return;
