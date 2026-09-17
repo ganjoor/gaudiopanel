@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:gaudiopanel/callbacks/g_ui_callbacks.dart';
+import 'package:gaudiopanel/forms/generic_lookups.dart';
 import 'package:gaudiopanel/models/common/paginated_items_response_model.dart';
 import 'package:gaudiopanel/models/notifications/ruser_notification_viewmodel.dart';
 import 'package:gaudiopanel/services/notification_service.dart';
@@ -26,12 +27,19 @@ class NotificationsDataSection extends StatefulWidget {
 class _NotificationsState extends State<NotificationsDataSection> {
   Icon getNotificationIcon(RUserNotificationViewModel notification) {
     return notification.status == NotificationStatus.unread
-        ? const Icon(Icons.mail, color: Colors.yellow)
-        : const Icon(Icons.mark_as_unread);
+        ? const Icon(Icons.mark_email_unread, color: Colors.amber)
+        : const Icon(Icons.mark_email_read, color: Colors.grey);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (widget.notifications.items == null ||
+        widget.notifications.items!.isEmpty) {
+      return const EmptyState(
+        icon: Icons.notifications_none,
+        message: 'اعلان جدیدی ندارید.',
+      );
+    }
     return ListView.builder(
         itemCount: widget.notifications.items!.length,
         itemBuilder: (BuildContext context, int index) {
@@ -53,7 +61,7 @@ class _NotificationsState extends State<NotificationsDataSection> {
                           widget.notifications.items![index].id, false);
                       if (error.isNotEmpty) {
                         widget.snackbarNeeded(
-                            'خطا در تغییر وضعیت اعلان  ${widget.notifications.items![index].subject}، اطلاعات بیشتر $error');
+                            'خطا در تغییر وضعیت اعلان «${widget.notifications.items![index].subject}»، اطلاعات بیشتر: $error');
                       } else {
                         setState(() {
                           widget.notifications.items![index].status =

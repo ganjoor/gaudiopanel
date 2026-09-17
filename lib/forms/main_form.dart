@@ -51,8 +51,6 @@ class MainForm extends StatefulWidget {
 }
 
 class MainFormWidgetState extends State<MainForm> {
-  final GlobalKey<ScaffoldMessengerState> _key =
-      GlobalKey<ScaffoldMessengerState>();
   bool _canPublish = false;
   bool _canModerate = false;
   bool _canReOrder = false;
@@ -223,7 +221,7 @@ class MainFormWidgetState extends State<MainForm> {
         _isLoading = false;
       });
       if (!mounted) return;
-      await alert(context, 'خطا', 'خطا در دریافت نمایه‌ها: ${profiles.item2}');
+      await errorAlert(context, 'خطا در دریافت نمایه‌ها: ${profiles.item2}');
     }
   }
 
@@ -243,8 +241,7 @@ class MainFormWidgetState extends State<MainForm> {
       });
     } else {
       if (!mounted) return;
-      await alert(context, 'خطا',
-          'خطا در دریافت صف انتشار در سایت: ${publishQueue.item2}');
+      await errorAlert(context, 'خطا در دریافت صف انتشار در سایت: ${publishQueue.item2}');
     }
   }
 
@@ -281,8 +278,7 @@ class MainFormWidgetState extends State<MainForm> {
       });
     } else {
       if (!mounted) return;
-      await alert(context, 'خطا',
-          'خطا در دریافت تعداد اعلان‌ها: ${retNotificationsCount.item2}');
+      await errorAlert(context, 'خطا در دریافت تعداد اعلان‌ها: ${retNotificationsCount.item2}');
     }
 
     setState(() {
@@ -346,10 +342,8 @@ class MainFormWidgetState extends State<MainForm> {
   }
 
   void _snackbarNeeded(String msg) {
-    _key.currentState!.showSnackBar(SnackBar(
-      content: Text(msg),
-      backgroundColor: Colors.red,
-    ));
+    if (!mounted) return;
+    errorAlert(context, msg);
   }
 
   void _updateUnreadNotificationsCount(int count) {
@@ -457,8 +451,7 @@ class MainFormWidgetState extends State<MainForm> {
     });
     if (profileResult.item2.isNotEmpty) {
       if (!mounted) return;
-      await alert(context, 'خطا',
-          'خطا در یافتن نمایهٔ پیش‌فرض ، اطلاعات بیشتر ${profileResult.item2}');
+      await errorAlert(context, 'خطا در یافتن نمایهٔ پیش‌فرض ، اطلاعات بیشتر ${profileResult.item2}');
       return;
     }
     (bool replace, bool commentary)? res =
@@ -486,7 +479,7 @@ class MainFormWidgetState extends State<MainForm> {
 
       if (err.isNotEmpty) {
         if (!mounted) return;
-        await alert(context, 'خطا', 'خطا در ارسال خوانش‌های جدید: $err');
+        await errorAlert(context, 'خطا در ارسال خوانش‌های جدید: $err');
       }
 
       setState(() {
@@ -500,7 +493,7 @@ class MainFormWidgetState extends State<MainForm> {
         _notifications.items!.where((element) => element.isMarked).toList();
     if (markedNotifications.isEmpty) {
       if (!mounted) return;
-      await alert(context, 'خطا', 'لطفاً اعلان‌های مد نظر را علامتگذاری کنید.');
+      await errorAlert(context, 'لطفاً اعلان‌های مد نظر را علامتگذاری کنید.');
 
       return;
     }
@@ -517,8 +510,7 @@ class MainFormWidgetState extends State<MainForm> {
       String error = await NotificationService().switchStatus(item.id, false);
       if (error.isNotEmpty) {
         if (!mounted) return;
-        await alert(context, 'خطا',
-            'خطا در تغییر وضعیت اعلان  ${item.subject}، اطلاعات بیشتر $error');
+        await errorAlert(context, 'خطا در تغییر وضعیت اعلان  ${item.subject}، اطلاعات بیشتر $error');
 
         break;
       }
@@ -540,7 +532,7 @@ class MainFormWidgetState extends State<MainForm> {
         _notifications.items!.where((element) => element.isMarked).toList();
     if (markedNotifications.isEmpty) {
       if (!mounted) return;
-      await alert(context, 'خطا', 'لطفاً اعلان‌های مد نظر را علامتگذاری کنید.');
+      await errorAlert(context, 'لطفاً اعلان‌های مد نظر را علامتگذاری کنید.');
 
       return;
     }
@@ -556,8 +548,7 @@ class MainFormWidgetState extends State<MainForm> {
             await NotificationService().deleteNotification(item.id, false);
         if (delRes.item2.isNotEmpty) {
           if (!mounted) return;
-          await alert(context, 'خطا',
-              'خطا در حذف اعلان ${item.subject}، اطلاعات بیشتر ${delRes.item2}');
+          await errorAlert(context, 'خطا در حذف اعلان ${item.subject}، اطلاعات بیشتر ${delRes.item2}');
 
           break;
         }
@@ -581,7 +572,7 @@ class MainFormWidgetState extends State<MainForm> {
         _profiles.items!.where((element) => element.isMarked).toList();
     if (markedProfiles.isEmpty) {
       if (!mounted) return;
-      await alert(context, 'خطا', 'لطفاً نمایه‌های مد نظر را علامتگذاری کنید.');
+      await errorAlert(context, 'لطفاً نمایه‌های مد نظر را علامتگذاری کنید.');
 
       return;
     }
@@ -596,8 +587,7 @@ class MainFormWidgetState extends State<MainForm> {
         var delRes = await RecitationService().deleteProfile(item.id!, false);
         if (delRes.item2.isNotEmpty) {
           if (!mounted) return;
-          await alert(context, 'خطا',
-              'خطا در حذف نمایهٔ ${item.name}، اطلاعات بیشتر ${delRes.item2}');
+          await errorAlert(context, 'خطا در حذف نمایهٔ ${item.name}، اطلاعات بیشتر ${delRes.item2}');
 
           break;
         }
@@ -618,7 +608,7 @@ class MainFormWidgetState extends State<MainForm> {
         _narrations.items!.where((element) => element.isMarked).toList();
     if (markedRecitations.isEmpty) {
       if (!mounted) return;
-      await alert(context, 'خطا', 'لطفاً خوانش‌های مد نظر را علامتگذاری کنید.');
+      await errorAlert(context, 'لطفاً خوانش‌های مد نظر را علامتگذاری کنید.');
 
       return;
     }
@@ -633,8 +623,7 @@ class MainFormWidgetState extends State<MainForm> {
         var delRes = await RecitationService().deleteRecitation(item.id, false);
         if (delRes.item2.isNotEmpty) {
           if (!mounted) return;
-          await alert(context, 'خطا',
-              'خطا در حذف خوانش ${item.audioTitle}، اطلاعات بیشتر ${delRes.item2}');
+          await errorAlert(context, 'خطا در حذف خوانش ${item.audioTitle}، اطلاعات بیشتر ${delRes.item2}');
           break;
         }
         if (delRes.item1) {
@@ -654,7 +643,7 @@ class MainFormWidgetState extends State<MainForm> {
         _narrations.items!.where((element) => element.isMarked).toList();
     if (markedRecitations.isEmpty) {
       if (!mounted) return;
-      await alert(context, 'خطا', 'لطفاً خوانش‌های مد نظر را علامتگذاری کنید.');
+      await errorAlert(context, 'لطفاً خوانش‌های مد نظر را علامتگذاری کنید.');
       return;
     }
 
@@ -667,8 +656,7 @@ class MainFormWidgetState extends State<MainForm> {
     });
     if (defProfile.item2.isNotEmpty) {
       if (!mounted) return;
-      await alert(context, 'خطا',
-          'خطا در دریافت نمایهٔ فعال ، اطلاعات بیشتر ${defProfile.item2}');
+      await errorAlert(context, 'خطا در دریافت نمایهٔ فعال ، اطلاعات بیشتر ${defProfile.item2}');
       return;
     }
 
@@ -691,7 +679,7 @@ class MainFormWidgetState extends State<MainForm> {
       var res = await service.updateRecitation(recitation, false);
       if (res.item2.isNotEmpty) {
         if (!mounted) return;
-        await alert(context, 'خطا', res.item2);
+        await errorAlert(context, res.item2);
 
         break;
       }
@@ -723,7 +711,7 @@ class MainFormWidgetState extends State<MainForm> {
         _profiles.items!.where((element) => element.isMarked).toList();
     if (markedProfiles.isEmpty) {
       if (!mounted) return;
-      await alert(context, 'خطا', 'لطفاً نمایه‌های مد نظر را علامتگذاری کنید.');
+      await errorAlert(context, 'لطفاً نمایه‌های مد نظر را علامتگذاری کنید.');
       return;
     }
     String email = (await _getEmail())!;
@@ -742,14 +730,14 @@ class MainFormWidgetState extends State<MainForm> {
 
       if (ret.item2.isNotEmpty) {
         if (!mounted) return;
-        await alert(context, 'خطا', ret.item2);
+        await errorAlert(context, ret.item2);
         break;
       } else {
         transfered += ret.item1;
       }
     }
     if (!mounted) return;
-    await alert(context, 'خطا', 'موارد منتقل شده: $transfered');
+    await successAlert(context, 'تعداد $transfered خوانش با موفقیت به مالک جدید منتقل شد.');
 
     await _loadData();
   }
@@ -777,6 +765,20 @@ class MainFormWidgetState extends State<MainForm> {
                   : _activeSection == GActiveFormSection.recitationsWithMistakes
                       ? 5
                       : -1,
+          emptyMessage: switch (_activeSection) {
+            GActiveFormSection.draftRecitations =>
+              'هنوز خوانش پیش‌نویسی ندارید.\nبرای افزودن خوانش جدید از دکمهٔ + استفاده کنید.',
+            GActiveFormSection.allMyRecitations =>
+              'هنوز هیچ خوانشی ثبت نکرده‌اید.',
+            GActiveFormSection.allUsersPendingNormalRecitations ||
+            GActiveFormSection.allUsersPendingCommentaryRecitations =>
+              'در حال حاضر خوانشی در انتظار تأیید نیست.',
+            GActiveFormSection.rejectedRecitaions =>
+              'خوانش برگشت‌خورده‌ای وجود ندارد.',
+            GActiveFormSection.recitationsWithMistakes =>
+              'خوانشی با اشکال گزارش‌شده یافت نشد.',
+            _ => 'موردی یافت نشد.',
+          },
         );
       case GActiveFormSection.reportedRecitations:
         return ReportedDataSection(
@@ -820,11 +822,9 @@ class MainFormWidgetState extends State<MainForm> {
 
   @override
   Widget build(BuildContext context) {
-    return ScaffoldMessenger(
-        key: _key,
-        child: LoadingOverlay(
-            isLoading: _isLoading,
-            child: Scaffold(
+    return LoadingOverlay(
+        isLoading: _isLoading,
+        child: Scaffold(
               appBar: AppBar(
                 title: Text(title),
                 actions: [
@@ -951,11 +951,8 @@ class MainFormWidgetState extends State<MainForm> {
                               .where((element) => element.isMarked)
                               .toList();
                           if (markedNarrations.isEmpty) {
-                            _key.currentState!.showSnackBar(const SnackBar(
-                              content: Text(
-                                  'لطفاً خوانش‌های مد نظر را علامتگذاری کنید.'),
-                              backgroundColor: Colors.red,
-                            ));
+                            await errorAlert(context,
+                                'لطفاً خوانش‌های مد نظر را علامتگذاری کنید.');
                             return;
                           }
                           String confirmation = markedNarrations.length > 1
@@ -971,8 +968,7 @@ class MainFormWidgetState extends State<MainForm> {
                                   .updateRecitation(item, false);
                               if (updateRes.item2.isNotEmpty) {
                                 if (!context.mounted) return;
-                                await alert(context, 'خطا',
-                                    'خطا در تغییر وضعیت خوانش ${item.audioTitle}، اطلاعات بیشتر ${updateRes.item2}');
+                                await errorAlert(context, 'خطا در تغییر وضعیت خوانش ${item.audioTitle}، اطلاعات بیشتر ${updateRes.item2}');
                               }
                               setState(() {
                                 _narrations.items!.remove(item);
@@ -1003,8 +999,7 @@ class MainFormWidgetState extends State<MainForm> {
                               .toList();
                           if (markedNarrations.isEmpty) {
                             if (!mounted) return;
-                            await alert(context, 'خطا',
-                                'لطفاً خوانش‌های مد نظر را علامتگذاری کنید.');
+                            await errorAlert(context, 'لطفاً خوانش‌های مد نظر را علامتگذاری کنید.');
                             return;
                           }
                           String confirmation = markedNarrations.length > 1
@@ -1024,8 +1019,7 @@ class MainFormWidgetState extends State<MainForm> {
                                       false);
                               if (updateRes.item2.isNotEmpty) {
                                 if (!context.mounted) return;
-                                await alert(context, 'خطا',
-                                    'خطا در تغییر وضعیت خوانش ${item.audioTitle}، اطلاعات بیشتر ${updateRes.item2}');
+                                await errorAlert(context, 'خطا در تغییر وضعیت خوانش ${item.audioTitle}، اطلاعات بیشتر ${updateRes.item2}');
                               }
                               setState(() {
                                 _narrations.items!.remove(item);
@@ -1064,7 +1058,7 @@ class MainFormWidgetState extends State<MainForm> {
                         });
                         if (ret.isNotEmpty) {
                           if (!context.mounted) return;
-                          await alert(context, 'خطا', 'خطا در تلاش مجدد: $ret');
+                          await errorAlert(context, 'خطا در تلاش مجدد: $ret');
                         }
                       },
                     ),
@@ -1092,11 +1086,10 @@ class MainFormWidgetState extends State<MainForm> {
 
                             if (ret.item2.isNotEmpty) {
                               if (!context.mounted) return;
-                              await alert(context, 'خطا', ret.item2);
+                              await errorAlert(context, ret.item2);
                             } else {
                               if (!context.mounted) return;
-                              await alert(context, 'خطا',
-                                  'تعداد خوانش‌های تحت تأثیر قرار گرفته: ${ret.item1}');
+                              await errorAlert(context, 'تعداد خوانش‌های تحت تأثیر قرار گرفته: ${ret.item1}');
                             }
                           }
                         }),
@@ -1122,7 +1115,7 @@ class MainFormWidgetState extends State<MainForm> {
                     ),
                     ListTile(
                       title: const Text('خوانش‌های پیش‌نویس من'),
-                      leading: Icon(Icons.music_note,
+                      leading: Icon(Icons.edit_note,
                           color: Theme.of(context).primaryColor),
                       selected:
                           _activeSection == GActiveFormSection.draftRecitations,
@@ -1163,7 +1156,7 @@ class MainFormWidgetState extends State<MainForm> {
                     ),
                     ListTile(
                       title: const Text('همهٔ خوانش‌های من'),
-                      leading: Icon(Icons.music_note,
+                      leading: Icon(Icons.library_music,
                           color: Theme.of(context).primaryColor),
                       selected:
                           _activeSection == GActiveFormSection.allMyRecitations,
@@ -1188,7 +1181,7 @@ class MainFormWidgetState extends State<MainForm> {
                         visible: _canModerate,
                         child: ListTile(
                           title: const Text('خوانش‌های در انتظار تأیید'),
-                          leading: Icon(Icons.music_note,
+                          leading: Icon(Icons.pending_actions,
                               color: Theme.of(context).primaryColor),
                           selected: _activeSection ==
                               GActiveFormSection
@@ -1215,7 +1208,7 @@ class MainFormWidgetState extends State<MainForm> {
                         visible: _canModerate,
                         child: ListTile(
                           title: const Text('شرح‌های صوتی در انتظار تأیید'),
-                          leading: Icon(Icons.music_note,
+                          leading: Icon(Icons.record_voice_over,
                               color: Theme.of(context).primaryColor),
                           selected: _activeSection ==
                               GActiveFormSection
@@ -1265,7 +1258,7 @@ class MainFormWidgetState extends State<MainForm> {
                         )),
                     ListTile(
                       title: const Text('نمایه‌های من'),
-                      leading: Icon(Icons.people,
+                      leading: Icon(Icons.badge_outlined,
                           color: Theme.of(context).primaryColor),
                       selected: _activeSection == GActiveFormSection.profiles,
                       onTap: () async {
@@ -1328,7 +1321,7 @@ class MainFormWidgetState extends State<MainForm> {
                     ),
                     ListTile(
                       title: const Text('صف انتشار در گنجور'),
-                      leading: Icon(Icons.send_to_mobile,
+                      leading: Icon(Icons.publish,
                           color: Theme.of(context).primaryColor),
                       selected: _activeSection ==
                           GActiveFormSection.synchronizationQueue,
@@ -1349,7 +1342,7 @@ class MainFormWidgetState extends State<MainForm> {
                     ),
                     ListTile(
                       title: const Text('خوانش‌های دارای اشکال'),
-                      leading: Icon(Icons.music_note,
+                      leading: Icon(Icons.warning_amber_outlined,
                           color: Theme.of(context).primaryColor),
                       selected: _activeSection ==
                           GActiveFormSection.recitationsWithMistakes,
@@ -1372,7 +1365,7 @@ class MainFormWidgetState extends State<MainForm> {
                     ),
                     ListTile(
                       title: const Text('خوانش‌های برگشت‌خورده'),
-                      leading: Icon(Icons.music_note,
+                      leading: Icon(Icons.remove_circle_outline,
                           color: Theme.of(context).primaryColor),
                       selected: _activeSection ==
                           GActiveFormSection.rejectedRecitaions,
@@ -1658,8 +1651,7 @@ class MainFormWidgetState extends State<MainForm> {
                     case GActiveFormSection.synchronizationQueue:
                       if (!_audioUpdateEnabled) {
                         if (!mounted) return;
-                        await alert(context, 'خطا',
-                            'ارسال خوانش جدید به دلیل تغییرات فنی سایت موقتاً غیرفعال است.');
+                        await errorAlert(context, 'ارسال خوانش جدید به دلیل تغییرات فنی سایت موقتاً غیرفعال است.');
                         return;
                       }
                       await _newNarrations();
@@ -1689,8 +1681,7 @@ class MainFormWidgetState extends State<MainForm> {
                         });
                       } else {
                         if (!context.mounted) return;
-                        await alert(context, 'خطا',
-                            'خطا در ایجاد نمایه: ${serviceResult.item2}');
+                        await errorAlert(context, 'خطا در ایجاد نمایه: ${serviceResult.item2}');
                       }
                       break;
                   }
@@ -1700,6 +1691,6 @@ class MainFormWidgetState extends State<MainForm> {
                     : 'ارسال خوانش‌های جدید',
                 child: const Icon(Icons.add),
               ),
-            )));
+            ));
   }
 }

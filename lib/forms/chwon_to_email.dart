@@ -30,6 +30,7 @@ class _ChownToEmailState extends State<ChownToEmail> {
                     child: TextFormField(
                       controller: _emailController,
                       decoration: const InputDecoration(
+                        icon: Icon(Icons.mail_outline),
                         labelText: 'پست الکترونیکی',
                         hintText: 'پست الکترونیکی',
                       ),
@@ -40,14 +41,16 @@ class _ChownToEmailState extends State<ChownToEmail> {
                   child: OverflowBar(
                     alignment: MainAxisAlignment.end,
                     children: [
-                      ElevatedButton(
-                        child: const Text('تأیید'),
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.check),
+                        label: const Text('تأیید'),
                         onPressed: () {
                           Navigator.of(context).pop(_emailController.text);
                         },
                       ),
-                      TextButton(
-                        child: const Text('انصراف'),
+                      TextButton.icon(
+                        icon: const Icon(Icons.close),
+                        label: const Text('انصراف'),
                         onPressed: () {
                           Navigator.of(context).pop(null);
                         },

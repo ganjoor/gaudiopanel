@@ -41,8 +41,9 @@ class _RejectRecitationState extends State<RejectRecitation> {
               ),
               Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    child:
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.sync_problem),
+                    label:
                         const Text('مشکلات فنی از قبیل همگامسازی نادرست دارد'),
                     onPressed: () {
                       Navigator.of(context)
@@ -51,8 +52,9 @@ class _RejectRecitationState extends State<RejectRecitation> {
                   )),
               Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    child: const Text('خوانش اشکالات ادبی و بیانی دارد'),
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.menu_book_outlined),
+                    label: const Text('خوانش اشکالات ادبی و بیانی دارد'),
                     onPressed: () {
                       Navigator.of(context)
                           .pop('خوانش اشکالات ادبی و بیانی دارد');
@@ -60,8 +62,9 @@ class _RejectRecitationState extends State<RejectRecitation> {
                   )),
               Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    child: const Text('خوانش متعلق به ارسال کننده نیست'),
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.person_off_outlined),
+                    label: const Text('خوانش متعلق به ارسال کننده نیست'),
                     onPressed: () {
                       Navigator.of(context)
                           .pop('خوانش متعلق به ارسال کننده نیست');
@@ -69,8 +72,9 @@ class _RejectRecitationState extends State<RejectRecitation> {
                   )),
               Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    child: const Text('شرح صوتی نیست'),
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.voice_over_off_outlined),
+                    label: const Text('شرح صوتی نیست'),
                     onPressed: () {
                       Navigator.of(context).pop('شرح صوتی نیست');
                     },
@@ -90,16 +94,18 @@ class _RejectRecitationState extends State<RejectRecitation> {
                   child: OverflowBar(
                     alignment: MainAxisAlignment.end,
                     children: [
-                      ElevatedButton(
-                        child: const Text('رد خوانش'),
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.block),
+                        label: const Text('رد خوانش'),
                         onPressed: () {
                           if (_causeController.text.isNotEmpty) {
                             Navigator.of(context).pop(_causeController.text);
                           }
                         },
                       ),
-                      TextButton(
-                        child: const Text('انصراف'),
+                      TextButton.icon(
+                        icon: const Icon(Icons.close),
+                        label: const Text('انصراف'),
                         onPressed: () {
                           Navigator.of(context).pop(null);
                         },

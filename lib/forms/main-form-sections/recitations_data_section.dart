@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gaudiopanel/callbacks/g_ui_callbacks.dart';
+import 'package:gaudiopanel/forms/generic_lookups.dart';
 import 'package:gaudiopanel/forms/narration_edit.dart';
 import 'package:gaudiopanel/forms/reject_recitation.dart';
 import 'package:gaudiopanel/models/common/paginated_items_response_model.dart';
@@ -14,12 +15,14 @@ class RecitationsDataSection extends StatefulWidget {
       required this.narrations,
       required this.loadingStateChanged,
       required this.snackbarNeeded,
-      required this.status});
+      required this.status,
+      required this.emptyMessage});
 
   final PaginatedItemsResponseModel<RecitationViewModel> narrations;
   final LoadingStateChanged loadingStateChanged;
   final SnackbarNeeded snackbarNeeded;
   final int status;
+  final String emptyMessage;
 
   @override
   State<RecitationsDataSection> createState() => _RecitationsState();
@@ -195,6 +198,12 @@ class _RecitationsState extends State<RecitationsDataSection> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.narrations.items == null || widget.narrations.items!.isEmpty) {
+      return EmptyState(
+        icon: Icons.library_music_outlined,
+        message: widget.emptyMessage,
+      );
+    }
     return ListView.builder(
         itemCount: widget.narrations.items!.length,
         itemBuilder: (BuildContext context, int index) {

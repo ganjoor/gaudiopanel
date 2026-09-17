@@ -73,15 +73,17 @@ class _SearchParamsState extends State<SearchParams> {
                   child: OverflowBar(
                     alignment: MainAxisAlignment.end,
                     children: [
-                      ElevatedButton(
-                        child: const Text('تأیید'),
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.search),
+                        label: const Text('تأیید'),
                         onPressed: () {
                           Navigator.of(context).pop(Tuple2<int, String>(
                               _pageSize, _searchController.text));
                         },
                       ),
-                      TextButton(
-                        child: const Text('انصراف'),
+                      TextButton.icon(
+                        icon: const Icon(Icons.close),
+                        label: const Text('انصراف'),
                         onPressed: () {
                           Navigator.of(context).pop(null);
                         },

@@ -339,7 +339,21 @@ class SignUpFormState extends State<SignUpForm> {
                                 )),
                             Visibility(
                                 visible: _signupError.isNotEmpty && _finalized,
-                                child: Text(_signupError)),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Icons.error_outline,
+                                        color: Colors.red, size: 18),
+                                    const SizedBox(width: 4),
+                                    Flexible(
+                                      child: Text(
+                                        _signupError,
+                                        style:
+                                            const TextStyle(color: Colors.red),
+                                      ),
+                                    ),
+                                  ],
+                                )),
                             const SizedBox(width: 10),
                             Visibility(
                                 visible: !_alreadyLoggedIn && !_emailSent,

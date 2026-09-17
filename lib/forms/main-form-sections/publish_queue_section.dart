@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gaudiopanel/forms/generic_lookups.dart';
 import 'package:gaudiopanel/models/common/paginated_items_response_model.dart';
 import 'package:gaudiopanel/models/recitation/recitation_publishing_tracker_viewmodel.dart';
 
@@ -28,6 +29,12 @@ class _PublishQueueSectionState extends State<PublishQueueSection> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.queue.items == null || widget.queue.items!.isEmpty) {
+      return const EmptyState(
+        icon: Icons.publish_outlined,
+        message: 'صف انتشار خالی است؛ در حال حاضر موردی در حال ارسال به گنجور نیست.',
+      );
+    }
     return ListView.builder(
         itemCount: widget.queue.items!.length,
         itemBuilder: (BuildContext context, int index) {

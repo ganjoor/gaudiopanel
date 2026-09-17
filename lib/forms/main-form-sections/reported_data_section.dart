@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gaudiopanel/callbacks/g_ui_callbacks.dart';
+import 'package:gaudiopanel/forms/generic_lookups.dart';
 import 'package:gaudiopanel/models/common/paginated_items_response_model.dart';
 import 'package:gaudiopanel/models/recitation/recitation_error_report_viewmodel.dart';
 import 'package:gaudiopanel/services/recitation_service.dart';
@@ -22,32 +23,6 @@ class ReportedDataSection extends StatefulWidget {
 }
 
 class _ProfilesState extends State<ReportedDataSection> {
-  Future<void> _showMyDialog(String error) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          title: const Text('خطا'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[Text(error)],
-            ),
-          ),
-          actions: <Widget>[
-            ElevatedButton(
-              child: const Text('تأیید'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Future<String?> _input(String title, String field, String value) async {
     TextEditingController controller = TextEditingController();
     controller.text = value;
@@ -74,7 +49,7 @@ class _ProfilesState extends State<ReportedDataSection> {
                   onFieldSubmitted: (String value) => {
                     if (controller.text.trim().isEmpty)
                       {
-                        _showMyDialog('$field نمی‌تواند خالی باشد.'),
+                        errorAlert(context, '$field نمی‌تواند خالی باشد.'),
                       }
                     else
                       {Navigator.of(context).pop(controller.text.trim())}
@@ -88,7 +63,7 @@ class _ProfilesState extends State<ReportedDataSection> {
               child: const Text('تأیید'),
               onPressed: () {
                 if (controller.text.trim().isEmpty) {
-                  _showMyDialog('$field نمی‌تواند خالی باشد.');
+                  errorAlert(context, '$field نمی‌تواند خالی باشد.');
                   return;
                 }
                 Navigator.of(context).pop(controller.text.trim());
@@ -137,6 +112,13 @@ class _ProfilesState extends State<ReportedDataSection> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.reportedRecitations.items == null ||
+        widget.reportedRecitations.items!.isEmpty) {
+      return const EmptyState(
+        icon: Icons.flag_outlined,
+        message: 'خوانش گزارش‌شده‌ای برای بررسی وجود ندارد.',
+      );
+    }
     return ListView.builder(
         itemCount: widget.reportedRecitations.items!.length,
         itemBuilder: (BuildContext context, int index) {
@@ -150,7 +132,7 @@ class _ProfilesState extends State<ReportedDataSection> {
                               .reportedRecitations.items![index].recitationId,
                           error401: false);
                   if (res.item2.isNotEmpty) {
-                    await _showMyDialog(res.item2);
+                    await errorAlert(context, res.item2);
                     return;
                   }
                   var url = widget
@@ -173,7 +155,7 @@ class _ProfilesState extends State<ReportedDataSection> {
                     'خط متناظر: ${widget.reportedRecitations.items![index].coupletIndex + 1}'),
                 Text(widget
                     .reportedRecitations.items![index].recitation.audioArtist),
-                ElevatedButton(
+                ElevatedButton.icon(
                   style: ButtonStyle(
                       backgroundColor:
                           WidgetStateProperty.all<Color>(Colors.blueGrey)),
@@ -193,9 +175,10 @@ class _ProfilesState extends State<ReportedDataSection> {
                       widget.snackbarNeeded(res.item2);
                     }
                   },
-                  child: const Text('گزارش درست نیست'),
+                  icon: const Icon(Icons.thumb_down_alt_outlined),
+                  label: const Text('گزارش درست نیست'),
                 ),
-                ElevatedButton(
+                ElevatedButton.icon(
                   style: ButtonStyle(
                       backgroundColor:
                           WidgetStateProperty.all<Color>(Colors.red)),
@@ -216,9 +199,10 @@ class _ProfilesState extends State<ReportedDataSection> {
                     }
                     widget.loadingStateChanged(false);
                   },
-                  child: const Text('خوانش اشکال دارد و باید حذف شود'),
+                  icon: const Icon(Icons.delete_forever),
+                  label: const Text('خوانش اشکال دارد و باید حذف شود'),
                 ),
-                ElevatedButton(
+                ElevatedButton.icon(
                   style: ButtonStyle(
                       backgroundColor:
                           WidgetStateProperty.all<Color>(Colors.yellow)),
@@ -261,7 +245,8 @@ class _ProfilesState extends State<ReportedDataSection> {
                     }
                     widget.loadingStateChanged(false);
                   },
-                  child: const Text('در فهرست اشکالات خوانش ثبت شود'),
+                  icon: const Icon(Icons.bug_report_outlined),
+                  label: const Text('در فهرست اشکالات خوانش ثبت شود'),
                 )
               ]),
               trailing: IconButton(

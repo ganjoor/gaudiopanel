@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gaudiopanel/callbacks/g_ui_callbacks.dart';
+import 'package:gaudiopanel/forms/generic_lookups.dart';
 import 'package:gaudiopanel/forms/profile_edit.dart';
 import 'package:gaudiopanel/models/common/paginated_items_response_model.dart';
 import 'package:gaudiopanel/models/recitation/user_recitation_profile_viewmodel.dart';
@@ -52,6 +53,13 @@ class _ProfilesState extends State<ProfilesDataSection> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.profiles.items == null || widget.profiles.items!.isEmpty) {
+      return const EmptyState(
+        icon: Icons.badge_outlined,
+        message: 'هنوز نمایه‌ای نساخته‌اید.\n'
+            'برای ارسال خوانش، ابتدا از دکمهٔ + یک نمایه بسازید.',
+      );
+    }
     return ListView.builder(
         itemCount: widget.profiles.items!.length,
         itemBuilder: (BuildContext context, int index) {

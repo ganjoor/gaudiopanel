@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gaudiopanel/forms/generic_lookups.dart';
 import 'package:gaudiopanel/models/common/paginated_items_response_model.dart';
 import 'package:gaudiopanel/models/recitation/uploaded_item_viewmodel.dart';
 
@@ -24,8 +25,12 @@ class _UploadsState extends State<UploadsDataSection> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.uploads.items == null
-        ? const Text('بارگذاری')
+    return (widget.uploads.items == null || widget.uploads.items!.isEmpty)
+        ? const EmptyState(
+            icon: Icons.cloud_upload_outlined,
+            message: 'هنوز فایلی بارگذاری نکرده‌اید.\n'
+                'برای شروع، از دکمهٔ + در پایین صفحه استفاده کنید.',
+          )
         : ListView.builder(
             itemCount: widget.uploads.items!.length,
             itemBuilder: (BuildContext context, int index) {
