@@ -29,6 +29,7 @@ class _ChownToEmailState extends State<ChownToEmail> {
                     textDirection: TextDirection.ltr,
                     child: TextFormField(
                       controller: _emailController,
+                      style: const TextStyle(fontFamily: 'Roboto'),
                       decoration: const InputDecoration(
                         icon: Icon(Icons.mail_outline),
                         labelText: 'پست الکترونیکی',

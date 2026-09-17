@@ -56,7 +56,8 @@ class GAudioPanelAppState extends State<GAudioPanelApp> {
             // the app on. For desktop platforms, the controls will be smaller and
             // closer together (more dense) than on mobile platforms.
             visualDensity: VisualDensity.adaptivePlatformDensity,
-            fontFamily: 'Samim'),
+            fontFamily: 'Vazirmatn',
+            fontFamilyFallback: const ['Roboto']),
         home: widget.initialWidget,
         builder: (BuildContext context, Widget? child) {
           return Directionality(

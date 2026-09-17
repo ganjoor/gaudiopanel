@@ -98,6 +98,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                     textDirection: TextDirection.ltr,
                     child: TextFormField(
                         controller: _artistUrlController,
+                        style: const TextStyle(fontFamily: 'Roboto'),
                         decoration: const InputDecoration(
                           icon: Icon(Icons.link),
                           labelText: 'نشانی وب',
@@ -131,6 +132,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                         textDirection: TextDirection.ltr,
                         child: TextFormField(
                             controller: _audioSrcUrlController,
+                            style: const TextStyle(fontFamily: 'Roboto'),
                             decoration: const InputDecoration(
                               icon: Icon(Icons.link),
                               labelText: 'نشانی وب منبع',
@@ -149,6 +151,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                           textDirection: TextDirection.ltr,
                           child: TextFormField(
                               controller: _fileSuffixWithoutDashController,
+                              style: const TextStyle(fontFamily: 'Roboto'),
                               decoration: const InputDecoration(
                                 icon: Icon(Icons.tag),
                                 labelText: 'پسوند یکتاساز فایل',

@@ -213,6 +213,7 @@ class SignUpFormState extends State<SignUpForm> {
                                   controller: _email,
                                   autofillHints: const [AutofillHints.username],
                                   textDirection: TextDirection.ltr,
+                                  style: const TextStyle(fontFamily: 'Roboto'),
                                   validator: (value) {
                                     if (!_emailSent &&
                                         (value == null || value.isEmpty)) {
@@ -283,6 +284,7 @@ class SignUpFormState extends State<SignUpForm> {
                                 child: TextFormField(
                                   controller: _secret,
                                   textDirection: TextDirection.ltr,
+                                  style: const TextStyle(fontFamily: 'Roboto'),
                                   validator: (value) {
                                     if (_emailSent &&
                                         (value == null || value.isEmpty)) {
@@ -360,6 +362,7 @@ class SignUpFormState extends State<SignUpForm> {
                                 child: TextFormField(
                                   controller: _captcha,
                                   textDirection: TextDirection.ltr,
+                                  style: const TextStyle(fontFamily: 'Roboto'),
                                   validator: (value) {
                                     if (!_emailSent &&
                                         (value == null || value.isEmpty)) {
@@ -396,6 +399,7 @@ class SignUpFormState extends State<SignUpForm> {
                                   obscureText: true,
                                   autofillHints: const [AutofillHints.password],
                                   textDirection: TextDirection.ltr,
+                                  style: const TextStyle(fontFamily: 'Roboto'),
                                   validator: (value) {
                                     if ((value == null || value.isEmpty)) {
                                       return 'گذرواژه وارد نشده است.';
@@ -418,6 +422,7 @@ class SignUpFormState extends State<SignUpForm> {
                                   obscureText: true,
                                   autofillHints: const [AutofillHints.password],
                                   textDirection: TextDirection.ltr,
+                                  style: const TextStyle(fontFamily: 'Roboto'),
                                   validator: (value) {
                                     if ((value == null || value.isEmpty)) {
                                       return 'تکرار گذرواژه وارد نشده است.';

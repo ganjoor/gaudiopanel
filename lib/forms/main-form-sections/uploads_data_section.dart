@@ -38,7 +38,8 @@ class _UploadsState extends State<UploadsDataSection> {
                   leading: getUploadIcon(widget.uploads.items![index]),
                   title: Directionality(
                       textDirection: TextDirection.ltr,
-                      child: Text(widget.uploads.items![index].fileName)),
+                      child: Text(widget.uploads.items![index].fileName,
+                          style: const TextStyle(fontFamily: 'Roboto'))),
                   subtitle:
                       Text(widget.uploads.items![index].processResultMsg));
             });

@@ -108,7 +108,14 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
   fonts:
-  - family: Samim
+  - family: Vazirmatn
     fonts:
-      - asset: fonts/Samim.ttf
+      - asset: fonts/Vazirmatn[wght].ttf
+  - family: Roboto
+    fonts:
+      - asset: fonts/Roboto-400.ttf
+      - asset: fonts/Roboto-500.ttf
+        weight: 500
+      - asset: fonts/Roboto-700.ttf
+        weight: 700
 

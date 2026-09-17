@@ -76,6 +76,7 @@ class LoginFormState extends State<LoginForm> {
                               controller: _email,
                               autofillHints: const [AutofillHints.username],
                               textDirection: TextDirection.ltr,
+                              style: const TextStyle(fontFamily: 'Roboto'),
                               validator: (value) {
                                 if (value == null) {
                                   return 'پست الکترونیکی وارد نشده است.';
@@ -99,6 +100,7 @@ class LoginFormState extends State<LoginForm> {
                               obscureText: true,
                               autofillHints: const [AutofillHints.password],
                               textDirection: TextDirection.ltr,
+                              style: const TextStyle(fontFamily: 'Roboto'),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'گذرواژه وارد نشده است.';

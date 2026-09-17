@@ -95,7 +95,8 @@ class _ProfilesState extends State<ProfilesDataSection> {
                 Text(widget.profiles.items![index].artistName),
                 Directionality(
                     textDirection: TextDirection.ltr,
-                    child: Text(widget.profiles.items![index].artistUrl))
+                    child: Text(widget.profiles.items![index].artistUrl,
+                        style: const TextStyle(fontFamily: 'Roboto')))
               ]),
               trailing: IconButton(
                 icon: widget.profiles.items![index].isMarked

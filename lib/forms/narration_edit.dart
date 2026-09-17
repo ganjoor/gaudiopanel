@@ -127,6 +127,7 @@ class _NarrationEditState extends State<NarrationEdit> {
                     textDirection: TextDirection.ltr,
                     child: TextFormField(
                         controller: _artistUrlController,
+                        style: const TextStyle(fontFamily: 'Roboto'),
                         decoration: InputDecoration(
                             labelText: 'نشانی وب',
                             hintText: 'نشانی وب',
@@ -177,6 +178,7 @@ class _NarrationEditState extends State<NarrationEdit> {
                     textDirection: TextDirection.ltr,
                     child: TextFormField(
                         controller: _audioSrcUrlController,
+                        style: const TextStyle(fontFamily: 'Roboto'),
                         decoration: InputDecoration(
                             labelText: 'نشانی وب منبع',
                             hintText: 'نشانی وب منبع',
