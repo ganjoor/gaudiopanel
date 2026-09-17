@@ -70,7 +70,7 @@ class _SearchParamsState extends State<SearchParams> {
               ),
               Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: ButtonBar(
+                  child: OverflowBar(
                     alignment: MainAxisAlignment.end,
                     children: [
                       ElevatedButton(

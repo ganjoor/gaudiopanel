@@ -84,7 +84,7 @@ class _UploadFilesState extends State<UploadFiles> {
                   'نام فایلها اهمیتی ندارد و نیاز نیست زوج فایل‌ها همنام باشند.'),
               Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: ButtonBar(
+                  child: OverflowBar(
                     alignment: MainAxisAlignment.end,
                     children: [
                       ElevatedButton(

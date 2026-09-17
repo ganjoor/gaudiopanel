@@ -797,7 +797,6 @@ class MainFormWidgetState extends State<MainForm> {
       case GActiveFormSection.synchronizationQueue:
         return PublishQueueSection(queue: _queue);
       case GActiveFormSection.uploads:
-      default:
         return UploadsDataSection(uploads: _uploads);
     }
   }
