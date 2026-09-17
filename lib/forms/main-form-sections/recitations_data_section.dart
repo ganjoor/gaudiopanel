@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:gaudiopanel/callbacks/g_ui_callbacks.dart';
 import 'package:gaudiopanel/forms/generic_lookups.dart';
 import 'package:gaudiopanel/forms/narration_edit.dart';
@@ -7,6 +8,7 @@ import 'package:gaudiopanel/forms/reject_recitation.dart';
 import 'package:gaudiopanel/models/common/paginated_items_response_model.dart';
 import 'package:gaudiopanel/models/recitation/recitation_viewmodel.dart';
 import 'package:gaudiopanel/services/recitation_service.dart';
+import 'package:gaudiopanel/services/upload_recitation_service.dart';
 import 'package:just_audio/just_audio.dart';
 
 class RecitationsDataSection extends StatefulWidget {
@@ -102,6 +104,66 @@ class _RecitationsState extends State<RecitationsDataSection> {
         );
       },
     );
+  }
+
+  Future<bool?> _confirm(String title, String text) async {
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: SingleChildScrollView(
+            child: Text(text),
+          ),
+          actions: [
+            ElevatedButton.icon(
+              icon: const Icon(Icons.check),
+              label: const Text('بله'),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+            TextButton.icon(
+              icon: const Icon(Icons.close),
+              label: const Text('خیر'),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _replaceXml(RecitationViewModel narration) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['xml'],
+    );
+    if (result == null || result.files.isEmpty) return;
+
+    if (true !=
+        await _confirm('تأییدیه',
+            'فایل xml انتخاب‌شده جایگزین فایل همگام‌سازی فعلی «${narration.audioTitle}» می‌شود و مستقیماً روی نسخهٔ منتشرشده اعمال خواهد شد. تنها فایلی پذیرفته می‌شود که برای همین فایل mp3 تهیه شده باشد. آیا ادامه می‌دهید؟')) {
+      return;
+    }
+
+    widget.loadingStateChanged(true);
+    String err = await UploadRecitationService()
+        .replaceRecitationXml(narration.id, result.files.first, false);
+    widget.loadingStateChanged(false);
+
+    if (!mounted) return;
+    if (err.isEmpty) {
+      await successAlert(
+          context,
+          'فایل xml برای «${narration.audioTitle}» ارسال و در صف انتشار قرار گرفت.\n'
+          'نتیجهٔ نهایی (موفقیت یا خطا) از طریق اعلان‌های شما اطلاع‌رسانی خواهد شد.');
+    } else {
+      await errorAlert(context, err);
+    }
   }
 
   Future _doEdit(int index) async {
@@ -223,6 +285,16 @@ class _RecitationsState extends State<RecitationsDataSection> {
                     onPressed: () async {
                       await _doEdit(index);
                     }),
+                Visibility(
+                    visible: widget.narrations.items![index].reviewStatus ==
+                        AudioReviewStatus.approved,
+                    child: TextButton.icon(
+                      icon: const Icon(Icons.sync, size: 18),
+                      label: const Text('جایگزینی فایل همگام‌سازی (xml)'),
+                      onPressed: () async {
+                        await _replaceXml(widget.narrations.items![index]);
+                      },
+                    )),
                 Visibility(
                     visible: widget.narrations.items![index].reviewStatus ==
                             AudioReviewStatus.rejected ||
