@@ -57,7 +57,7 @@ class GAudioPanelAppState extends State<GAudioPanelApp> {
             // closer together (more dense) than on mobile platforms.
             visualDensity: VisualDensity.adaptivePlatformDensity,
             fontFamily: 'Vazirmatn',
-            fontFamilyFallback: const ['Roboto']),
+            fontFamilyFallback: const ['Roboto', 'NotoSansArabic']),
         home: widget.initialWidget,
         builder: (BuildContext context, Widget? child) {
           return Directionality(

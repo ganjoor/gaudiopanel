@@ -118,4 +118,7 @@ flutter:
         weight: 500
       - asset: fonts/Roboto-700.ttf
         weight: 700
+  - family: NotoSansArabic
+    fonts:
+      - asset: fonts/NotoSansArabic-Regular.ttf
 
