@@ -110,7 +110,7 @@ flutter:
   fonts:
   - family: Vazirmatn
     fonts:
-      - asset: fonts/Vazirmatn[wght].ttf
+      - asset: fonts/Vazirmatn-Variable.ttf
   - family: Roboto
     fonts:
       - asset: fonts/Roboto-400.ttf
