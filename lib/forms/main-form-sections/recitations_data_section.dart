@@ -10,6 +10,7 @@ import 'package:gaudiopanel/models/recitation/recitation_viewmodel.dart';
 import 'package:gaudiopanel/services/recitation_service.dart';
 import 'package:gaudiopanel/services/upload_recitation_service.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RecitationsDataSection extends StatefulWidget {
   const RecitationsDataSection(
@@ -166,6 +167,16 @@ class _RecitationsState extends State<RecitationsDataSection> {
     }
   }
 
+  Future<void> _launchXml(RecitationViewModel narration) async {
+    final url = narration.xmlUrl;
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
+    } else {
+      if (!mounted) return;
+      await errorAlert(context, 'خطا در نمایش فایل xml: $url');
+    }
+  }
+
   Future _doEdit(int index) async {
     final result = await _edit(widget.narrations.items![index]);
     if (result == null) return;
@@ -288,12 +299,26 @@ class _RecitationsState extends State<RecitationsDataSection> {
                 Visibility(
                     visible: widget.narrations.items![index].reviewStatus ==
                         AudioReviewStatus.approved,
-                    child: TextButton.icon(
-                      icon: const Icon(Icons.sync, size: 18),
-                      label: const Text('جایگزینی فایل همگام‌سازی (xml)'),
-                      onPressed: () async {
-                        await _replaceXml(widget.narrations.items![index]);
-                      },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.visibility_outlined,
+                              size: 18),
+                          tooltip: 'نمایش فایل xml فعلی',
+                          onPressed: () async {
+                            await _launchXml(
+                                widget.narrations.items![index]);
+                          },
+                        ),
+                        TextButton.icon(
+                          icon: const Icon(Icons.sync, size: 18),
+                          label: const Text('جایگزینی فایل همگام‌سازی (xml)'),
+                          onPressed: () async {
+                            await _replaceXml(widget.narrations.items![index]);
+                          },
+                        ),
+                      ],
                     )),
                 Visibility(
                     visible: widget.narrations.items![index].reviewStatus ==
