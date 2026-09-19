@@ -43,7 +43,23 @@ class _NotificationsState extends State<NotificationsDataSection> {
     return ListView.builder(
         itemCount: widget.notifications.items!.length,
         itemBuilder: (BuildContext context, int index) {
-          return ListTile(
+          bool marked = widget.notifications.items![index].isMarked;
+          return Card(
+              margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              elevation: marked ? 3 : 1,
+              color: marked
+                  ? Theme.of(context).colorScheme.primaryContainer
+                  : null,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+                side: BorderSide(
+                  color: marked
+                      ? Theme.of(context).colorScheme.primary
+                      : Colors.grey.shade300,
+                  width: marked ? 1.5 : 1,
+                ),
+              ),
+              child: ListTile(
               leading: getNotificationIcon(widget.notifications.items![index]),
               title: Text(widget.notifications.items![index].subject),
               subtitle: Html(
@@ -91,7 +107,7 @@ class _NotificationsState extends State<NotificationsDataSection> {
                         !widget.notifications.items![index].isMarked;
                   });
                 },
-              ));
+              )));
         });
   }
 }

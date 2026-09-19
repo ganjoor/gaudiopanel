@@ -122,7 +122,23 @@ class _ProfilesState extends State<ReportedDataSection> {
     return ListView.builder(
         itemCount: widget.reportedRecitations.items!.length,
         itemBuilder: (BuildContext context, int index) {
-          return ListTile(
+          bool marked = widget.reportedRecitations.items![index].isMarked;
+          return Card(
+              margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              elevation: marked ? 3 : 1,
+              color: marked
+                  ? Theme.of(context).colorScheme.primaryContainer
+                  : null,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+                side: BorderSide(
+                  color: marked
+                      ? Theme.of(context).colorScheme.primary
+                      : Colors.grey.shade300,
+                  width: marked ? 1.5 : 1,
+                ),
+              ),
+              child: ListTile(
               leading: IconButton(
                 icon: const Icon(Icons.open_in_browser),
                 onPressed: () async {
@@ -260,7 +276,7 @@ class _ProfilesState extends State<ReportedDataSection> {
                         !widget.reportedRecitations.items![index].isMarked;
                   });
                 },
-              ));
+              )));
         });
   }
 }

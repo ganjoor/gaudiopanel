@@ -38,7 +38,14 @@ class _PublishQueueSectionState extends State<PublishQueueSection> {
     return ListView.builder(
         itemCount: widget.queue.items!.length,
         itemBuilder: (BuildContext context, int index) {
-          return ListTile(
+          return Card(
+              margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              elevation: 1,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+                side: BorderSide(color: Colors.grey.shade300),
+              ),
+              child: ListTile(
               leading: getStatusIcon(widget.queue.items![index]),
               title: Directionality(
                   textDirection: TextDirection.ltr,
@@ -50,7 +57,7 @@ class _PublishQueueSectionState extends State<PublishQueueSection> {
                   visible: widget.queue.items![index].error,
                   child: Text(_lastException(index)),
                 )
-              ]));
+              ])));
         });
   }
 }

@@ -34,14 +34,22 @@ class _UploadsState extends State<UploadsDataSection> {
         : ListView.builder(
             itemCount: widget.uploads.items!.length,
             itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                  leading: getUploadIcon(widget.uploads.items![index]),
-                  title: Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Text(widget.uploads.items![index].fileName,
-                          style: const TextStyle(fontFamily: 'Roboto'))),
-                  subtitle:
-                      Text(widget.uploads.items![index].processResultMsg));
+              return Card(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  elevation: 1,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    side: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  child: ListTile(
+                      leading: getUploadIcon(widget.uploads.items![index]),
+                      title: Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: Text(widget.uploads.items![index].fileName,
+                              style: const TextStyle(fontFamily: 'Roboto'))),
+                      subtitle: Text(
+                          widget.uploads.items![index].processResultMsg)));
             });
   }
 }
